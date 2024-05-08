@@ -14,7 +14,7 @@
 
     <script>
         // Establish WebSocket connection
-        const socket = new WebSocket('ws://localhost:8080');
+        const socket = new WebSocket('ws://localhost:7070');
 
         // Handle incoming messages
         socket.addEventListener('message', function (event) {

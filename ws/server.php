@@ -1,7 +1,7 @@
 <?php
 
 // Create WebSocket server
-$server = new WebSocketServer("localhost", 8080);
+$server = new WebSocketServer("localhost", 7070);
 
 class WebSocketServer {
     private $server;
@@ -80,7 +80,7 @@ class WebSocketServer {
                 // Handle received data
                 echo "Received message from client: $data\n";
                  $this->sendMessage($client, $data);
-                 sleep(2);
+                 sleep(1);
                  $this->sendTimeToClient($client);
             }
         }
@@ -133,142 +133,6 @@ class WebSocketServer {
     }
 
     
-    private function recv_old5($client) {
-        $data = socket_read($client, 2048);
-        $bytes = strlen($data);
-        if ($bytes === 0) {
-            // Client disconnected
-            return false;
-        } else {
-            $opcode = ord($data[0]) & 0x0F;
-            if ($opcode !== 0x1) {
-                // Opcode must be 0x1 for text frame
-                return false;
-            }
-            $payloadLength = ord($data[1]) & 127;
-            $maskOffset = 2;
-            if ($payloadLength === 126) {
-                $payloadLength = unpack('n', substr($data, 2, 2))[1];
-                $maskOffset = 4;
-            } elseif ($payloadLength === 127) {
-                // Note: 64-bit length not implemented
-                return false;
-            }
-            $mask = substr($data, $maskOffset, 4);
-            $payloadOffset = $maskOffset + 4;
-            $decodedData = '';
-            for ($i = $payloadOffset; $i < $bytes; ++$i) {
-                $decodedData .= $data[$i] ^ $mask[$i % 4];
-            }
-            return $decodedData;
-        }
-    }
-    
-    private function recv_old4($client) {
-        $data = socket_read($client, 2048);
-        $bytes = strlen($data);
-        if ($bytes === 0) {
-            // Client disconnected
-            return false;
-        } else {
-            $opcode = ord($data[0]) & 0x0F;
-            if ($opcode !== 0x1) {
-                // Opcode must be 0x1 for text frame
-                return false;
-            }
-            $payloadLength = ord($data[1]) & 127;
-            $maskOffset = 2;
-            if ($payloadLength === 126) {
-                $payloadLength = unpack('n', substr($data, 2, 2))[1];
-                $maskOffset = 4;
-            } elseif ($payloadLength === 127) {
-                // Note: 64-bit length not implemented
-                return false;
-            }
-            $mask = substr($data, $maskOffset, 4);
-            $payloadOffset = $maskOffset + 4;
-            $decodedData = '';
-            for ($i = $payloadOffset; $i < $bytes; ++$i) {
-                $decodedData .= $data[$i] ^ $mask[$i % 4];
-            }
-            return $decodedData;
-        }
-    }
-    
-
-    private function recv_old($client) {
-        $data = socket_read($client, 2048);
-        $bytes = strlen($data);
-        if ($bytes === 0) {
-            // Client disconnected
-            return false;
-        } else {
-            // Unmask data
-            $decodedData = '';
-            $payloadLength = ord($data[1]) & 127;
-            if ($payloadLength === 126) {
-                $mask = substr($data, 4, 4);
-                $payloadOffset = 8;
-            } elseif ($payloadLength === 127) {
-                $mask = substr($data, 10, 4);
-                $payloadOffset = 14;
-            } else {
-                $mask = substr($data, 2, 4);
-                $payloadOffset = 6;
-            }
-            for ($i = $payloadOffset; $i < $bytes; ++$i) {
-                $decodedData .= $data[$i] ^ $mask[$i % 4];
-            }
-            return $decodedData;
-        }
-    }
-
-    private function recv_old2($client) {
-        $data = socket_read($client, 2048);
-        $bytes = strlen($data);
-        if ($bytes === 0) {
-            // Client disconnected
-            return false;
-        } else {
-            // Unmask data
-            $decodedData = '';
-            $opcode = ord($data[0]) & 0x0F;
-            $payloadLength = ord($data[1]) & 127;
-            $maskOffset = 2;
-            if ($payloadLength === 126) {
-                $payloadLength = unpack('n', substr($data, 2, 2))[1];
-                $maskOffset = 4;
-            } elseif ($payloadLength === 127) {
-                // Note: 64-bit length not implemented
-                // You may need to handle this case if you expect very large messages
-                return false;
-            }
-            $mask = substr($data, $maskOffset, 4);
-            $payloadOffset = $maskOffset + 4;
-            for ($i = $payloadOffset; $i < $bytes; ++$i) {
-                $decodedData .= $data[$i] ^ $mask[$i % 4];
-            }
-            return $decodedData;
-        }
-    }
-    
-
-    public function sendMessage_old($client, $message) {
-        // Calculate the frame header
-        $frame = chr(129); // 0x1 text frame (FIN + opcode)
-        $length = strlen($message);
-        if ($length <= 125) {
-            $frame .= chr($length);
-        } elseif ($length <= 65535) {
-            $frame .= chr(126) . pack('n', $length);
-        } else {
-            $frame .= chr(127) . pack('NN', 0, $length);
-        }
-        // Append message data
-        $frame .= $message;
-        // Send frame
-        socket_write($client, $frame);
-    }
 }
 
 ?>
