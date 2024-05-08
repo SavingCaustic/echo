@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel theme="lm2" size="1920x1080">
+  <module name="master">
+    <patches />
+    <button name="settings" />
+    <button name="playmode" />
+    <button name="mute" />
+    <button name="solo" />
+    <knob name="volume" label="Tune" default="0"/>
+    <vu />
+  </module>
+  <layer name="controls">
+    <module name="osc2" xy="0,0">
+      <button name="mute_01" value="M" />
+      <button name="solo_01" value="S" />
+      <knob name="tune_01" label="Tune" default="0"/>
+      <knob name="punch_01" label="Punch" default="0"/>
+      <knob name="decay_01" label="Decay" default="0"/>
+      <knob name="decay_01" label="Pan" default="0"/>
+      <knob name="decay_01" label="Vol" default="0.5"/>
+    </module>
+  </layer>
+  <layer>
+    <vbutton name="play_01" />
+  </layer>
+</panel>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel theme="prophet" size="1920x1080">
+  <module name="osc2" xy="0,0">
+    <rotaryswitch name="osc2_oct" default="0" label="Octave" values="-3,-2,-1,0,1,2,3" />
+    <rotaryswitch name="osc2_semis" default="0" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
+    <centerknob name="osc2_detune" default="0" values="-50,0,+50" />
+  </module>
+  <module name="modulation" xy="0,100">
+    <knob name="mod_level" label="Level" default="0"/>
+    <rotaryswitch name="mod_type" label="Type" values="Off,AM,FM,PM" default="Off"/>  
+  </module>
+  <module name="osc1" label="Oscillator 1" xy="100,100">
+    <rotaryswitch name="osc1_waveform" label="Waveform" default="Sine" values="Sine,Triangle,Sawtooth,Square" />
+  </module>
+  <module name="osc_mix" label="Mix">
+    <knob name="osc_mix" />
+    <switch name="osc_unison" default="0" label="Unison" />
+  </module>
+  <module name="filter">
+    <knobswitch name="filter_type" default="Low-pass" label="Type" values="Low-pass,Band-pass,High-pass" />
+    <switch name="filter_db" default="12" label="db/oct" values="12,24" />
+  </module>
+  <module name="vcf">
+    <dualknob name="vca_attack" name2="vca_attack_velsens" label="Attack\n(velocity)" />
+  </module>
+  <module name="vca">
+    <knob name="vca_attack" label="Attack" />
+    <knob name="vca_decay" label="Decay" />
+    <knob name="vca_sustain" label="Sustain" />
+    <knob name="vca_hold" label="Hold" />
+    <knob name="vca_release" label="Release" />
+    <knob name="vca_velsens" label="Vel.sens" />
+  </module>
+  <module name="lfo1">
+  </module>
+  <module name="lfo2">
+  </module>
+  <module name="master">
+    <knob name="volume" default="5" values="0,5,10" />
+  </module>
+</panel>
