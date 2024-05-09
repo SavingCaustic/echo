@@ -5,13 +5,13 @@ require('../app.php');
 $sr = 44100/2;
 $app = new App($sr);               //pass something that can't be changed?
 $app->init();
-$app->rackSetup(1,'subsynth');
+$app->rackSetup(1,'subway');
 $myRack = $app->getRackRef(1);
 $mySub = $myRack->getSynthRef();
 $myDelay = $myRack->loadEffect('delay');
 
 require('../utils/wavWriter.php');
-$ww = new WavWriter('subsynth1.wav',30000, $sr);
+$ww = new WavWriter('subway1.wav',30000, $sr);
 $timer = microtime(true);
 
 //test 1 - re-trigger same note.

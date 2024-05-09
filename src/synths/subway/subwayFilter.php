@@ -3,7 +3,7 @@
 //It could possilby be highly optimized.
 
 
-class SubsynthFilter {
+class SubwayFilter {
     const LOW_PASS = 1;
     const HIGH_PASS = 2;
     const BAND_PASS = 3;
@@ -54,6 +54,11 @@ class SubsynthFilter {
         $this->a3 = $this->a1;
         $this->b1 = 2.0 * (1.0 - $this->c * $this->c) * $this->a1;
         $this->b2 = (1.0 - $this->resonance * $this->c + $this->c * $this->c) * $this->a1;
+    }
+
+    function reset() {  //needed? Not used..
+        $this->out1 = 0;
+        $this->out2 = 0;        
     }
 
     public function applyFilter($input) {

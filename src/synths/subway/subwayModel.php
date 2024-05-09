@@ -1,10 +1,10 @@
 <?php
-require('subsynthVoice.php');
+require('subwayVoice.php');
 
 //This is *not* the controller. It needs to be run in the audio-thread.
 //settings are not midi-based but optimized for distribution to units.
 
-class SubsynthModel implements SynthInterface {
+class SubwayModel implements SynthInterface {
   //objects
   var $dspCore;
   var $lfo1;
@@ -125,7 +125,7 @@ class SubsynthModel implements SynthInterface {
     $this->polyphony = $voiceCnt;
     for($i=0; $i < $voiceCnt; $i++) {
       //voice grabs the settings it needs
-      $this->voices[$i] = new SubsynthVoice($this);
+      $this->voices[$i] = new SubwayVoice($this);
     }
   }
 

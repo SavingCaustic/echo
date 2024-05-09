@@ -1,7 +1,7 @@
 <?php
-require('subsynthFilter.php');
+require('subwayFilter.php');
 
-class SubsynthVoice {
+class SubwayVoice {
     var $synthModel;
     var $active;
     var $note;
@@ -22,7 +22,7 @@ class SubsynthVoice {
         $this->osc2->setWaveform($se['OSC2_WF']);
         $this->vcf = new ADSHR($this, $this->synthModel->dspCore->sampleRate);
         $this->vca = new ADSHR($this, $this->synthModel->dspCore->sampleRate);
-        $this->filter = new SubsynthFilter($this->synthModel->dspCore->sampleRate);      //maybe SubsynthFilter2 is cooler.. 
+        $this->filter = new SubwayFilter($this->synthModel->dspCore->sampleRate);      //maybe SubsynthFilter2 is cooler.. 
         $this->filter->setParams('LOWPASS', $se['VCF_CUTOFF'], $se['VCF_RESONANCE']);
     }
 
@@ -69,6 +69,7 @@ class SubsynthVoice {
         //remove note-ref so not double fired.
         //no, on contrary - keep and replace if re-fired
         $this->vca->release();
+        $this->vcf->release();
     }
 
     function renderNextBlock($blockSize, $voiceIX, $blockCreated) {        
@@ -78,7 +79,10 @@ class SubsynthVoice {
         for($i=0;$i<$blockSize;$i+=$chunkSize) {
             //do filter calculations, to spare cpu, not every sample.
             $filterMod = $this->vcf->getNextLevel($chunkSize);
-            $this->filter->calcCoefficients($filterMod * $se['VCF_CUTOFF']);
+            $filterFreq = $se['VCF_CUTOFF'] * 0.2 + 0.8 * $se['VCF_CUTOFF'] * $filterMod;
+            $filterRes = $se['VCF_RESONANCE'] * $filterMod;
+            $this->filter->calcCoefficients($filterFreq, $filterRes);
+            //$filterMod * $se['VCF_CUTOFF']);
             $pitchMod = 0;  //same..
             $pitchMod = $this->synthModel->lfo1Sample;
 
