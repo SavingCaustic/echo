@@ -7,8 +7,8 @@ DSP breadboarding using PHP with goal to create a mobile DAW, similar to Caustic
 * Mocking UI of final app.
 
 ## Roadmap, (divided by milestones)
-This roadmap excludes actions in JUCE or other C platform.
-And remember, no men at work, Play! :)
+This roadmap **excludes** actions in JUCE or other C platform.
+And remember, no work and all play folks! :)
 
 * Push project to github (done)
 * Get a drum machine in order
