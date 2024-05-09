@@ -2,7 +2,7 @@
 
 //run all tests looking for any errors
 
-//delete wav files
+//delete wav files. Any wav that should be kept: rename to pcm.
 foreach(glob('*.wav') as $f) {
     if(strstr($f,'.wav')) {
 	if($f != 'wavplayer_in.wav') unlink($f);

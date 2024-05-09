@@ -7,9 +7,11 @@ $app = new App($sr);               //pass something that can't be changed?
 $app->init();
 $app->rackSetup(1,'waveform');
 $myRack = $app->getRackRef(1);
-$mySub = $myRack->getSynthRef();
-$mySub->settings['VOICES'] = 25;
-$mySub->pushSettings();
+
+$mySynth = $myRack->getSynthRef();
+//dunno about the argument. All params should probably be int:s right?
+$mySynth->setParam('VOICES',25);
+$mySynth->pushSettings();
 
 require('../utils/wavWriter.php');
 $ww = new WavWriter('bench.wav', 5000, $sr);
