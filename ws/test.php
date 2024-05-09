@@ -41,6 +41,7 @@
 </style>
 </head>
 <body>
+<p>current status, ok but not great.</p>
 <div id="container">
     <div id="capbg"></div>
     <div id="cap"></div>

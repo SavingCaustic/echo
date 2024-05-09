@@ -57,8 +57,10 @@ class WaveformModel implements SynthInterface {
       //called on init or polyphony change
       //in C, maybe GC existing voice-objects?
       if($this->oscCount != 0) {
-        //destroy every object.
-        $this->oscillators[$i] = null;
+        //destroy every old object.
+        for($i=0; $i < $this->oscCount; $i++) {
+          $this->oscillators[$i] = null;
+        }
       }
       $this->oscillators = array();
       //restart

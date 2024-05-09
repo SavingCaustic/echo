@@ -11,9 +11,13 @@ class wavplayerModel {
         $this->pushSettings();
     }
     
+    public function init() {
+
+    }
+
     public function initSettings() {
       $this->settings = array(
-        'WAVEFORM' => 'wavplayer_in.wav'
+        'WAVEFORM' => 'wavplayer_in.pcm'
       );
       file_put_contents(__DIR__ . '/defaults.json',json_encode($this->settings));
     }

@@ -19,3 +19,7 @@ A regular web-server is need to initiate communiction so open another terminal w
 
 From a browser of choice, request http://127.0.0.1/client.php
 
+## Web based UI
+
+Exploring if web based UI at all is a viable option.
+Start php server as above but request: http://127.0.0.1/test.php
