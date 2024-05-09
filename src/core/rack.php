@@ -56,11 +56,12 @@ class Rack {
       while ($this->pattern[$this->patternPtr][0] == $this->patternTick) {
         //process pattern event
         $evt = $this->pattern[$this->patternPtr];
-        switch($evt[1]) {
-          case '90':
+        $cmd = $evt[1] & 0xf0;
+        switch($cmd) {
+          case 0x90:
             $this->synth->noteOn($evt[2], $evt[3]);
             break;
-          case '80':
+          case 0x80:
             $this->synth->noteOff($evt[2], $evt[3]);
             break;
         }
