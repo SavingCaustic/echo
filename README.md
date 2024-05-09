@@ -1,8 +1,32 @@
 # echo
-DSP breadboarding using PHP
+DSP breadboarding using PHP with goal to create a mobile DAW, similar to Caustic.
 
-## Main objective
-Preparing structure for upcoming C-project
+## Main objectives
+* Preparing structure for upcoming C-project
+* Exploring DSP filtering etc.
+* Mocking UI of final app.
+
+## Roadmap, (divided by milestones)
+This roadmap excludes actions in JUCE or other C platform.
+And remember, no men at work, Play! :)
+
+* Push project to github (done)
+* Get a drum machine in order
+* Have a catchy beat with two tracks playing by rendering.
+---
+* Create example of event-processor-effect.
+* Raise PPQN to 96 or similar.
+* Stereo processing - how? Interleaved all the way?
+* Stabilize code.
+---
+* Simulate audio in using wav-file reading.
+* "Synth" that can record or not record (but always effect process) audio in.
+---
+* XML frontend rendering help tool
+* Hack to play with settings for synths and effects using /www
+---
+* FE dialogs for pattern & sample editing. XML based visuals.
+
 
 ## Requirements
 To run project, have a PHP-cli installation, > PHP8.
@@ -14,6 +38,4 @@ To run project, have a PHP-cli installation, > PHP8.
 
 ## Remember
 * Currently, everything is subject to change.
-* Don't work. Have fun with it. :)
-
-* 
+ 

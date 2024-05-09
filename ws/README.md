@@ -3,7 +3,7 @@
 One possible route, but not the first option.. 
 Having a web-based UI driven by websockets between FE & BE.
 
-Currently this directory doesn't do anything useful, and doesn't behave like we want it to do.
+Currently this directory doesn't do anything useful, just for WS experiments.
 
 ## Usage
 
