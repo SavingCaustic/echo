@@ -76,7 +76,7 @@ class wavplayerModel {
         $bufferSize = $this->dspCore->rackRenderSize;
         $samples = [];
         for ($i = 0; $i < $bufferSize; $i++) {
-            if ($this->samplePtr <= $this->sampleCnt) {
+            if ($this->samplePtr < $this->sampleCnt) {
                 // Read a 16-bit signed integer (2 bytes)
                 $sampleRaw = fread($this->fp, 2);
                 $sample = unpack("s", $sampleRaw)[1];
