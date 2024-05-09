@@ -11,10 +11,10 @@ $mySub = $myRack->getSynthRef();
 $myDelay = $myRack->loadEffect('delay');
 
 $mySub->pushSettings();
-$mySub->noteOn(60,120,0);
+$mySub->noteOn(60,90,0);
 
 require('../utils/wavWriter.php');
-$ww = new WavWriter('wavplayer.wav',20000);
+$ww = new WavWriter('wavplayer.wav',15000);
 $timer = microtime(true);
 
 $ww->append($app->testRender(44));
