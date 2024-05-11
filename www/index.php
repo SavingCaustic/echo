@@ -45,7 +45,7 @@ a {
 <td><select name="synth">
   <option>select..</option>
 <?php
-$synths = array('subway','waveform');
+$synths = array('subcult','waveform');
 foreach($synths as $synth) {
   $sel = ($synth == @$_SESSION['synth']) ? ' selected="selected"' : '';
   echo '<option ' . $sel . '>' . $synth . '</option>' . crlf;

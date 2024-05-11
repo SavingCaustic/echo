@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<style>
+    body {
+        margin:0px;
+        background-color: #222222;
+    }
+
+    body,td,input,select {
+        font-size:2rem;
+        font-family: sans-serif;
+    }
+
+    .transportBar {
+        height:60px;
+        background-color:#555;
+    }
+
+    .transportBar td {
+        color:#fff;
+    }
+</style>
+</head>
+<body>
+    <iframe src="synth.php" width=100%" height="930" style="border:0px solid #fff"></iframe>
+    <table width="100%" class="transportBar"><tr>
+        <td>Synth:<select>
+            <option>None</option>
+            <option>Waveform</option>
+            <option>Subtractive</option>
+            <option>Beatnik</option>
+        </select></td>
+
+        <td>Effect:<select>
+            <option>None</option>
+            <option>Delay 1</option>
+        </select></td>
+
+        <td>Seq:<select>
+            <option>Fast arpeggio</option>
+            <option>Base line</option>
+            <option>Soul chords</option>
+            <option>Drums 1</option>
+            <option>Drums 2</option>
+        </select></td>
+        <td>
+            T: <input type="text" value="120" size="3"/>
+        </td>
+        <td align="right">
+          <input type="button" accesskey="R" value="(R)ender" />
+          <input type="button" accesskey="P" value="(P)lay" />
+          <input type="button" accesskey="V" value="(V)iew" />
+          <input type="button" accesskey="V" value="Reset" />
+          &nbsp;
+        </td>
+    </tr></table>
+</body>
+</html>

@@ -1,4 +1,5 @@
 <?php
+//this file should probably move into the src-directory.
 
 class WavWriter {
     private $fileHandle;

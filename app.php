@@ -6,7 +6,7 @@ declare(strict_types=1);
 
 require('src/core/dspCore.php');
 require('src/core/rack.php');
-require('src/sequencer/masterPlayer.php');
+require('src/core/masterPlayer.php');
 
 class App {
     var $racks;
@@ -19,11 +19,11 @@ class App {
     function __construct($sampleRate = 44100, $bufferSize = 1024) {
         $masterRenderSize = $bufferSize * ($sampleRate / 44100);
         //to get an accurate clock, rackRenderSize is relative to sampleRate, not bufferSize.
-        $rackRenderSize = $sampleRate / 44100 * 128;    //3mS, good enough for 96 ppqn. (5mS)
+        $rackRenderSize = $sampleRate / 44100 * 64;
         $masterTune = 440;    //Hz
         $this->dspCore = new DspCore($sampleRate, $masterTune, $rackRenderSize, $masterRenderSize);
         $this->masterPlayer = new MasterPlayer($this);
-        $this->masterPlayer->setup(120,96);
+        $this->masterPlayer->setTempo(120);
         $this->masterPlayer->reset();
         //to be evaluated..
         $this->rackCount = 14;

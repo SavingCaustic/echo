@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Learning Vue</title>
+  <script src="vue.js"></script>
+  <style>
+    .grid {
+      height:150px;
+    }
+
+    .point {
+      position: relative;
+      cursor: pointer;
+      border:2px solid #a4e;
+    }
+
+
+    .dragging {
+        border:2px solid #03F;
+    }
+  </style>
+</head>
+<body>
+  <h1>hello vue</h1>
+  <p>notes outside of scale could be colourized</p>
+  <div id="app" style="bordeR:10px solid #000;width:400px;height:200px;"">
+    <table><tr>
+        <td>Bars:[ ]</td>
+        <td>Resolution:[ ]</td>
+        <td>Quant:[ ]</td>
+    </tr></table>
+    <div style="width:100%;overflow-x:scroll">
+        <div class="grid" style="width:800px;overflow-x:scroll;border:1px solid #900;">
+      <img
+        class="point sel"
+        :class="{ 'dragging': isDragging }"
+        v-for="(point, index) in points"
+        :key="index"
+        :src="point.src"
+        :style="{ left: point.x + 'px', top: point.y + 'px'}"
+        :width="point.width"
+        height="10"
+        draggable="true"
+        @dragstart="dragStart(index, $event)"
+        @drag="handleDrag(index, $event)"
+        @dragend="dragEnd(index, $event)"
+        @touchstart="dragStart(index, $event)"
+        @touchmove="handleDrag(index, $event)"
+        @touchend="dragEnd(index, $event)"
+      />
+      </div>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

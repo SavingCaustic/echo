@@ -18,6 +18,7 @@ class Rack {
         $this->dspCore = &$dspCore;
         $this->patternPtr = 0;   //needs to be reset too by master player..
         $this->tick = 0;          //possibly this should update event if not playing.. 
+        $this->setSwing();
     }
 
     function loadSynth($synthName) {
@@ -35,8 +36,9 @@ class Rack {
     }
 
     function loadPattern($pattern, $barCount, $signNom = 4, $signDenom = 4) {
+      //here timing should be 96PPQN always.
       $this->pattern = $pattern;
-      $this->ticksInPattern = $barCount * 96 * $signNom / $signDenom;
+      $this->ticksInPattern = $barCount * 96 * 4 * $signNom / $signDenom;
       $this->patternPtr = 0;
       $this->patternTick = 0;  //maybe this shouldn't be here when we load patterns as we go..
       //this should really scan pass any negative start-marks.
@@ -44,16 +46,28 @@ class Rack {
         $this->patternPtr++;
       }
       $this->nextPattern = null; //??
+      $this->setSwing();
     }
     
     function getSynthRef() {
         return $this->synth;
     }
 
+    function setSwing($time = 48, $depth = 0) {
+      $this->swingTime = 48;
+      $this->swingDepth = $depth; //0-1
+    }
+
     function processTick() {
       //new tick, see if any events should be processed.
       //events in pattern must be sorted in order.
-      while ($this->pattern[$this->patternPtr][0] == $this->patternTick) {
+      //floor(cos($this->patternTick / $this->ticksInPattern * M_2_PI) * 5);
+      $swingTime = $this->swingTime; //48 = 16ths?
+      $swingOffset = ($this->patternTick % $swingTime);
+      if ($swingOffset > $swingTime/2) $swingOffset = $swingTime - $swingOffset;
+      $swingOffset = floor($swingOffset * $this->swingDepth);
+      //with swing, maby change to <=
+      while ($swingOffset + $this->pattern[$this->patternPtr][0] == $this->patternTick) {
         //process pattern event
         $evt = $this->pattern[$this->patternPtr];
         $cmd = $evt[1] & 0xf0;

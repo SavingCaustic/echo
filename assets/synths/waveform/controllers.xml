@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel theme="lm2" size="1920x1080">
+  <module name="os" xy="0,0" title="VOICES">
+    <knob name="voices" label="Voices" default="10" range="1-25-50"/>
+  </module>
+</panel>
