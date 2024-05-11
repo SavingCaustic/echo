@@ -15,7 +15,7 @@ And remember, no work and all play folks! :)
 * Have a catchy beat with two tracks playing by rendering.
 ---
 * Create example of event-processor-effect.
-* Raise PPQN to 96 or similar.
+* Raise PPQN to 96 or similar. (done)
 * Stereo processing - how? Interleaved all the way?
 * Stabilize code.
 ---
