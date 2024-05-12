@@ -53,30 +53,40 @@ class Rack {
         return $this->synth;
     }
 
-    function setSwing($time = 48, $depth = 0) {
+    function setSwing($time = 48, $depth = 0, $debug = false) {
       $this->swingTime = 48;
       $this->swingDepth = $depth; //0-1
+      $this->swingDebug = $debug;
+    }
+
+    function calcSwingOffset() {
+      $swingTime = $this->swingTime; //48 = 16ths?
+      $swingOffset = ($this->patternTick % $swingTime);
+      //ramp up&down.
+      if ($swingOffset > $swingTime/2) $swingOffset = $swingTime - $swingOffset;
+      if ($this->swingDebug) echo 'offset: ' . $swingOffset . "\r\n";
+      $swingOffset = floor($swingOffset * $this->swingDepth);
+      return $swingOffset;
     }
 
     function processTick() {
+      //not sure about swing time. how it's percieved. 
       //new tick, see if any events should be processed.
       //events in pattern must be sorted in order.
       //floor(cos($this->patternTick / $this->ticksInPattern * M_2_PI) * 5);
-      $swingTime = $this->swingTime; //48 = 16ths?
-      $swingOffset = ($this->patternTick % $swingTime);
-      if ($swingOffset > $swingTime/2) $swingOffset = $swingTime - $swingOffset;
-      $swingOffset = floor($swingOffset * $this->swingDepth);
-      //with swing, maby change to <=
-      while ($swingOffset + $this->pattern[$this->patternPtr][0] == $this->patternTick) {
+      $swingOffset = $this->calcSwingOffset();
+      while ($swingOffset + $this->pattern[$this->patternPtr][0] <= $this->patternTick) {
         //process pattern event
         $evt = $this->pattern[$this->patternPtr];
         $cmd = $evt[1] & 0xf0;
         switch($cmd) {
           case 0x90:
             $this->synth->noteOn($evt[2], $evt[3]);
+            if ($this->swingDebug) echo 'sending note on at tick ' . $this->patternTick . "\n";
             break;
           case 0x80:
             $this->synth->noteOff($evt[2], $evt[3]);
+            if ($this->swingDebug) echo 'sending note off at tick ' . $this->patternTick . "\n";
             break;
         }
         $this->patternPtr++;

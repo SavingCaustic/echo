@@ -16,6 +16,8 @@ And remember, no work and all play folks! :)
 ---
 * Create example of event-processor-effect.
 * Raise PPQN to 96 or similar. (done)
+* Swing implementation (done).
+* Swing testing. Add quarter-note swing.
 * Stereo processing - how? Interleaved all the way?
 * Stabilize code.
 ---
