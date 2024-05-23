@@ -11,15 +11,17 @@ $myRack = $app->getRackRef(1);
 $mySynth = $myRack->getSynthRef();
 $myDelay = $myRack->loadEffect('delay');
 
-$mySynth->pushSettings();
-$mySynth->noteOn(60,90,0);
+$mySynth->pushParams();
+
+$myRack->parseMidi(0x90,60,0);
 
 require('../utils/wavWriter.php');
-$ww = new WavWriter('wavplayer.wav',20000);
+$ww = new WavWriter('wavplayer.wav',30000);
 $timer = microtime(true);
 
-$ww->append($app->testRender(44));
-$mySynth->noteOff(60,120,0);
+$ww->append($app->testRender(60));
+
+$myRack->parseMidi(0x80,60,0);
 
 echo 'Time: ' . (microtime(true) - $timer) . "\r\n";
 $ww->close();

@@ -18,7 +18,7 @@ class WaveformModel implements SynthInterface {
         $this->oscCount = 0;
     }
     
-    public function init() {
+    public function reset() {
       $this->initSettings();
       $this->pushSettings();
     }

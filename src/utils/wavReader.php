@@ -1,46 +1,15 @@
 <?php
 
-class wavplayerModel {
-    var $samples;
-    var $samplePtr;
-    var $sampleCnt;
+class WavReader {
+    //could probably do quite much in the end, scrubbing etc.
+    //minimal now.
 
-
-    function __construct($dspCore) {
-        $this->dspCore = &$dspCore;
-        $this->reset();
-        $this->pushParams();
-    }
-    
-
-    public function reset() {
-      $this->settings = array(
-        'WAVEFORM' => 'wavplayer_in.pcm'
-      );
-      file_put_contents(__DIR__ . '/defaults.json',json_encode($this->settings));
-    }
-
-    public function pushParams() {
-    }
-
-    function pushSetting($setting) {
-    }
-
-    function parseMidi($cmd, $param1, $param2) {
-        $cmdMSN = $cmd & 0xf0;
-        if ($cmdMSN == 0x90) $this->noteOn($param1,$param2);
-        if ($cmdMSN == 0x80) $this->noteOff($param1,0);
-    }
-
-    function noteOn($note, $vel) {
-        //this shitty code was written by chat-gtp, don't trust it.
-        //for now, just one sample.
-        $this->fp = fopen($this->settings['WAVEFORM'],'rb');
+    function wav2buffer($wavFile) {
+        //open a wav-file, verify it's not to big and load it into buffer-pointer.
+        $this->fp = fopen($wavFile,'rb');
         $this->samplePtr = 0;
-
         // Read the header
         $file = &$this->fp;
-
 /*      Positions   Sample Value         Description
         1 - 4       "RIFF"               Marks the file as a riff file. Characters are each 1. byte long.
         5 - 8       File size (integer)  Size of the overall file - 8 bytes, in bytes (32-bit integer). Typically, you'd fill this in after creation.
@@ -60,38 +29,22 @@ class wavplayerModel {
         $header = fread($file, 44); // WAV files typically have a 44-byte header
         $data = unpack('Vlength/vformat/vchannels/Vsample_rate/Vbyte_rate/vblock_align/vbits_per_sample/C4cheader/Vdata_size', substr($header,16));
         $sample_rate = $data['sample_rate'];
+        //only allow 44.1 ?
         $bits_per_sample = $data['bits_per_sample'];
         $data_size = $data['data_size'];
-
+        if($data_size > 100000) die('nope, file too big');
         $channels = $data['channels'];
+        //for now only allow mono..
         $bytes_per_sample = $bits_per_sample / 8;
         $number_of_samples = $data_size / ($bytes_per_sample * $channels);
         $this->sampleCnt = $number_of_samples;
-    }
-
-    function noteOff($note, $vel) {
-        // Close the file
-        fclose($this->fp);
-
-    }
-
-    function renderNextBlock() {
-        // Read the data (samples)
-        $bufferSize = $this->dspCore->rackRenderSize;
-        $samples = [];
-        for ($i = 0; $i < $bufferSize; $i++) {
-            if ($this->samplePtr < $this->sampleCnt) {
-                // Read a 16-bit signed integer (2 bytes)
-                $sampleRaw = fread($this->fp, 2);
-                $sample = unpack("s", $sampleRaw)[1];
-                $samples[$i] = $sample / 32768.0;
-                $this->samplePtr++;
-            } else {
-                $samples[$i] = 0;
-            }    
-            //$samples[$i] = 0;
+        $data = fread($file, $this->sampleCnt*2);
+        $integers = unpack('s*', $data);
+        //for some stupid reason, unpack starts at [1], so fix that with a slow iteration now.
+        $floats = array();
+        for($i=1;$i<=$number_of_samples;$i++) {
+            $floats[$i-1] = $integers[$i] / 32768;
         }
-        return $this->buffer = $samples;
+        return $floats;
     }
-
 }

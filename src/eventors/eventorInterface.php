@@ -2,20 +2,20 @@
 declare(strict_types=1);
 
 interface EventorInterface {
-    //the following methods must be implemented by any synth
-    function init();                    //to be called on essential config changes
+    //the following methods must be implemented by any event-processor (eventor)
 
-    function initSettings();
+    function reset();
 
     function setParam($name, $val);
 
-    function pushSettings();
+    function pushParams();
 
-    function noteOn($note, $vel);
+    function parseMidi();
 
-    function noteOff($note, $vel);
+    function sendMidi();
 
     function tick();
+    //probably called from F8 but who knows, right?
 
     function play();
 

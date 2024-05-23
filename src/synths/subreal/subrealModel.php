@@ -1,10 +1,10 @@
 <?php
-require('subcultVoice.php');
+require('subrealVoice.php');
 
 //This is *not* the controller. It needs to be run in the audio-thread.
 //settings are not midi-based but optimized for distribution to units.
 
-class SubcultModel implements SynthInterface {
+class SubrealModel implements SynthInterface {
   //objects
   var $dspCore;
   var $lfo1;
@@ -34,7 +34,7 @@ class SubcultModel implements SynthInterface {
     $this->pushSettings();
   }
 
-  function init() {
+  function reset() {
     $this->initSettings();
     $this->pushSettings();
   }
@@ -125,8 +125,14 @@ class SubcultModel implements SynthInterface {
     $this->polyphony = $voiceCnt;
     for($i=0; $i < $voiceCnt; $i++) {
       //voice grabs the settings it needs
-      $this->voices[$i] = new SubcultVoice($this);
+      $this->voices[$i] = new SubrealVoice($this);
     }
+  }
+
+  function parseMidi($cmd, $param1, $param2) {
+    $cmdMSN = $cmd & 0xf0;
+    if ($cmdMSN == 0x90) $this->noteOn($param1, $param2);
+    if ($cmdMSN == 0x80) $this->noteOff($param1, 0);
   }
 
   function noteOn($note, $vel) {

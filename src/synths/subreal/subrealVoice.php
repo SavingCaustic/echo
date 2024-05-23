@@ -1,7 +1,7 @@
 <?php
-require('subcultFilter.php');
+require('subrealFilter.php');
 
-class SubcultVoice {
+class SubrealVoice {
     var $synthModel;
     var $active;
     var $note;
@@ -22,7 +22,7 @@ class SubcultVoice {
         $this->osc2->setWaveform($se['OSC2_WF']);
         $this->vcf = new ADSHR($this, $this->synthModel->dspCore->sampleRate);
         $this->vca = new ADSHR($this, $this->synthModel->dspCore->sampleRate);
-        $this->filter = new SubcultFilter($this->synthModel->dspCore->sampleRate);      //maybe SubsynthFilter2 is cooler.. 
+        $this->filter = new SubrealFilter($this->synthModel->dspCore->sampleRate);      //maybe SubsynthFilter2 is cooler.. 
         $this->filter->setParams('LOWPASS', $se['VCF_CUTOFF'], $se['VCF_RESONANCE']);
     }
 
@@ -119,6 +119,7 @@ class SubcultVoice {
                 $sample = $this->filter->applyFilter($sample);
                 //
                 $sample *= $ampMod; //introduces noise * (0.5 + sqrt(abs($pitchMod*0.1)));
+                //REMAKE THIS CODE. Always fill buffer with zero. Below takes too much time when we need it.
                 if($blockCreated) { //block created from synthRender-method
                     //add
                     $this->synthModel->buffer[$i+$j] += $sample;

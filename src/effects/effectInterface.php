@@ -1,16 +1,24 @@
 <?php
-declare(strict_types=1);
 
 interface EffectInterface {
-    //the following methods must be implemented by any synth
+    //the following methods must be implemented by any effect
 
-    function initSettings();
+    function reset();
+    //any initalization that could be re-run.
+    //called at end of __construct
 
-    function setParam($name, $val);
+    function setParam($name, $val, $push = true);     
+    //set param in 'patch cache'
 
-    function pushSettings();
+    function pushParam($name,$val);
+    //push param to speed optimized register
 
-    function process();
+    function pushParams();
+    //iterate over all parameters and push
+
+    //function process(&$ptrBuffer);
+    function process($buffer);
+    //dsp process
 
 }
 

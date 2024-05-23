@@ -6,12 +6,12 @@ declare(strict_types=1);
 
 require('src/core/dspCore.php');
 require('src/core/rack.php');
-require('src/core/masterPlayer.php');
+require('src/core/playerEngine.php');
 
 class App {
     var $racks;
     var $messageQue;
-    var $masterPlayer;
+    var $playerEngine;
     var $rackCount;
     var $dspCore;
     var $wave;      //ever used? why not wav2file on synth? 
@@ -22,11 +22,12 @@ class App {
         $rackRenderSize = $sampleRate / 44100 * 64;
         $masterTune = 440;    //Hz
         $this->dspCore = new DspCore($sampleRate, $masterTune, $rackRenderSize, $masterRenderSize);
-        $this->masterPlayer = new MasterPlayer($this);
-        $this->masterPlayer->setTempo(120);
-        $this->masterPlayer->reset();
+        $this->playerEngine = new PlayerEngine($this);
+        $this->playerEngine->setTempo(120);
+        $this->playerEngine->reset();
         //to be evaluated..
         $this->rackCount = 14;
+        $this->dspCore->appDir = __DIR__;
     }
     function init() {
         //setup (t)racks
@@ -61,7 +62,7 @@ class App {
         //note this signal should be stereo.
         $waveOut = array();
         for($i=0;$i<$blocks;$i++) {
-            $wave = $this->masterPlayer->renderNextBlock();
+            $wave = $this->playerEngine->renderNextBlock($i);
             $waveOut = array_merge($waveOut, $wave);
         }
         return $waveOut;

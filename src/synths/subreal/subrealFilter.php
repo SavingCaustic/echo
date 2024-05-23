@@ -3,7 +3,7 @@
 //It could possilby be highly optimized.
 
 
-class SubcultFilter {
+class SubrealFilter {
     const LOW_PASS = 1;
     const HIGH_PASS = 2;
     const BAND_PASS = 3;
@@ -71,7 +71,7 @@ class SubcultFilter {
                 $output = $input - $output;
                 break;
             case self::BAND_PASS:
-                $output = $this->a1 * $input + $this->a2 * $this->out1 + $this->a3 * $this->out2 - $this->b1 * $this->out1 - $this->b2 * $this->out2;
+                $output = $this->a1 * $input + $this->a2 * $wthis->out1 + $this->a3 * $this->out2 - $this->b1 * $this->out1 - $this->b2 * $this->out2;
                 $output = $this->resonance * ($output - $this->out2) + $input;
                 break;
             default:
@@ -96,7 +96,7 @@ class SubsynthFilter2 { //MoogFilter
     private $p;
     private $q;
     private $buf0;
-    private $buf1;
+    private $wbuf1;
     private $buf2;
     private $buf3;
 

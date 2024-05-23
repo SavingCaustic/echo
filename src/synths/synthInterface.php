@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 interface SynthInterface {
     //the following methods must be implemented by any synth
-    function init();                    //to be called on essential config changes
+    function reset();                    //to be called on essential config changes
 
     function initSettings();
 

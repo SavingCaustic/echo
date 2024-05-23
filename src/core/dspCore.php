@@ -9,6 +9,7 @@ require('dspParts/adshr2.php');
 require('dspParts/lfo.php');
 require('dspParts/butterLpf.php');
 require(__DIR__ . '/../synths/synthInterface.php');
+require(__DIR__ . '/../effects/effectInterface.php');
 
 //not sure what should be included here really. Acts as a foundation for any synth or effect,
 //to be investigated..

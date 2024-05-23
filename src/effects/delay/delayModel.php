@@ -1,8 +1,8 @@
 <?php
 
-class DelayModel {
+class DelayModel implements effectInterface {
     //simple delay acting more or less as an interface for writing effects
-    var $lfp;       //object for a filter - tape effect.. can we really motivate that?
+    var $lfp;
     var $time;
     var $feedback;
     var $mix;
@@ -18,31 +18,45 @@ class DelayModel {
         $this->fifoSize = 22050; //0.5 sec max. Fixed array best for performance?
         $this->fifoIdx = 0;
         $this->fifoMax = 1000;
-        $this->initSettings(); //dunno..
-        $this->pushSettings();
+        $this->reset(); //dunno..
+        $this->pushParams();
         //$this->setValues(165,0.3,0.3);
         //in C, we need to setup size of array somehow, and we need to zero it!
         for($i=0;$i<$this->fifoSize;$i++) $this->fifo[$i] = 0;
     }
 
-    function initSettings() {
+    function reset() {
         //imitate synth right..
-        $this->settings = array(
-            'FEEDBACK' => 0.3,
-            'TIME' => 150,
-            'MIX'=> 0.4
+        //should really be read from XML
+        $this->params = array(
+            'FEEDBACK' => 0.2,
+            'TIME' => 0.2,
+            'MIX'=> 0.5
         );
         //save these default settings to be picked up by www-player
-        file_put_contents(__DIR__ . '/defaults.json',json_encode($this->settings));
+        file_put_contents(__DIR__ . '/defaults.json',json_encode($this->params));
     }
 
-    function pushSettings() {
+    function setParam($name, $val, $push = true) {
+        if (!array_key_exists($name, $this->params)) die('bad setting ' . $name);
+        $this->params[$name] = $val;
+        if ($push) $this->pushParam($name, $val);
+    }
+
+    function pushParams() {
         //experimental function that pushes settings to non-readable, optimized registers.
-        $se = $this->settings;
+        foreach($this->params as $key=>$val) {
+            $this->pushParam($key, $val);
+        }
+    }
+
+    function pushParam($name, $val) {
+        //experimental function that pushes settings to non-readable, optimized registers.
+        $se = $this->params;
         $this->feedback = $se['FEEDBACK'];
         $this->mix = $se['MIX'];
         //
-        $fifoReqSize = floor($se['TIME'] * $this->dspCore->sampleRate * 0.001);
+        $fifoReqSize = floor($se['TIME'] * $this->dspCore->sampleRate * 1);
         if ($fifoReqSize > $this->fifoSize) $fifoReqSize = $this->fifoSize;
         $this->fifoMax = $fifoReqSize;    
     }
