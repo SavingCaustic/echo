@@ -66,7 +66,7 @@ class wavplayerModel {
         $channels = $data['channels'];
         $bytes_per_sample = $bits_per_sample / 8;
         $number_of_samples = $data_size / ($bytes_per_sample * $channels);
-        $this->sampleCnt = $number_of_samples;
+        $this->sampleCnt = floor($number_of_samples / SR_IF);
     }
 
     function noteOff($note, $vel) {
@@ -85,7 +85,11 @@ class wavplayerModel {
                 $sampleRaw = fread($this->fp, 2);
                 $sample = unpack("s", $sampleRaw)[1];
                 $samples[$i] = $sample / 32768.0;
-                $this->samplePtr++;
+                $this->samplePtr = $this->samplePtr + 1 * SR_IF;
+                if (SR_IF > 1) {
+                    //skip some bytes..
+                    fread($this->fp, 2 * (SR_IF - 1));
+                }
             } else {
                 $samples[$i] = 0;
             }    

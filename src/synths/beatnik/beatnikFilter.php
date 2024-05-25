@@ -2,7 +2,7 @@
 //this filter class was more or less written by ChatGTP.
 //It could possilby be highly optimized.
 
-class SubsynthFilter {
+class BeatnikFilter {
     const LOW_PASS = 1;
     const HIGH_PASS = 2;
     const BAND_PASS = 3;

@@ -13,6 +13,7 @@ class BeatnikModel implements SynthInterface {
   var $polyphony;
   var $nextBlock;
   var $buffer;
+  var $bufferEmpty;
   var $debug;
   var $settings;
   //private shared (non-voice) registers
@@ -28,6 +29,7 @@ class BeatnikModel implements SynthInterface {
 
   function reset() {
     $this->setupDefaultSamples();
+    $this->bufferEmpty = 0;
   }
 
   function initSettings() {
@@ -76,17 +78,17 @@ class BeatnikModel implements SynthInterface {
   function pushSetting($setting) {
   }
 
-  function parseMidi($cmd, $param1, $param2) {
-    $cmdMSN = $cmd & 0xf0;
-    if ($cmdMSN == 0x90) $this->noteOn($param1, $param2);
-    if ($cmdMSN == 0x80) $this->noteOff($param1, 0);
-  }
-
   public function setParam($name,$val) {
     //used by test-scripts so keep..
     if (!array_key_exists($name, $this->settings)) die('bad setting ' . $name);
     $this->settings[$name] = $val;
     $this->pushSetting($name);
+  }
+
+  function parseMidi($cmd, $param1, $param2) {
+    $cmdMSN = $cmd & 0xf0;
+    if ($cmdMSN == 0x90) $this->noteOn($param1, $param2);
+    if ($cmdMSN == 0x80) $this->noteOff($param1, 0);
   }
 
   function noteOn($note, $vel) {
@@ -105,19 +107,19 @@ class BeatnikModel implements SynthInterface {
   function renderNextBlock() {
     //make stuff not done inside chunk
     $blockSize = $this->dspCore->rackRenderSize;
+    //only do this if needed. 
+    if (!$this->bufferEmpty) {
+      $this->buffer = array_fill(0,$blockSize,0);
+      $this->bufferEmpty = true;
+    }
     //iterate over all voices and create a summed output.
     $voiceCount = sizeof($this->voices);
-    $blockCreated = false;
     for ($i=0; $i < $voiceCount; $i++) {
       $myVoice = &$this->voices[$i];
       if ($myVoice->checkVoiceActive()) {
-        $myVoice->renderNextBlock($blockSize,$i,$blockCreated); //if i == 0, init buffer, else +=
-        $blockCreated = true;
+        $myVoice->renderNextBlock($blockSize,$i);
+        $this->bufferEmpty = false;
       }
-    }
-    if (!$blockCreated) {
-      //no voices has created the buffer, we need to create a silent one, or should this be done by rack?
-      $this->buffer = array_fill(0,$blockSize,0);
     }
   }
 }

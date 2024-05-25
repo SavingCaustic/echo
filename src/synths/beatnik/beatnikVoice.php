@@ -1,5 +1,5 @@
 <?php
-//require('beatnikFilter.php');
+require('beatnikFilter.php');
 
 class BeatnikVoice {
     var $synthModel;
@@ -13,6 +13,7 @@ class BeatnikVoice {
 
     function __construct($synthModel) {
         $this->synthModel = &$synthModel;
+        $this->filter = new BeatnikFilter(44100);
         $se = $this->synthModel->settings;
         $this->active = false;
     }
@@ -21,6 +22,7 @@ class BeatnikVoice {
         $this->vel = $vel;
         $this->samplePtr = 0;
         $this->active = true;
+        $this->filter->setParams('LOWPASS', $vel * 180, 1 - $vel / 150);
     }
 
     function setupSample($data) {
@@ -46,19 +48,21 @@ class BeatnikVoice {
         $this->active = false;
     }
 
-    function renderNextBlock($blockSize, $voiceIX, $blockCreated) {        
+    function renderNextBlock($blockSize, $voiceIX) {        
         // Read the data (samples)
         // actually, grab [blockSize] values and just copy back.
         // if we would add 256 zero bytes to the sample we would be safe to run the buffer.
         for ($i = 0; $i < $blockSize; $i++) {
             if ($this->samplePtr < $this->sampleSize) {
-                $this->synthModel->buffer[$i] = $this->sample[$this->samplePtr] * $this->vel/127;
+                $sample = $this->sample[$this->samplePtr];
+                $sample = $this->filter->applyFilter($sample);
+
+                $this->synthModel->buffer[$i] += $sample * $this->vel/127;
                 $this->samplePtr++;
             } else {
-                $this->synthModel->buffer[$i] = $this->sample[$this->samplePtr-1];
+                $this->synthModel->buffer[$i] += 0; //$this->sample[$this->samplePtr-1];
                 $this->active = false;
             }    
-            //$samples[$i] = 0;
         }
     }
  
