@@ -52,7 +52,7 @@ foreach($pattern as &$rec) {
 }
 
 $myRack->loadPattern($pattern, 2);
-$myRack->setSwing(48,0.4,true && false); //swing may also be negative!
+$myRack->setSwing(48,0.4,true); //swing may also be negative!
 
 $ww->append($app->testRender(0));
 //$app->playMode('pattern');

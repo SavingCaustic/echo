@@ -19,13 +19,13 @@ $pattern = array();
 for($i=0;$i<16;$i++) {
     switch ($i % 4) {
         case 0:
-            $pattern[] = [$i*24, 0x90, 69, 120];
-            $pattern[] = [$i*24 + 8, 0x80, 69, 0];
+            //$pattern[] = [$i*24, 0x90, 69, 120];
+            //$pattern[] = [$i*24 + 8, 0x80, 69, 0];
             //break;
         case 2:
             //add extra..
-            $pattern[] = [$i*24+12, 0x90, 73, 80];
-            $pattern[] = [$i*24 + 16, 0x80, 73, 0];
+            //$pattern[] = [$i*24+12, 0x90, 73, 80];
+            //$pattern[] = [$i*24 + 16, 0x80, 73, 0];
             //don't uncomment break;
         default:
             $pattern[] = [$i*12, 0x90, 81, 80];
@@ -37,23 +37,23 @@ for($i=0;$i<16;$i++) {
 $a = array_column($pattern,0);
 array_multisort($a, SORT_ASC, $pattern);
 //increase to 96PPQN
-foreacH($pattern as &$rec) {
+foreach($pattern as &$rec) {
     $rec[0] *= 2;
 }
 
 $myRack->loadPattern($pattern, 1);
-$myRack->setSwing(48,0.7,true && false); //swing may also be negative!
+$myRack->setSwing(48,0.8,true); //swing may also be negative!
 
 require('../utils/wavWriter.php');
 $ww = new WavWriter('swing.wav',10000,$sr);
 $timer = microtime(true);
 //some silence
 //$ww->append($myRack->render(256));  
-$ww->append($app->testRender(10));
+$ww->append($app->testRender(1));
 //$app->playMode('pattern');
-$app->playerEngine->setTempo(90);
+$app->playerEngine->setTempo(105);
 $app->playerEngine->play();
-$ww->append($app->testRender(90));
+$ww->append($app->testRender(140));
 
 echo 'Time: ' . (microtime(true) - $timer) . "\r\n";
 $ww->close();
