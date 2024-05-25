@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-
 //this is a silly benchmarking synth that just fires lets you fire up to 25 notes.
 
 class WaveformModel implements SynthInterface {

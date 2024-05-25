@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 //the eventors also need some clock that is 24PPQN. Maybe pulse only. 
 class PlayerEngine {
-    var $app;
+    var $rackRefs;
     var $rackRenderSize;
     var $masterRenderSize;
     var $tempo;   //bpm
@@ -19,28 +19,28 @@ class PlayerEngine {
     var $bar;
     var $tick;
     var $isPlaying;
-  
-    function __construct($app) {
-      $this->app = &$app;
-      $this->rackRenderSize = $this->app->dspCore->rackRenderSize;
-      $this->masterRenderSize = $this->app->dspCore->masterRenderSize;
+    var $processClock;
+    var $samplesSinceClock;
+    var $processTick;
+    
+    function __construct() {
+      require('../appdir.php');
+      $this->appDir = getAppDir();
+      require($this->appDir  . '/src/core/rack.php');
+      $this->rackRenderSize = 128;
+      $this->masterRenderSize = 1024;
+      $this->rackCount = 14;
+      $this->rackRefs = array();
+      //perhaps metronome should sit at rack 0.
+      for($i=0; $i < $this->rackCount; $i++) {
+        $this->rackRefs[$i] = null;
+      }
     }
 
-    function setTempo($tempo = 120, $timeSignNom = 4, $timeSignDenom = 4) {
-      $this->tempo = $tempo; //beats per minute
-      $this->timeSignNom = $timeSignNom;
-      $this->timeSignDenom = $timeSignDenom;
-      //tick here is *NOT* midi clock. Tick increased to 384 PPbar
-      //not sure what should be here and what should be in rack.
-      //but maybe all here. Why update 14 ticks..
-      $this->tickToClockRatio = 4;
-      $this->ticksInBar = $this->tickToClockRatio * 96 * $this->timeSignNom / $this->timeSignDenom;
-      $this->ticksInBeat = $this->ticksInBar / $this->timeSignNom;
-      $this->ticksPerSec = $tempo / 60 * $this->ticksInBeat;
-      $this->samplesPerTick = (int) round(1/$this->ticksPerSec * $this->app->dspCore->sampleRate);
-      $this->clockDivisor = 0;
+    function close() {
+      //dunno. clean up everything, then quit.
     }
-  
+
     function reset() {
       $this->bar = 0;
       $this->processTick = false;   //signal to rack that a new tick has arrived.
@@ -49,8 +49,24 @@ class PlayerEngine {
       $this->processClock = false;  //signal to rack (eventors) that new clock has arrived.
       $this->playhead = 0;          //samples?
       $this->lastTickPlayhead = 0;  //?
+      $this->processClock = false;
+      $this->processTick = false;
+      $this->samplesSinceClock = 0;
     }
-  
+
+    function setTempo($tempo = 120, $timeSignNom = 4, $timeSignDenom = 4) {
+      $this->tempo = $tempo; //beats per minute
+      $this->timeSignNom = $timeSignNom;
+      $this->timeSignDenom = $timeSignDenom;
+      $this->tickToClockRatio = 4;
+      $this->ticksInBar = $this->tickToClockRatio * 96 * $this->timeSignNom / $this->timeSignDenom;
+      $this->ticksInBeat = $this->ticksInBar / $this->timeSignNom;
+      $this->ticksPerSec = $tempo / 60 * $this->ticksInBeat;
+      $this->samplesPerTick = (int) round(1/$this->ticksPerSec * 44100 / SR_IF);
+      echo 'samples per tick: ' . $this->samplesPerTick . "\n";
+      $this->clockDivisor = 0;
+    }
+    
     function play() {
       $this->reset();               //??
       $this->isPlaying = true;
@@ -65,31 +81,51 @@ class PlayerEngine {
       $this->isPlaying = false;
     }
   
+    function rackSetup(int $rackIdx, string $synth) {
+      //in c++, not really sure in how to allocate objects and best practice of controlling their lifetime.
+      if (!is_null($this->rackRefs[$rackIdx])) {
+          //just drop it..
+          return;
+      }
+      $this->rackRefs[$rackIdx] = new Rack($rackIdx, $this, $this->appDir);
+      $r = &$this->rackRefs[$rackIdx];
+      $r->loadSynth($synth);
+  }
+
+  function getRackRef(int $rackIdx) : Rack {
+      return $this->rackRefs[$rackIdx];
+  }
+
+  function setRackRenderSize($renderSize) {
+    //not needed. rackRenderSize is never changed.
+    $this->rackRenderSize = $renderSize;
+    foreach($this->racks as $rack) {
+      if (!is_null($rack)) $rack->setRackRenderSize($renderSize);
+    }
+  }
+
     //somewhere we also need to deal with midi-in messages.
 
     function renderNextBlock($debug = 0) {
-      //master function for rendering and timing!
-      //bufferSize = 1024
-      //blockSize = 128
       $offset = 0;
       $allRacksOff = true;
       $outerEnd = $this->masterRenderSize / $this->rackRenderSize;
       $masterWave = array();
       for($outer = 0;$outer < $outerEnd; $outer++) {
         //iterate over (t)racks. USE threads MULTI-CORE HERE
-        for($i=0;$i<$this->app->rackCount;$i++) {
-          if (!is_null($this->app->racks[$i])) {
+        for($i=0;$i<$this->rackCount;$i++) {
+          if (!is_null($this->rackRefs[$i])) {
             $allRacksOff = false;
             if ($this->processClock) {
               //eventors & effects
-              $this->app->racks[$i]->processClock();
+              $this->rackRefs[$i]->processClock();
               $this->processClock = false;
             }
             if ($this->processTick) {
               //pattern
-              $this->app->racks[$i]->processTick(($debug == 20 && $outer == 4));
+              $this->rackRefs[$i]->processTick();
             }
-            $wave = $this->app->racks[$i]->render(1);
+            $wave = $this->rackRefs[$i]->render(1);
           }
         }
         if ($allRacksOff) {
@@ -107,14 +143,27 @@ class PlayerEngine {
       return $masterWave;
     }
 
+    function testRender($blocks = 128) {
+      //this is like main() for tests. Returns a wave of floats that could be converted to wav.
+      //note this signal should be stereo.
+      $blocks = $blocks / SR_IF;
+      $waveOut = array();
+      for($i=0;$i<$blocks;$i++) {
+          $wave = $this->renderNextBlock($i);
+          $waveOut = array_merge($waveOut, $wave);
+      }
+      return $waveOut;
+  }
+
+
     function manageTiming() {
       //tick - running on play
       $this->processTick = false;
       if ($this->isPlaying) {
         $this->playhead += $this->rackRenderSize;
-        if ($this->playhead > $this->lastTickPlayhead + $this->samplesPerTick) {
+        if ($this->playhead >= $this->lastTickPlayhead + $this->samplesPerTick) {
           $this->processTick = true;
-          $this->lastTickPlayhead = $this->playhead;
+          $this->lastTickPlayhead += $this->samplesPerTick;
         }
       }
       //clock - Always runnng.

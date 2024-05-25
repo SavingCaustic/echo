@@ -1,11 +1,18 @@
 <?php
 declare(strict_types=1);
 
+
+require(__DIR__ . '/dspCore.php');
+
+require(__DIR__ . '/../synths/synthInterface.php');
+require(__DIR__ . '/../eventors/eventorInterface.php');
+require(__DIR__ . '/../effects/effectInterface.php');
+
 //maybe this class should be split into a rack- and a pattern-player class.
 
 class Rack {
     var $rackIdx;
-    var $hDspCore;
+    var $dspCore;        
     var $hEventor1;
     var $hEventor2;
     var $hSynth;
@@ -19,10 +26,12 @@ class Rack {
     var $nextPattern;     //array of next pattern events (to be written)
     var $rackClock;       //absolute tick in rack, incremented and looped - on what? 24?
 
-    function __construct($rackIdx,$dspCore) {
+    function __construct($rackIdx,$dspCore, $appDir) {
         //store so we now outselfs which rack we're at.
         $this->rackIdx = $rackIdx;
-        $this->hDspCore = &$dspCore;
+        $this->appDir = $appDir;
+        $this->rackRenderSize = 128;
+        $this->dspCore = new DSPCore(44100 / SR_IF,440,128, $this->appDir); 
         $this->hSynth = null;
         $this->hEventor1 = null;
         $this->hEventor2 = null;
@@ -48,7 +57,7 @@ class Rack {
       require_once(__DIR__ . '/../synths/' . $synthName . '/' . $synthName . 'Model.php');
         //name of model to avoid name-conflicts?
         $class = $synthName . 'Model';
-        $this->hSynth = new $class($this->hDspCore);
+        $this->hSynth = new $class($this->dspCore);
         // should call ->reset on construct $this->hSynth->init();
     }
 
@@ -60,10 +69,10 @@ class Rack {
         require_once(__DIR__ . '/../effects/' . $effectName . '/' . $effectName . 'Model.php');
         $class = $effectName . 'Model';
         if ($slot != 2) {
-          $this->hEffect1 = new $class($this->hDspCore);
+          $this->hEffect1 = new $class($this);
           return $this->hEffect1;  //not sure about this one..
         } else {
-          $this->hEffect2 = new $class($this->hDspCore);
+          $this->hEffect2 = new $class($this);
           return $this->hEffect2;  //not sure about this one..
         }
     }
@@ -103,8 +112,7 @@ class Rack {
     }
     
     function processClock() {
-      //playing or not, here i am..
-      //for eventors and effect units.
+      //playing or not, here i am.. for eventors and effect units.
       if (!is_null($this->hEventor1)) $this->hEventor1->processClock();
       if (!is_null($this->hEventor2)) $this->hEventor2->processClock();
       //not sure about effect. Rather thriggered in time by the audio playhead?
@@ -153,6 +161,7 @@ class Rack {
 
     function setSwing($time = 48, $depth = 0, $debug = false) {
       //well, this could be a class of its own. Swing should probably not be in each rack by default.
+      //48 = swing distributed over 48 ticks => 16th notes.
       $this->swingTime = $time;
       $this->swingDepth = $depth; //0-1
       $this->swingDebug = $debug;
@@ -160,26 +169,20 @@ class Rack {
 
 
     function calcSwingOffset() {
-      return $this->calcSwingOffset_lin();
+      return $this->calcSwingOffset_bin();
     }
 
-    function calcSwingOffset_lin() {
-      $swingTime = $this->swingTime; //48 = 16ths?
-      $swingOffset = ($this->patternTick % $swingTime);
-      //ramp up&down.
-      if ($swingOffset > $swingTime/2) $swingOffset = $swingTime - $swingOffset;
-      $swingOffset = floor($swingOffset * $this->swingDepth);
-      if ($this->swingDebug) echo 'offset: ' . $swingOffset . "\r\n";
-      return $swingOffset;
-    }
-
-      //floor(cos($this->patternTick / $this->ticksInPattern * M_2_PI) * 5);
-    function calcSwingOffset_sin() {
-      $swingTime = $this->swingTime; //48 = 16ths?
-      $swingOffset = ($this->rackClock % $swingTime);
-      if ($swingOffset > $swingTime/2) $swingOffset = $swingTime - $swingOffset;
-      if ($this->swingDebug) echo 'offset: ' . $swingOffset . "\r\n";
-      $swingOffset = floor($swingOffset * $this->swingDepth);
+    function calcSwingOffset_bin() {
+      $swingTime = $this->swingTime;
+      if ($this->patternTick % $this->swingTime == 0) {
+        $swingOffset = 0;
+      } else {
+        $swingOffset = floor(
+          ($this->swingTime - ($this->patternTick % $this->swingTime)) * 
+          $this->swingDepth
+        );
+      }
+      if ($this->swingDebug) echo 'tick ' . $this->patternTick . ', offset: ' . $swingOffset . "\r\n";
       return $swingOffset;
     }
     

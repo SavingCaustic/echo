@@ -4,11 +4,13 @@ declare(strict_types=1);
 //this php file mocks the compiled binary, therefore outside the src-directory
 //it's just a room for the audio-engine and UI-stuff to live in.
 
-require('src/core/dspCore.php');
-require('src/core/rack.php');
 require('src/core/playerEngine.php');
+//require('src/core/dspCore.php');
+//require('src/core/rack.php');
 
 class App {
+    //i'm the shepherd sheepdog keeping it all together.
+    //but maybe things gradually move to the playerEngine?
     var $racks;
     var $messageQue;
     var $playerEngine;

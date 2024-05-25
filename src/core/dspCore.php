@@ -8,8 +8,8 @@ require('dspParts/adshr.php');
 require('dspParts/adshr2.php');
 require('dspParts/lfo.php');
 require('dspParts/butterLpf.php');
-require(__DIR__ . '/../synths/synthInterface.php');
-require(__DIR__ . '/../effects/effectInterface.php');
+//require(__DIR__ . '/../synths/synthInterface.php');
+//require(__DIR__ . '/../effects/effectInterface.php');
 
 //not sure what should be included here really. Acts as a foundation for any synth or effect,
 //to be investigated..
@@ -18,16 +18,16 @@ class DspCore {
   var $sampleRate;
   var $masterTune;
   var $rackRenderSize;
-  var $masterRenderSize;
   var $e12;
   var $ln2;
   var $waveTables = array();
 
-  function __construct($sampleRate, $masterTune, $rackRenderSize, $masterRenderSize) {
+  function __construct($sampleRate, $masterTune, $rackRenderSize,$appDir) { //, $masterRenderSize) {
     $this->sampleRate = $sampleRate;
     $this->masterTune = $masterTune;
     $this->rackRenderSize = $rackRenderSize;
-    $this->masterRenderSize = $masterRenderSize;
+    $this->appDir = $appDir;
+    //$this->masterRenderSize = $masterRenderSize;
     $this->ln2 = log(2);
     $this->setupWavetables();
   }

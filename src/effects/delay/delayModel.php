@@ -11,8 +11,8 @@ class DelayModel implements effectInterface {
     var $fifoIdx;     //wr and rd same for now..
     var $fifoMax;
 
-    function __construct($dspCore) {
-        $this->dspCore = &$dspCore;
+    function __construct($rack) {
+        $this->rackRef = &$rack;
         //$this->lpf = new ResonantLowPassFilter(44100,100,2);
         //$this->lpf = new ButterLPFopt(44100,1000);
         $this->fifoSize = 22050; //0.5 sec max. Fixed array best for performance?
@@ -56,13 +56,13 @@ class DelayModel implements effectInterface {
         $this->feedback = $se['FEEDBACK'];
         $this->mix = $se['MIX'];
         //
-        $fifoReqSize = floor($se['TIME'] * $this->dspCore->sampleRate * 1);
+        $fifoReqSize = floor($se['TIME'] * 44100 / SR_IF);
         if ($fifoReqSize > $this->fifoSize) $fifoReqSize = $this->fifoSize;
         $this->fifoMax = $fifoReqSize;    
     }
 
     function process($buffer) {        
-        $bufferSize = $this->dspCore->rackRenderSize;
+        $bufferSize = $this->rackRenderSize;
         $bufferOut = array();
         for($i=0;$i<$bufferSize;$i++) {
             $echo = $this->fifo[$this->fifoIdx];
