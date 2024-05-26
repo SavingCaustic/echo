@@ -22,7 +22,7 @@ class BeatnikVoice {
         $this->vel = $vel;
         $this->samplePtr = 0;
         $this->active = true;
-        $this->filter->setParams('LOWPASS', $vel * 180, 1 - $vel / 150);
+        $this->filter->setParams('LOWPASS', $vel * 150, 1); // - $vel / 150);
     }
 
     function setupSample($data) {

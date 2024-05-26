@@ -54,7 +54,7 @@ class Rack {
     }
 
     function loadSynth($synthName) {
-      require_once(__DIR__ . '/../synths/' . $synthName . '/' . $synthName . 'Model.php');
+      require_once($this->appDir . '/src/synths/' . $synthName . '/' . $synthName . 'Model.php');
         //name of model to avoid name-conflicts?
         $class = $synthName . 'Model';
         $this->hSynth = new $class($this->dspCore);

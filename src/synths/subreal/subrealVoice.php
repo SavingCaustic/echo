@@ -62,7 +62,8 @@ class SubrealVoice {
 
     function voiceDeactivate() {
         //called by VCA release or hold complete
-        $this->active = false;
+        //if ($this->note == 80) die('now');
+        //$this->active = false;
     }
 
     function noteOff() {

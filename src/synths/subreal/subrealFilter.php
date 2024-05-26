@@ -89,7 +89,7 @@ class SubrealFilter {
 
 
 
-class SubsynthFilter2 { //MoogFilter
+class SubrealFilter2 { //MoogFilter
     private $cutoff;
     private $resonance;
     private $f;

@@ -7,10 +7,10 @@ $PE = new PlayerEngine();           //it doesn't have to autostart really..
 $PE->rackSetup(1,'subreal');        //dunno really why the test-scripts would need the app? skip that.
 $myRack = $PE->getRackRef(1);
 $mySub = $myRack->getSynthRef();
-$myEV1 = $myRack->loadEventor('octaver',1);
+//$myEV1 = $myRack->loadEventor('octaver',1);
 
 require('../utils/wavWriter.php');
-$ww = new WavWriter('subreal2.wav',20000);
+$ww = new WavWriter('subreal2.wav',5000);
 
 $mySub->setParam('VCA_ATTACK', 20);
 
@@ -25,12 +25,14 @@ $ww->append($PE->testRender(64));
 $mySub->setParam('VCA_ATTACK', 3);
 $mySub->setParam('VCF_ATTACK', 30);
 $mySub->setParam('VCF_SUSTAIN', 0.4);
-$mySub->setParam('VCF_CUTOFF', 4000);
-$mySub->setParam('VCF_RESONANCE', 0.5);
-$myRack->parseMidi(0x90,69,50);
-$ww->append($PE->testRender(24));
-$myRack->parseMidi(0x80,69,120);
-$ww->append($PE->testRender(24));
+$mySub->setParam('VCF_CUTOFF', 8000);
+$mySub->setParam('VCA_RELEASE', 800);
+$mySub->setParam('VCF_RELEASE', 200);
+$mySub->setParam('VCF_RESONANCE', 0.1);
+$myRack->parseMidi(0x90,65,80);
+$ww->append($PE->testRender(10));
+$myRack->parseMidi(0x80,65,0);
+$ww->append($PE->testRender(150));
 
 
 $ww->close();

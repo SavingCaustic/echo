@@ -21,25 +21,28 @@ for($i=0;$i<16;$i++) {
         $pattern[] = [$i*24 + 4, 0x80, 50, 0];
     }
     if ($i % 4 == 0) {
-        if ($i % 2 == 0) {
-            $pattern[] = [$i*24, 0x90, 52, rand(50,100)];
-            $pattern[] = [$i*24 + 4, 0x80, 52, 0];    
-        } else {
-            $pattern[] = [$i*24, 0x90, 53, rand(50,100)];
-            $pattern[] = [$i*24 + 4, 0x80, 53, 0];    
-        }
+        $pattern[] = [$i*24, 0x90, 48, rand(90,100)];
+        $pattern[] = [$i*24 + 4, 0x80, 48, 0];    
+    }
+    if ($i == 1) {
+        $pattern[] = [$i*24, 0x90, 49, rand(50,100)];
+        $pattern[] = [$i*24 + 4, 0x80, 49, 0];    
     }
     if ($i == 3) {
-        $pattern[] = [$i*24, 0x90, 49, 100];
+        $pattern[] = [$i*24, 0x90, 49, rand(50,100)];
         $pattern[] = [$i*24 + 4, 0x80, 49, 0];    
-        $pattern[] = [$i*24, 0x90, 53, 100];
+        $pattern[] = [$i*24, 0x90, 53, rand(50,100)];
         $pattern[] = [$i*24 + 4, 0x80, 53, 0];    
     }
     if ($i % 4 == 3) {
-        $pattern[] = [$i*24, 0x90, 50, 50];
+        $pattern[] = [$i*24, 0x90, 50, rand(50,100)];
         $pattern[] = [$i*24 + 4, 0x80, 50, 0];
-        $pattern[] = [$i*24+12, 0x90, 50, 50];
+        $pattern[] = [$i*24+12, 0x90, 50, rand(50,100)];
         $pattern[] = [$i*24+12 + 4, 0x80, 50, 0];
+    }
+    if ($i == 14) {
+        $pattern[] = [$i*24, 0x90, 49, 127];
+        $pattern[] = [$i*24 + 4, 0x80, 49, 0];    
     }
 }
 
@@ -47,7 +50,7 @@ $a = array_column($pattern,0);
 array_multisort($a, SORT_ASC, $pattern);
 //die(print_r($pattern));
 
-$PE->setTempo(105);
+$PE->setTempo(80);
 $myRack->loadPattern($pattern, 1);
 $myRack->setSwing(48,0.5,false); //swing may also be negative!
 

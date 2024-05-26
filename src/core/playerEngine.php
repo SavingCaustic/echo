@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 //this must be run in the audio thread, and optionally as background-process when app minimized.
 
-//the eventors also need some clock that is 24PPQN. Maybe pulse only. 
 class PlayerEngine {
     var $rackRefs;
     var $rackRenderSize;
@@ -176,6 +175,12 @@ class PlayerEngine {
       }
     }
 
-    //midi here??
+    //since we can't be faster than this there's really no need for callbacks.
+    
+    //read audio in
+    //maybe is the inverse, on bufferOut empty, start reading audioIn so rack has new food.
+    
+
+    //read midi in
   }
   
