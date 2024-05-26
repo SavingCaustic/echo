@@ -61,8 +61,8 @@ class DelayModel implements effectInterface {
         $this->fifoMax = $fifoReqSize;    
     }
 
-    function process($buffer) {        
-        $bufferSize = $this->rackRenderSize;
+    function process(&$buffer) {        
+        $bufferSize = $this->rackRef->rackRenderSize;
         $bufferOut = array();
         for($i=0;$i<$bufferSize;$i++) {
             $echo = $this->fifo[$this->fifoIdx];
@@ -83,9 +83,10 @@ class DelayModel implements effectInterface {
             //throw back the signal to the buffer.
             //mix = 0 = dry, 1 = wet
             $sample = $echo * $this->mix + $buffer[$i] * (1-$this->mix);
-            $bufferOut[$i] = $sample;            
+            $buffer[$i] = $sample;
+            //$bufferOut[$i] = $sample;            
         }
-        return $bufferOut;
+        //return $bufferOut;
     }
 }
 

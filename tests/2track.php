@@ -20,7 +20,9 @@ $mySub->setParam('OSC2_OCT',-1);
 $mySub->setParam('OSC2_MODLEVEL',0.7);
 
 
-//$myDelay = $myRack->loadEffect('delay');
+$myDelay = $mySecondRack->loadEffect('delay');
+$myEV1 = $mySecondRack->loadEventor('octaver',1);
+
 require('../utils/wavWriter.php');
 $ww = new WavWriter('2track.wav',10000);
 $timer = microtime(true);

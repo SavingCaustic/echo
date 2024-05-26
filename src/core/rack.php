@@ -202,7 +202,7 @@ class Rack {
         $this->hSynth->renderNextBlock();
         $this->bufferOut = $this->hSynth->buffer;
         if(!is_null($this->hEffect1)) {
-          $this->hEffect1->process();
+          $this->hEffect1->process($this->bufferOut);
         }
       }
     }

@@ -16,7 +16,7 @@ class OctaverModel {
         //TIMING IN 24 PPQN in eventors
         $this->settings = array(
             'NOTE_LENGTH' => 3,
-            'FREQ' => 6,
+            'FREQ' => 12,
         );
         //save these default settings to be picked up by www-player
         file_put_contents(__DIR__ . '/defaults.json',json_encode($this->settings));
@@ -38,7 +38,7 @@ class OctaverModel {
             case 0x90:
                 //clone note +12
                 $this->sendMidi($cmd, $param1, $param2);
-                $this->sendMidi($cmd, $param1 + 7, $param2);
+                $this->sendMidi($cmd, $param1 + 12, $param2);
                 break;
             default:
                 $this->sendMidi($cmd, $param1, $param2);

@@ -17,7 +17,7 @@ interface EffectInterface {
     //iterate over all parameters and push
 
     //function process(&$ptrBuffer);
-    function process($buffer);
+    function process(&$bufferOut);
     //dsp process
 
 }
