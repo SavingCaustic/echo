@@ -5,15 +5,16 @@ interface SynthInterface {
     //the following methods must be implemented by any synth
     function reset();                    //to be called on essential config changes
 
-    function initSettings();
-
     function setParam($name, $val);
 
-    function pushSettings();
+    function pushAllParams();           //needed by patch-load?
 
-    function noteOn($note, $vel);
-
-    function noteOff($note, $vel);
+    function parseMidi($cmd, $param1 = null, $param2 = null);
 
     function renderNextBlock();
+
+    //function noteOn($note, $vel);
+
+    //function noteOff($note, $vel);
+
 }

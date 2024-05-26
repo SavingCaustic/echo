@@ -20,23 +20,20 @@ class BeatnikModel implements SynthInterface {
   
   function __construct($dspCore) {
     $this->dspCore = &$dspCore;
-    $this->debug = false;
-    $this->initSettings();
     $this->setupVoices(8);
+    $this->debug = false;
     $this->reset();
-    $this->pushSettings();
   }
 
-  function reset() {
+  public function reset() {
+    $this->settings = array();
     $this->setupDefaultSamples();
     $this->bufferEmpty = 0;
+    $this->pushAllParams();
   }
 
-  function initSettings() {
-    $this->settings = array();
-  }
   
-  function setupVoices($voiceCnt) {
+  private function setupVoices($voiceCnt) {
     //called on init or polyphony change
     //in C, maybe GC existing voice-objects?
     //voices shared (like OH/CH have *different voices* since different AR, pitch etc.
@@ -68,14 +65,11 @@ class BeatnikModel implements SynthInterface {
     }
   } 
 
-  function pushSettings() {
+  function pushAllParams() {
     //iterate over all settings and set them to respective (private) register.
     foreach($this->settings as $key=>$val) {
-      $this->pushSetting($key);
+      $this->pushParam($key,$val);
     }
-  }
-
-  function pushSetting($setting) {
   }
 
   public function setParam($name,$val) {
@@ -85,7 +79,7 @@ class BeatnikModel implements SynthInterface {
     $this->pushSetting($name);
   }
 
-  function parseMidi($cmd, $param1, $param2) {
+  public function parseMidi($cmd, $param1 = null, $param2 = null) {
     $cmdMSN = $cmd & 0xf0;
     if ($cmdMSN == 0x90) $this->noteOn($param1, $param2);
     if ($cmdMSN == 0x80) $this->noteOff($param1, 0);

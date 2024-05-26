@@ -73,7 +73,7 @@ class SubrealVoice {
         $this->vcf->release();
     }
 
-    function renderNextBlock($blockSize, $voiceIX, $blockCreated) {        
+    function renderNextBlock($blockSize, $voiceIX) {        
         //for efficiency, some calculations are only done on intervals.
         $se = $this->synthModel->settings;
         $chunkSize = 64;
@@ -86,7 +86,7 @@ class SubrealVoice {
             //$filterMod * $se['VCF_CUTOFF']);
             $pitchMod = 0;  //same..
             $pitchMod = $this->synthModel->lfo1Sample;
-
+            //some memory here?
             $osc2_hz = $this->synthModel->dspCore->noteToHz($this->note + $pitchMod + $this->synthModel->osc2_noteOffset); 
             $osc1_hz = $this->synthModel->dspCore->noteToHz($this->note + $pitchMod); //$this->note * $fm
             //check envelope target here instead.
@@ -117,17 +117,10 @@ class SubrealVoice {
                 }
                 $sample = $osc1_sample * (1 - $this->synthModel->osc_mix) + $osc2_sample * ($this->synthModel->osc_mix); 
                 //feed the sample into the VCF somehow..
-                $sample = $this->filter->applyFilter($sample);
+                $sample = $this->filter->applyFilter($sample) * $ampMod;
                 //
-                $sample *= $ampMod; //introduces noise * (0.5 + sqrt(abs($pitchMod*0.1)));
-                //REMAKE THIS CODE. Always fill buffer with zero. Below takes too much time when we need it.
-                if($blockCreated) { //block created from synthRender-method
-                    //add
-                    $this->synthModel->buffer[$i+$j] += $sample;
-                } else {
-                    //init
-                    $this->synthModel->buffer[$i+$j] = $sample;
-                }
+                //$sample *= $ampMod; //introduces noise * (0.5 + sqrt(abs($pitchMod*0.1)));
+                $this->synthModel->buffer[$i+$j] += $sample;
             }
         }
     }

@@ -12,26 +12,25 @@ class WaveformModel implements SynthInterface {
 
     function __construct($dspCore) {
         $this->dspCore = &$dspCore;
-        $this->initSettings();
-        $this->pushSettings();
-        $this->oscCount = 0;
+        $this->reset();
     }
     
     public function reset() {
       $this->initSettings();
-      $this->pushSettings();
+      $this->pushAllParams();
+      $this->oscCount = 0;
     }
 
-    public function initSettings() {
+    private function initSettings() {
       $this->settings = array(
         'VOICES' => 25
       );
       file_put_contents(__DIR__ . '/defaults.json',json_encode($this->settings));
     }
 
-    public function pushSettings() {
+    public function pushAllParams() {
       foreach($this->settings as $key=>$val) {
-        $this->pushSetting($key);
+        $this->pushParam($key);
       }
     }
 
@@ -39,10 +38,14 @@ class WaveformModel implements SynthInterface {
       //used by test-scripts so keep..
       if (!array_key_exists($name, $this->settings)) die('bad setting ' . $name);
       $this->settings[$name] = $val;
-      $this->pushSetting($name);
+      $this->pushParam($name);
     }  
-  
-    private function pushSetting($setting) {
+
+    public function parseMidi($cmd, $param1 = null, $param2 = null) {
+      //nothing here. :)
+    }
+
+    private function pushParam($setting) {
       //can only be called from setParam
       $val = $this->settings[$setting];
       switch($setting) {
@@ -69,14 +72,6 @@ class WaveformModel implements SynthInterface {
         $this->notesHz[$i] = $this->dspCore->noteToHz(rand(40,80)); 
       }
       $this->oscCount = $cnt;
-    }
-
-    function noteOn($note, $vel) {
-      //nothing really..
-    }
-  
-    function noteOff($note, $vel) {
-      //nothing really..
     }
 
     public function renderNextBlock() {

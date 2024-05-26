@@ -54,11 +54,14 @@ class BeatnikVoice {
         // if we would add 256 zero bytes to the sample we would be safe to run the buffer.
         for ($i = 0; $i < $blockSize; $i++) {
             if ($this->samplePtr < $this->sampleSize) {
-                $sample = $this->sample[$this->samplePtr];
-                $sample = $this->filter->applyFilter($sample);
-
-                $this->synthModel->buffer[$i] += $sample * $this->vel/127;
-                $this->samplePtr++;
+                //$sample = $this->sample[$this->samplePtr];
+                //$sample = $this->filter->applyFilter($sample);
+                //$this->synthModel->buffer[$i] += $sample * $this->vel/127;
+                //$this->samplePtr++;
+                //$sample = $this->filter->applyFilter($sample);
+                $this->synthModel->buffer[$i] += 
+                    $this->filter->applyFilter($this->sample[$this->samplePtr++]) * $this->vel/127;
+                //$this->samplePtr++;
             } else {
                 $this->synthModel->buffer[$i] += 0; //$this->sample[$this->samplePtr-1];
                 $this->active = false;

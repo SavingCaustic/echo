@@ -8,7 +8,7 @@ require('../src/core/playerEngine.php');
 $PE = new PlayerEngine();           //it doesn't have to autostart really..
 $PE->rackSetup(1,'wavplayer');        //dunno really why the test-scripts would need the app? skip that.
 $myRack = $PE->getRackRef(1);
-//$myDelay = $myRack->loadEffect('delay');
+$myDelay = $myRack->loadEffect('delay');
 
 //$myDelay = $myRack->loadEffect('delay');
 require('../utils/wavWriter.php');

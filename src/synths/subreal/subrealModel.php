@@ -30,13 +30,14 @@ class SubrealModel implements SynthInterface {
     $this->lfo1AR = new AR($this->dspCore);
     $this->debug = false;
     $this->initSettings();
+    //needs settings above..
     $this->setupVoices(4);
-    $this->pushSettings();
+    $this->reset();
   }
 
-  function reset() {
+  public function reset() {
     $this->initSettings();
-    $this->pushSettings();
+    $this->pushAllParams();
   }
 
   function initSettings() {
@@ -50,10 +51,10 @@ class SubrealModel implements SynthInterface {
     $this->settings = array(
       'OSC1_WF' => 'sine',
       'OSC2_WF' => 'sine',
-      'OSC2_OCT' => 2,
-      'OSC2_SEMITONES' => 0,
-      'OSC2_MODTYPE' => 'AM',
-      'OSC2_MODLEVEL' => 0.2,
+      'OSC2_OCT' => 1,
+      'OSC2_SEMITONES' => 5,
+      'OSC2_MODTYPE' => 'NONE',
+      'OSC2_MODLEVEL' => 0.5,
       'OSC_MIX' => 0.2, 
       'VCA_ATTACK' => 5,
       'VCA_DECAY' => 10,
@@ -76,18 +77,17 @@ class SubrealModel implements SynthInterface {
     file_put_contents(__DIR__ . '/defaults.json',json_encode($this->settings));
   }
 
-  function pushSettings() {
+  public function pushAllParams() {
     //iterate over all settings and set them to respective (private) register.
     foreach($this->settings as $key=>$val) {
-      $this->pushSetting($key);
+      $this->setParam($key, $val, false);
     }
   }
 
-  function pushSetting($setting) {
+  public function setParam($setting, $val, $store = true) {
     //oh this will be long..
-    $se = $this->settings;
-    $val = $se[$setting];
-    //val maybe *always* string?
+    $se = &$this->settings;
+    if ($store) $se[$setting] = $val;
     switch($setting) {
       case 'LFO1_WF':
         $this->lfo1->setWaveform($val);
@@ -109,15 +109,18 @@ class SubrealModel implements SynthInterface {
       case 'OSC_MIX':
         $this->osc_mix = $val;
         break;
+      default:
+        $name = $setting;
+        if (!array_key_exists($name, $this->settings)) die('bad setting ' . $name);
     }
   }
 
-  public function setParam($name,$val) {
+/*  public function setParam($name,$val) {
     //used by test-scripts so keep..
     if (!array_key_exists($name, $this->settings)) die('bad setting ' . $name);
     $this->settings[$name] = $val;
     $this->pushSetting($name);
-  }
+  }*/
 
   function setupVoices($voiceCnt) {
     //called on init or polyphony change
@@ -129,7 +132,7 @@ class SubrealModel implements SynthInterface {
     }
   }
 
-  function parseMidi($cmd, $param1, $param2) {
+  public function parseMidi($cmd, $param1 = null, $param2 = null) {
     $cmdMSN = $cmd & 0xf0;
     if ($cmdMSN == 0x90) $this->noteOn($param1, $param2);
     if ($cmdMSN == 0x80) $this->noteOff($param1, 0);
@@ -206,17 +209,15 @@ class SubrealModel implements SynthInterface {
     //iterate over all voices and create a summed output.
     $voiceCount = sizeof($this->voices);
     $blockCreated = false;
+    $this->buffer = array_fill(0,$blockSize,0);
     for ($i=0; $i < $voiceCount; $i++) {
       $myVoice = &$this->voices[$i];
       if ($myVoice->checkVoiceActive()) {
-        $myVoice->renderNextBlock($blockSize,$i,$blockCreated); //if i == 0, init buffer, else +=
+        $myVoice->renderNextBlock($blockSize,$i); //if i == 0, init buffer, else +=
         $blockCreated = true;
       }
     }
-    if (!$blockCreated) {
-      //no voices has created the buffer, we need to create a silent one, or should this be done by rack?
-      $this->buffer = array_fill(0,$blockSize,0);
-    } else {
+    if ($blockCreated) {
       //check for any analog distorsion fix
       $distLevel = 1.5;
       $distFactor = 1.4;

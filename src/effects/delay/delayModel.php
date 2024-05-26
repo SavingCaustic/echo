@@ -6,10 +6,11 @@ class DelayModel implements effectInterface {
     var $time;
     var $feedback;
     var $mix;
-    var $fifo;
+    var $fifo = array();
     var $fifoSize;    //sampleFreq * time
     var $fifoIdx;     //wr and rd same for now..
     var $fifoMax;
+    var $params;
 
     function __construct($rack) {
         $this->rackRef = &$rack;
@@ -18,35 +19,35 @@ class DelayModel implements effectInterface {
         $this->fifoSize = 22050; //0.5 sec max. Fixed array best for performance?
         $this->fifoIdx = 0;
         $this->fifoMax = 1000;
-        $this->reset(); //dunno..
-        $this->pushParams();
-        //$this->setValues(165,0.3,0.3);
-        //in C, we need to setup size of array somehow, and we need to zero it!
-        for($i=0;$i<$this->fifoSize;$i++) $this->fifo[$i] = 0;
+        $this->reset();
     }
 
-    function reset() {
+    public function reset() {
         //imitate synth right..
         //should really be read from XML
+        $this->fifo = array_fill(0,$this->fifoSize,0);
+
         $this->params = array(
             'FEEDBACK' => 0.2,
             'TIME' => 0.2,
             'MIX'=> 0.5
         );
+        $this->pushAllParams();
+
         //save these default settings to be picked up by www-player
         file_put_contents(__DIR__ . '/defaults.json',json_encode($this->params));
     }
 
-    function setParam($name, $val, $push = true) {
+    function setParam($name, $val) {
         if (!array_key_exists($name, $this->params)) die('bad setting ' . $name);
         $this->params[$name] = $val;
-        if ($push) $this->pushParam($name, $val);
+        $this->pushParam($name, $val);
     }
 
-    function pushParams() {
+    function pushAllParams() {
         //experimental function that pushes settings to non-readable, optimized registers.
         foreach($this->params as $key=>$val) {
-            $this->pushParam($key, $val);
+            $this->pushParam($key, $val, false);
         }
     }
 

@@ -89,9 +89,9 @@ class DspCore {
     //note = float!
     //return $this->masterTune * pow($this->e12,$note - 69 + $cent / 100);
     //improved:
-    $oct = ($note - 69 + $cent / 100)/12;
+    //$oct = ($note - 69 + $cent / 100)/12;
     //return $this->masterTune * pow(2,$oct);
-    return $this->masterTune * exp($this->ln2 * $oct);
+    return $this->masterTune * exp($this->ln2 * ($note - 69 + $cent / 100)/12);
   }
 
 }

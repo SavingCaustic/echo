@@ -1,7 +1,7 @@
 <?php
 //test voice allocation, polyphony and LINEAR adsr
 //note that we're generating wav from RACK, not master.
-define('SR_IF',2);                  //sample-rate inverse factor. 2 for 22050Hz, 4 for 11025.
+define('SR_IF',1);                  //sample-rate inverse factor. 2 for 22050Hz, 4 for 11025.
 
 require('../src/core/playerEngine.php');
 $PE = new PlayerEngine();           //it doesn't have to autostart really..

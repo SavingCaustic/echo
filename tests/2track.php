@@ -12,19 +12,26 @@ $mySecondRack = $PE->getRackRef(2);
 $mySub = $mySecondRack->getSynthRef();
 
 
+$mySub->setParam('VCA_ATTACK',50);
+$mySub->setParam('VCF_ATTACK',150);
 $mySub->setParam('VCA_RELEASE',500);
 $mySub->setParam('VCF_RELEASE',50);
-$mySub->setParam('OSC2_WF','SQUARE');
-$mySub->setParam('OSC1_WF','SAW');
+$mySub->setParam('VCF_CUTOFF',8000);
+$mySub->setParam('VCF_RESONANCE',5); //no effect..
+$mySub->setParam('OSC2_WF','SINE');
+$mySub->setParam('OSC1_WF','SINE');
 $mySub->setParam('OSC2_OCT',-1);
-$mySub->setParam('OSC2_MODLEVEL',0.7);
-
+$mySub->setParam('OSC2_SEMIS',0);
+$mySub->setParam('OSC2_MODLEVEL',0.2);
+$mySub->setParam('OSC_MIX',0.5);
+$mySub->pushAllParams();
 
 $myDelay = $mySecondRack->loadEffect('delay');
+$myDelay->setParam('TIME',80/120/4);
 $myEV1 = $mySecondRack->loadEventor('octaver',1);
 
 require('../utils/wavWriter.php');
-$ww = new WavWriter('2track.wav',10000);
+$ww = new WavWriter('2track.wav',5000);
 $timer = microtime(true);
 
 
@@ -94,7 +101,9 @@ $mySecondRack->setSwing(48,0.5,false); //swing may also be negative!
 $ww->append($PE->testRender(0));
 //$app->playMode('pattern');
 $PE->play();
-$ww->append($PE->testRender(200));
+for($i=0;$i<100;$i++) {
+  $ww->append($PE->testRender(2));
+}
 $PE->stop();    //pause not working!
 $ww->append($PE->testRender(30));
 
