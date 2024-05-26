@@ -18,6 +18,7 @@ class Rack {
     var $hSynth;
     var $hEffect1;
     var $hEffect2;
+    var $bufferOut; 
     //
     var $pattern;         //array of pattern events
     var $ticksInPattern;  //total ticks of pattern
@@ -31,15 +32,22 @@ class Rack {
         $this->rackIdx = $rackIdx;
         $this->appDir = $appDir;
         $this->rackRenderSize = 128;
-        $this->dspCore = new DSPCore(44100 / SR_IF,440,128, $this->appDir); 
+        $this->dspCore = new DSPCore(44100 / SR_IF,440, 128, $this->appDir); 
         $this->hSynth = null;
         $this->hEventor1 = null;
         $this->hEventor2 = null;
         //
-        $this->patternPtr = 0;      //needs to be reset too by master player..
-        $this->patternTick = 0;     //possibly this should update event if not playing.. 
-        $this->setSwing();
+        $this->reset();
     }
+
+    function reset() {
+      $this->bufferOut = array_fill(0,$this->rackRenderSize,0);
+      $this->pattern = array();
+      $this->patternPtr = 0;      //needs to be reset too by master player..
+      $this->patternTick = 0;     //possibly this should update event if not playing.. 
+      $this->patternEOF = true;
+      $this->setSwing();
+  }
 
     function loadEventor($eventorName, $slot = 1) {
       require_once(__DIR__ . '/../eventors/' . $eventorName . '/' . $eventorName . 'Model.php');
@@ -192,14 +200,11 @@ class Rack {
       $waveOut = array();
       for($i = 0;$i < $blocks; $i++ ) {
         $this->hSynth->renderNextBlock();
+        $this->bufferOut = $this->hSynth->buffer;
         if(!is_null($this->hEffect1)) {
-          $wave = $this->hEffect1->process($this->hSynth->buffer);
-        } else {
-          $wave = $this->hSynth->buffer;
+          $this->hEffect1->process();
         }
-        $waveOut = array_merge($waveOut, $wave);
       }
-      return $waveOut;
-  }
+    }
 
 }

@@ -124,15 +124,23 @@ class PlayerEngine {
               //pattern
               $this->rackRefs[$i]->processTick();
             }
-            $wave = $this->rackRefs[$i]->render(1);
+            //this is theaded really and goes to mixer.
+            //when all are done, mixer makes the final mixdown.
+            //wave can really be kept in rack instead..
+            $this->rackRefs[$i]->render(1);
           }
         }
-        if ($allRacksOff) {
-          for($i=0;$i<$this->rackRenderSize;$i++) {
-            $wave[$i] = 0;
-          }
+        // calculate master-wave for the rackRenderSize-block
+        $wave = array_fill(0,$this->rackRenderSize,0);
+        //this is more or less the mixer.
+        for($i=0;$i<$this->rackCount;$i++) {
+          if (!is_null($this->rackRefs[$i])) {
+            for($j=0;$j<$this->rackRenderSize;$j++) {
+              $wave[$j] += $this->rackRefs[$i]->bufferOut[$j];
+            }
+            }
         }
-        //process all the racks through the mixer. save for later..
+        //now output 
         for($i = 0;$i<$this->rackRenderSize;$i++) {
           $masterWave[$outer*$this->rackRenderSize + $i] = $wave[$i];
         }
