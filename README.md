@@ -1,12 +1,6 @@
 # echo
 DSP breadboarding using PHP with goal to create a mobile DAW, similar to Caustic.
 
-## Current tasks
-* Testing event processors
-* Thinking about pattern playback vs eventprocessor-timing.
-  ) Maybe play is always on but play listens to pattern events.
-  ) dunno. Or we should have a rackTick to control eventprocessors.
-
 ## Main objectives
 * Preparing structure for upcoming C-project
 * Exploring DSP filtering etc.
@@ -17,7 +11,7 @@ This roadmap **excludes** actions in JUCE or other C platform.
 And remember, no work and all play folks! :)
 
 ## DOING
-
+* Having a break
 
 ##TO DO
 * Stabilize code.
