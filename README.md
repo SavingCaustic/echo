@@ -13,7 +13,8 @@ And remember, no work and all play folks! :)
 ## DOING
 * Having a break
 
-##TO DO
+
+## TO DO
 * Stabilize code.
 * XML frontend rendering help tool
 * FE dialogs for pattern & sample editing. XML based visuals.
