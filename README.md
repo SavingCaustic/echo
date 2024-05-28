@@ -16,24 +16,31 @@ DSP breadboarding using PHP with goal to create a mobile DAW, similar to Caustic
 This roadmap **excludes** actions in JUCE or other C platform.
 And remember, no work and all play folks! :)
 
-* Push project to github (done)
-* Get a drum machine in order
-* Have a catchy beat with two tracks playing by rendering.
----
-* Create example of event-processor-effect.
-* Raise PPQN to 96 or similar. (done)
-* Swing implementation (done).
-* Swing testing. Add quarter-note swing.
-* Stereo processing - how? Interleaved all the way?
+## DOING
+
+
+##TO DO
 * Stabilize code.
----
+* XML frontend rendering help tool
+* FE dialogs for pattern & sample editing. XML based visuals.
 * Simulate audio in using wav-file reading.
 * "Synth" that can record or not record (but always effect process) audio in.
----
-* XML frontend rendering help tool
 * Hack to play with settings for synths and effects using /www
 ---
-* FE dialogs for pattern & sample editing. XML based visuals.
+* Stereo processing - how? Interleaved all the way? 
+---
+
+
+## DONE
+* Push project to github (done)
+* Get a drum machine in order (prototype ok)
+* Have a catchy beat with two tracks playing by rendering. (done)
+---
+* Create example of event-processor-effect. (done)
+* Raise PPQN to 96 or similar. (done)
+* Swing implementation (done).
+* Swing testing. Add quarter-note swing. (done)
+---
 
 
 ## Requirements
