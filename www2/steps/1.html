@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="vue.js"></script>
+  </head>
+  <body>
+    <h2>Step 1 - basic bindning + if + methods</h2>
+    <div id="app">
+        <h3>{{ title + '&nbsp;'}}</h3>
+        <p>{{ theText + ' ' + theName }}</p>
+        <p v-if="theCondition">condition true..</p>
+        <p v-else="theCondition">working?</p>
+        <p> {{ theCondition ? 'compressed' : 'condition' }}</p>
+        <p>getFromMethod():  {{ getFromMethod() }}</p>
+        <p v-show="decideIfShow">could be hidden by data</p>
+        <p>Conditional by computed: <span v-show="compDecideIfShow">could be hidden by COMPUTED</span></p>
+        <p>Conditional by method: <span v-show="funcDecideIfShow()">could be hidden by method</span></p>
+        <p><input v-model="title" /></p>
+        <p><input v-model="theName" /></p>
+        <p><input type="checkbox" v-model="theCondition" /></p>
+        <h2>foreach</h2>
+        <p v-for="item in items" :key="item.id"> {{item.text}} </p>
+    </div>
+
+    <script>
+const app = Vue.createApp({
+    data() {
+        return {  
+            title: 'the title',          
+            theText: 'some text',
+            theCondition: true,
+            theName: 'greenSocks',
+            decideIfShow: true,
+            items: [
+                {id: 53, text: 'some text'},
+                {id: 64, text: 'some text2'},
+                {id: 12, text: 'asdf'}
+            ]
+        }
+    },
+    computed: {
+        compDecideIfShow() {
+            return this.theCondition;
+        }
+    },
+    //here methods are a bit mis-used since rule of thumb is that methods should only be used for actions,
+    //computed properties for the rest.
+    methods: {
+        getFromMethod() {
+            return 'fuction return, ' + this.theName;
+        },
+        funcDecideIfShow() {
+            return this.theCondition;
+        }
+    }
+});
+const mountedApp = app.mount('#app');
+</script>
+  </body>
+</html>

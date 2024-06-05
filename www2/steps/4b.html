@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue 3 Component Example</title>
+  <script src="vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <p>{{ title }}</p>
+    <button-counter :initial-count="btn1clicks" @update:count="btn1clicks = $event"></button-counter>
+    <button-counter :initial-count="btn2clicks" @update:count="btn2clicks = $event"></button-counter>
+    <p :class="titleClass">{{ title }}</p>
+    <input v-model="btn1clicks" type="number" />
+    <input v-model="btn2clicks" type="number" />
+  </div>
+<script>
+  const ButtonCounter = {
+    props: ['initialCount'],
+    template: `
+      <div>
+        <button @click="increment">You clicked me {{ count }} times.</button>
+      </div>
+    `,
+    setup(props, { emit }) {
+      const count = Vue.ref(props.initialCount);
+
+      // Watch for changes in the initialCount prop and update count
+      Vue.watch(() => props.initialCount, (newValue) => {
+        count.value = newValue;
+      });
+
+      const increment = () => {
+        count.value++;
+        emit('update:count', count.value);
+      };
+
+      return { count, increment };
+    }
+  };
+
+  const app = Vue.createApp({
+    components: {
+      ButtonCounter
+    },
+    data() {
+      return {
+        btn1clicks: 53,
+        btn2clicks: 42,
+        title: 'the title',
+        titleClass: "theBold"
+      };
+    }
+  });
+
+  app.mount('#app');
+</script>
+</body>
+</html>

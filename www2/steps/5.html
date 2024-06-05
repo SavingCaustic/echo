@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue 3 Control Panel Example</title>
+  <script src="vue.js"></script>
+  <style>
+    .control { margin-bottom: 20px; }
+    .dial { width: 50px; height: 50px; background-color: gray; border-radius: 50%; display: inline-block; }
+    .slider { width: 200px; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>{{ title }}</h1>
+    
+    <div class="control">
+      <label for="slider1">{{ controls.slider1.label }}</label>
+      <input type="range" v-model="values.slider1" :min="controls.slider1.min" :max="controls.slider1.max" id="slider1" class="slider" />
+      <span>{{ values.slider1 }}</span>
+    </div>
+
+    <div class="control">
+      <label for="dial1">{{ controls.dial1.label }}</label>
+      <div class="dial" @click="incrementDial('dial1')"></div>
+      <span>{{ controls.dial1.value }}</span>
+    </div>
+
+    <div class="control">
+      <label for="switch1">{{ controls.switch1.label }}</label>
+      <input type="checkbox" v-model="controls.switch1.value" id="switch1" />
+      <span>{{ controls.switch1.value ? 'On' : 'Off' }}</span>
+    </div>
+
+    <pre>{{ controls }}</pre>
+    <hr/>
+    <pre>{{ values }}</pre>
+  </div>
+
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          title: 'Control Panel',
+          controls: {
+            slider1: { label: 'Slider 1', value: 50, min: 0, max: 50 },
+            dial1: { label: 'Dial 1', value: 0, min: 0, max: 10 },
+            switch1: { label: 'Switch 1', value: false }
+          },
+          values: {
+            slider1: 50,
+            slider2: 70
+          }
+        };
+      },
+      methods: {
+        incrementDial(controlName) {
+          if (this.controls[controlName].value < this.controls[controlName].max) {
+            this.controls[controlName].value++;
+          }
+        }
+      }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>

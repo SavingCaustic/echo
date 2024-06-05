@@ -1,22 +1,75 @@
 # BACKEND API DRAFT
 
-## /root/listRacks
-Get array of possible racks with name rack(?)
+## device
+Settings and methods for device running the app. Not song-related.
 
-## /rack/setup
-Setup new rack
-* arg1 = rack number
-* arg2 = synth name
+### .settings
+buffer_size
+device_id
+background_audio
 
-## /rack/remove
-Removes a rack.
+### methods
+audioStart
+audioStop
+testLatency
+probeDevices
+getInfo
+listSongs
 
-## /synth/changeParam
-* arg1 = paramName
-* arg2 = paramValue
+## song
+Song-related attributes
 
-## /pattern/moveNotes
-* arg1 = movement in x direction
-* arg2 = movement in y direction
-* arg3 = collection of notes
+### .settings
+tempo
+time_signature
+swing
+tuning
+name
+
+### methods
+new
+save
+load
+export
+listRacks
+setMetronome
+
+## rack
+Actions for rack
+
+### .settings
+track_number
+midi_channel
+name
+
+### methods
+new
+edit
+delete
+focus
+
+
+## synth 
+???
+
+### settings
+
+### methods
+
+
+## pattern (or rack.pattern)
+
+### methods
+reset
+create
+get
+length
+swingOverride
+notesAdd
+notesDelete
+notesQuantize
+notesMove
+save
+compare
+
 

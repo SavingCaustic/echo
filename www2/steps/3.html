@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+body {
+    -moz-user-select: none; /* nice but wabout safari? */
+}
+
+.dial {
+    margin:4px;
+    border:1px solid #ccc;
+}
+
+#dial1 {
+    border:1px solid #fa0;
+}
+    </style>
+    <script src="vue.js"></script>
+  </head>
+  <body>
+    <h2>Step 3 - events. Mouse and touch working - without hammer.js :)</h2>
+    <p>no data though. next step, components.</p>
+    <div id="app">
+        <h3 :class="titleClass">{{ title + '&nbsp;'}}</h3>
+        <div class="flexcontainer" style="display:flex">
+            <div class="dial" id="dial1" draggable="false"
+                @mousedown.prevent="rotateBegin($event)" 
+                @mousemove.prevent="rotateDo($event)" 
+                @mouseup.prevent="rotateEnd($event)"
+                @touchstart.prevent="touchRotateBegin($event)" 
+                @touchmove.prevent="touchRotateDo($event)" 
+                @touchend.prevent="touchRotateEnd($event)">
+                <img draggable="false" src="cap.png" />
+            </div>
+            <div class="dial" draggable="false" 
+                @mousedown.prevent="rotateBegin($event)" 
+                @mousemove.prevent="rotateDo($event)" 
+                @mouseup.prevent="rotateEnd($event)"
+                @touchstart.prevent="touchRotateBegin($event)" 
+                @touchmove.prevent="touchRotateDo($event)" 
+                @touchend.prevent="touchRotateEnd($event)">
+                <img draggable="false" src="cap.png" />
+            </div>
+        </div>
+        <input v-model="title" />
+        <div style="height:100px;"></div>
+        <textarea cols="160" rows="4"> {{ vueLog }} </textarea>
+        <textarea id="log" cols="160" rows="8"></textarea>
+    </div>
+
+    <script>
+const app = Vue.createApp({
+    data() {
+        return {  
+            startX: 0,
+            startY: 0,
+            rotating: false,
+            title: 'the title',
+            titleClass: "theBold",
+            vueLog: "duh",
+            items: [
+                {id: 53, text: 'some text', val: 10},
+                {id: 64, text: 'some text2', val: 20},
+                {id: 12, text: 'asdf', val: -5}
+            ]
+        }
+    },
+    computed: {
+    },
+    methods: {
+        calcStyle(val) {
+            return {
+                rotate: val + 'deg'
+            }
+        },
+        getTitleClass() {
+            return this.titleClass;
+        },
+        rotateBegin(event) {
+            //save the xy of mouse so we have anything to calc on.
+            this.startX = event.clientX;
+            this.startY = event.clientY;
+            this.rotating = true;
+            //this.vueLog = `Mouse down at (${mouseX}, ${mouseY})`;
+            console.log(event);
+        },
+        rotateDo(event) {
+            if (this.rotating) {
+                const diffX = event.clientX - this.startX;
+                const diffY = event.clientY - this.startY;
+                this.vueLog = `Mouse diff at (${diffX}, ${diffY})`;
+        
+            }
+        },
+        rotateEnd(event) {
+            this.rotating = false;
+        },
+        touchRotateBegin(event) {
+            const touch = event.touches[0];
+            this.startX = touch.clientX;
+            this.startY = touch.clientY;
+            this.rotating = true;
+        },
+        touchRotateDo(event) {
+            if (this.rotating) {
+                const touch = event.touches[0];
+                const diffX = touch.clientX - this.startX;
+                const diffY = touch.clientY - this.startY;
+                this.vueLog = `Mouse diff at (${diffX}, ${diffY})`;
+        
+            }
+        },
+        touchRotateEnd(event) {
+            this.rotating = false;
+        }
+    }
+});
+const mountedApp = app.mount('#app');
+</script>
+<script>
+    // Get the target element
+    var target = document.getElementById('dial1');
+    
+    // Function to log all fired events
+    function logEvent(event) {
+        //console.log('Event fired:', event.type);
+        document.getElementById('log').innerHTML += event.type + ', ';
+    }
+    
+    // Attach event listeners for all possible events
+    // 'mouseenter',  'mousemove', 'mouseover',  'mouseout', 'mouseleave',
+    var events = [
+        'click', 'dblclick', 'mousedown', 'mouseup',  
+        'keydown', 'keypress', 'keyup',
+        'focus', 'blur', 'change', 'input', 'submit',
+        'touchstart', 'touchend', 'touchmove', 'touchcancel',
+        'drag', 'dragstart', 'dragend', 'dragenter', 'dragleave', 'dragover', 'drop',
+        'scroll', 'resize', 'load', 'unload', 'error'
+    ];
+    
+    events.forEach(function(eventName) {
+        target.addEventListener(eventName, logEvent);
+    });
+    </script>
+    
+  </body>
+</html>

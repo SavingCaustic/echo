@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue 3 Component Example</title>
+  <script src="vue.js"></script>
+</head>
+<body>
+  <div id="app">
+    <p>{{ title }}</p>
+    <button-counter :initial-cunt="btn1clicks"></button-counter>
+    <button-counter :initial-cunt="btn2clicks"></button-counter>
+    <p :class="titleClass">{{ title }}</p>
+  </div>
+<script>
+  const ButtonCounter = {
+    props: ['initialCunt'],
+    template: `
+      <div>
+        <button @click="increment">You clicked me {{ count }} times.</button>
+      </div>
+    `,
+    setup(props) {
+      const count = Vue.ref(props.initialCunt);
+      const increment = () => {
+        count.value++;
+      };
+
+      return { count, increment };
+    }
+  };
+
+  const app = Vue.createApp({
+    components: {
+      ButtonCounter
+    },
+    data() {
+      return {
+        btn1clicks: 53,
+        btn2clicks: 42,
+        title: 'the title',
+        titleClass: "theBold"
+      };
+    }
+  });
+
+  app.mount('#app');
+</script>
+</body>
+</html>
