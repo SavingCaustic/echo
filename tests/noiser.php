@@ -17,7 +17,7 @@ $timer = microtime(true);
 $mySynth = $myRack->getSynthRef();
 //dunno about the argument. All params should probably be int:s right?
 for($i=0;$i<2000;$i++) {
-  $ww->append($PE->testRender(1)); //40*1024 / 44100
+  $ww->append($PE->testRender(3)); //40*1024 / 44100
 }
 
 echo 'Time: ' . (microtime(true) - $timer) . "\r\n";

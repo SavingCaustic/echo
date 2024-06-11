@@ -1,29 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel theme="prophet" size="1920x1080">
-  <module name="osc2" xy="0,0">
-    <rotaryswitch name="osc2_oct" default="0" label="Octave" values="-3,-2,-1,0,1,2,3" />
-    <rotaryswitch name="osc2_semis" default="0" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
+<panel theme="bakelite" size="1900x900" bgcolor="#403020">
+  <module name="osc1" label="Oscillator 1" xy="20,20" wh="350,150">
+    <button name="osc1_customwf" label="Custom" default="false" xy="50,70"/>
+    <rotaryswitch name="osc1_waveform" xy="130,70" label="Waveform" default="Sine" values="Sine,Triangle,Sawtooth,Square" />
+  </module>
+  <module name="osc2" label="Oscillator 2" xy="20,200" wh="350,150">
+    <rotaryswitch name="osc2_waveform" xy="80,70" label="Waveform" default="Sine" values="Sine,Triangle,Sawtooth,Square" />
+    <rotaryswitch name="osc2_oct" default="0" xy="180,70" label="Octave" values="-3,-2,-1,0,1,2,3" />
+    <rotaryswitch name="osc2_semis" default="0" xy="280,70" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
     <centerknob name="osc2_detune" default="0" values="-50,0,+50" />
   </module>
-  <module name="modulation" xy="0,100">
-    <knob name="mod_level" label="Level" default="0"/>
-    <rotaryswitch name="mod_type" label="Type" values="Off,AM,FM,PM" default="Off"/>  
+  <module name="noise" label="Noise" xy="20,380" wh="350,150">
+    <rotaryswitch name="noise_lpf" default="0" xy="80,60" label="LPF" values="-3,-2,-1,0,1,2,3" />
+    <knob name="noise_decay" default="0" xy="180,60" label="LPF" values="-3,-2,-1,0,1,2,3" />
   </module>
-  <module name="osc1" label="Oscillator 1" xy="100,100">
-    <rotaryswitch name="osc1_waveform" label="Waveform" default="Sine" values="Sine,Triangle,Sawtooth,Square" />
-  </module>
-  <module name="osc_mix" label="Mix">
+  <module name="osc_mix" label="Mix" xy="400,20" wh="170,330">
     <knob name="osc_mix" />
     <switch name="osc_unison" default="0" label="Unison" />
   </module>
-  <module name="filter">
+  <module name="filter" xy="600,20" wh="170,330" label="Filter">
+    <knob name="cutoff" label="Cutoff" min="100" max="10000" curve="log"/>
+    <knob name="resonance" label="Resonance" min="0" max="5" />
     <knobswitch name="filter_type" default="Low-pass" label="Type" values="Low-pass,Band-pass,High-pass" />
     <switch name="filter_db" default="12" label="db/oct" values="12,24" />
   </module>
-  <module name="vcf">
+  <module name="glide" xy="400,380" wh="400,150" label="Glide">
+    <knob name="cutoff" label="Cutoff" min="100" max="10000" curve="log"/>
+  </module>
+  <module name="vcf" xy="900,200" wh="960,150" label="VCF">
     <dualknob name="vca_attack" name2="vca_attack_velsens" label="Attack\n(velocity)" />
   </module>
-  <module name="vca">
+  <module name="vca" xy="900,380" wh="960,150" label="VCA">
     <knob name="vca_attack" label="Attack" />
     <knob name="vca_decay" label="Decay" />
     <knob name="vca_sustain" label="Sustain" />
@@ -31,11 +38,20 @@
     <knob name="vca_release" label="Release" />
     <knob name="vca_velsens" label="Vel.sens" />
   </module>
-  <module name="lfo1">
+  <module name="lfo1" xy="900,20" wh="300,150" label="LFO1">
+    <rotaryswitch name="lfo1_wf" values="Sine,Tri,Square,Saw,S &amp; H" />
+    <knob name="lfo1_speed" min="0.1" max="10" curve="log" unit="Hz" />
+    <knob name="lfo1_osc1" min="0" max="100" unit="%" />
+    <knob name="lfo1_osc2" min="0" max="100" unit="%" />
+    <knob name="lfo1_mod" min="0" max="100" unit="%" />
+    <knob name="lfo1_cutoff" min="0" max="100" unit="%" />
   </module>
-  <module name="lfo2">
+  <module name="lfo2" xy="1230,20" wh="300,150" label="LFO 2">
+    <knob name="lfo2_resonance" min="0" max="100" unit="%" />
   </module>
-  <module name="master">
-    <knob name="volume" default="5" values="0,5,10" />
+  <module name="modwheel" xy="1560,20" label="Mod.wheel" wh="300,150">
+    <knob name="modw_lfo1_speed" />
+    <knob name="modw_lfo1_depth" />
+    <rotaryswitch name="modwheel" values="lfo1_speed,lfo1_depth,resonance" />
   </module>
 </panel>

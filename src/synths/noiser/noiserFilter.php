@@ -46,12 +46,12 @@ class ButterworthFilter {
         $this->a = [1, $a1 / $a0, $a2 / $a0];
     }
 
-    public function applyFilter($data) {
+    public function applyFilter($data,$mix) {
         $filtered_data = [];
 
         foreach ($data as $value) {
             $filtered_value = $this->b[0] * $value + $this->b[1] * $this->x[0] + $this->b[2] * $this->x[1] - $this->a[1] * $this->y[0] - $this->a[2] * $this->y[1];
-            $filtered_data[] = $filtered_value;
+            $filtered_data[] = $filtered_value * $mix + $value * (1-$mix);
 
             // Shift the old values
             $this->x[1] = $this->x[0];

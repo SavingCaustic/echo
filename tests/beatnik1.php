@@ -30,6 +30,8 @@ for($i=0;$i<16;$i++) {
         default:
             $pattern[] = [$i*24, 0x90, 49, 40];
             $pattern[] = [$i*24 + 4, 0x80, 49, 0];
+            //$pattern[] = [$i*24 - 12, 0x90, 49, 40];
+            //$pattern[] = [$i*24 - 12 + 4, 0x80, 49, 0];
             break;
     }
     //buggy - this doesn't work but should..

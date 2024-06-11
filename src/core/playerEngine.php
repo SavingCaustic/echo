@@ -183,6 +183,11 @@ class PlayerEngine {
       }
     }
 
+    function manageMidiIn() {
+      //reads the midi-port. 
+      //forward to rack *buffer*
+    }
+
     //since we can't be faster than this there's really no need for callbacks.
     
     //read audio in

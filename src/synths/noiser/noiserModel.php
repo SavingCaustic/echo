@@ -25,9 +25,9 @@ class NoiserModel implements SynthInterface {
     
     public function reset() {
       $this->oscCount = 0;
-      $this->filterFreq = 500;
+      $this->filterFreq = 5000;
       $this->filterDir = 'up';
-      $this->filterRef->calculateCoefficients($this->filterFreq, 44100 / SR_IF, 6, $this->type);
+      $this->filterRef->calculateCoefficients($this->filterFreq, 44100 / SR_IF, 2, $this->type);
     }
 
     private function initSettings() {
@@ -53,15 +53,15 @@ class NoiserModel implements SynthInterface {
       //}
       $this->buffer = $this->noiseOscRef->getSamples($bufferSize);
       //die(serialize($this->buffer));
-      $this->buffer = $this->filterRef->applyFilter($this->buffer);
+      $this->buffer = $this->filterRef->applyFilter($this->buffer,0.95);
       if ($this->filterDir == 'up') {
-        $this->filterFreq *= 1.0005;
+        $this->filterFreq *= 1.0002;
       } else {
-        $this->filterFreq *= 0.9995;
+        $this->filterFreq *= 0.9998;
       }
-      if ($this->filterDir == 'up' && $this->filterFreq > 13000) $this->filterDir = 'down';
-      if ($this->filterDir == 'down' && $this->filterFreq < 250) $this->filterDir = 'up';
+      if ($this->filterDir == 'up' && $this->filterFreq > 14000) $this->filterDir = 'down';
+      if ($this->filterDir == 'down' && $this->filterFreq < 5000) $this->filterDir = 'up';
 
-      $this->filterRef->calculateCoefficients($this->filterFreq, 44100, 3, $this->type);
+      $this->filterRef->calculateCoefficients($this->filterFreq, 44100, 2, $this->type);
     }
 }
