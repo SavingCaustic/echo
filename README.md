@@ -11,12 +11,11 @@ This roadmap **excludes** actions in JUCE or other C platform.
 And remember, no work and all play folks! :)
 
 ## DOING
-* Having a break
+* XML frontend rendering help tool
 
 
 ## TO DO
 * Stabilize code.
-* XML frontend rendering help tool
 * FE dialogs for pattern & sample editing. XML based visuals.
 * Simulate audio in using wav-file reading.
 * "Synth" that can record or not record (but always effect process) audio in.
