@@ -11,7 +11,7 @@
     <rotaryswitch name="osc2_semis" default="0" xy="340,60" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
   </module>
   <module name="noise" label="Noise" xy="20,360" wh="400,140">
-    <rotaryswitch name="noise_lpf" default="0" xy="60,60" label="LPF" values="-3,-2,-1,0,1,2,3" />
+    <rotaryswitch name="noise_colour" default="0" xy="60,60" label="Colour" values="-3,-2,-1,0,1,2,3" />
     <knob name="noise_decay" default="0" xy="200,60" label="Decay" values="-3,-2,-1,0,1,2,3" />
     <knob name="noise_level" default="0" xy="340,60" label="Level" values="-3,-2,-1,0,1,2,3" />
   </module>
@@ -25,12 +25,12 @@
     <knobswitch name="filter_type" default="Low-pass" label="Type" values="Low-pass,Band-pass,High-pass" />
     <switch name="filter_db" default="12" label="db/oct" values="12,24" />
   </module>
-  <module name="glide" xy="440,360" wh="400,140" label="Glide">
+  <module name="glide" xy="440,360" wh="400,140" label="Pitch EG">
     <knob name="glide_attack" label="Attack" xy="60,60" min="1" max="1000" curve="log"/>
     <knob name="glide_release" label="Release" xy="200,60" min="1" max="1000" curve="log"/>
     <centerknob name="glide_pitch" label="Pitch" xy="340,60" min="-12" max="12"/>
   </module>
-  <module name="vcf" xy="800,190" wh="700,140" label="VCF">
+  <module name="vcf" xy="860,190" wh="680,140" label="VCF">
     <dualknob name="vca_attack" name2="vca_attack_velsens" label="Attack\n(velocity)" />
     <knob name="vcf_attack" label="Attack" xy="60,60"/>
     <knob name="vcf_decay" label="Decay" xy="200,60"/>
@@ -38,22 +38,25 @@
     <knob name="vcf_hold" label="Hold" xy="480,60"/>
     <knob name="vcf_release" label="Release" xy="620,60"/>
   </module>
-  <module name="vca" xy="860,360" wh="700,140" label="VCA">
+  # now comments are ok like this.
+  <module name="vca" xy="860,360" wh="680,140" label="VCA">
     <knob name="vca_attack" label="Attack" xy="60,60"/>
     <knob name="vca_decay" label="Decay" xy="200,60"/>
     <knob name="vca_sustain" label="Sustain" xy="340,60" />
     <knob name="vca_hold" label="Hold" xy="480,60"/>
     <knob name="vca_release" label="Release" xy="620,60"/>
   </module>
-  <module name="lfo1" xy="800,20" wh="400,140" label="LFO1">
+  <module name="lfo1" xy="860,20" wh="680,140" label="LFO1">
     <optbutton name="lfo1_wf" xy="60,60" label="Shape" values="Sine,Tri,Square,Saw,S &amp; H" />
-    <knob name="lfo1_speed" min="0.1" max="10" xy="200,60" label="Speed" curve="log" unit="Hz" />
-    <optbutton name="osc1_wf" label="Routing" default="false" xy="330,60"/>
+    <knob name="lfo1_ramp" min="0.1" max="10" xy="200,60" label="Ramp" curve="log" unit="mS" />
+    <knob name="lfo1_speed" min="0.1" max="10" xy="340,60" label="Speed" curve="log" unit="Hz" />
+    <knob name="lfo1_depth" min="0.1" max="10" xy="480,60" label="Depth" curve="log" unit="Hz" />
+    <optbutton name="osc1_wf" label="Routing" default="false" xy="620,60"/>
   </module>
-  <module name="lfo2" xy="1230,20" wh="300,140" label="LFO 2">
+  <module name="lfo2" xy="1570,20" wh="300,140" label="LFO 2">
     <knob name="lfo2_resonance" xy="60,60" label="Shape" min="0" max="100" unit="%" />
   </module>
-  <module name="modwheel" xy="1560,20" label="Mod.wheel" wh="300,140">
+  <module name="modwheel" xy="1570,190" label="Mod.wheel" wh="300,310">
     <knob name="modw_lfo1_speed" xy="80,60" label="LFO1 spd"/>
     <knob name="modw_lfo1_depth" xy="220,60" label="LFO1 ppt"/>
   </module>

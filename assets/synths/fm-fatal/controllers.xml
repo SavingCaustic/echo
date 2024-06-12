@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel theme="bakelite" size="1900x900" bgcolor="#403020">
+  <module name="osc1" label="Oscillator 1" xy="20,20" wh="1240,140">
+    <optbutton name="osc1_wf" label="Shape" default="false" xy="60,60"/>
+    <knob name="osc1_vol" label="Volume" xy="200,60"/>
+    <rotaryswitch name="osc1_oct" default="0" xy="340,60" label="Octave" values="-3,-2,-1,0,1,2,3" />
+    <rotaryswitch name="osc1_semis" default="0" xy="480,60" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
+    <knob name="osc1_attack" label="Attack" xy="620,60"/>
+    <knob name="osc1_decay" label="Decay" xy="760,60"/>
+    <knob name="osc1_sustain" label="Sustain" xy="900,60" />
+    <knob name="osc1_hold" label="Hold" xy="1040,60"/>
+    <knob name="osc1_release" label="Release" xy="1180,60"/>
+  </module>
+#copy..
+  <module name="osc1" label="Oscillator 2" xy="20,180" wh="1240,140">
+    <optbutton name="osc1_wf" label="Shape" default="false" xy="60,60"/>
+    <knob name="osc1_vol" label="Volume" xy="200,60"/>
+    <rotaryswitch name="osc1_oct" default="0" xy="340,60" label="Octave" values="-3,-2,-1,0,1,2,3" />
+    <rotaryswitch name="osc1_semis" default="0" xy="480,60" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
+    <knob name="osc1_attack" label="Attack" xy="620,60"/>
+    <knob name="osc1_decay" label="Decay" xy="760,60"/>
+    <knob name="osc1_sustain" label="Sustain" xy="900,60" />
+    <knob name="osc1_hold" label="Hold" xy="1040,60"/>
+    <knob name="osc1_release" label="Release" xy="1180,60"/>
+  </module>
+  <module name="osc1" label="Oscillator 3" xy="20,340" wh="1240,140">
+    <optbutton name="osc1_wf" label="Shape" default="false" xy="60,60"/>
+    <knob name="osc1_vol" label="Volume" xy="200,60"/>
+    <rotaryswitch name="osc1_oct" default="0" xy="340,60" label="Octave" values="-3,-2,-1,0,1,2,3" />
+    <rotaryswitch name="osc1_semis" default="0" xy="480,60" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
+    <knob name="osc1_attack" label="Attack" xy="620,60"/>
+    <knob name="osc1_decay" label="Decay" xy="760,60"/>
+    <knob name="osc1_sustain" label="Sustain" xy="900,60" />
+    <knob name="osc1_hold" label="Hold" xy="1040,60"/>
+    <knob name="osc1_release" label="Release" xy="1180,60"/>
+  </module>
+</panel>

@@ -53,6 +53,15 @@ class CtrlCreator {
     function parseXml() {
         $s = file_get_contents($this->xmlFile);
         $xp = xml_parser_create('UTF-8');
+        //before trying to parse, replace any row beginning with # to <comment/>
+        $rows = explode(chr(10),$s);
+        for($i=0;$i<sizeof($rows);$i++) {
+            if (substr(trim($rows[$i]),0,1) == '#') {
+                $rows[$i] = '<comment />';
+            }
+        }
+        $s = implode(chr(10),$rows);
+        unset($rows);
         xml_parse_into_struct($xp,$s,$vals,$indexes);
         //Remove the cdata rows.
         $a = array();
@@ -114,6 +123,10 @@ class CtrlCreator {
     function hex2rgb($hex) {
         list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
         return array($r, $g, $b);
+    }
+
+    function tag_comment($attr,$type) {
+        //nothing to do..
     }
 
     function octag_controller($attr, $type) {
@@ -221,6 +234,14 @@ class CtrlCreator {
 
     function tag_dualknob() {}
 
+    function tag_vslider() {}
+
+    function tag_hslider() {}
+
+    function tag_minibutton($attr, $type) {
+        //add a mini button that can side beside of a label not being a button) 
+    }
+
     function tag_rotaryswitch($attr, $type) {
         $this->setAttr($attr);
         //xy relative to module.
@@ -245,6 +266,6 @@ class CtrlCreator {
 }
 
 //Dancing with myself..
-$C = new CtrlCreator();
-$C->preProcess();
-$C->process();
+$CC = new CtrlCreator();
+$CC->preProcess();
+$CC->process();
