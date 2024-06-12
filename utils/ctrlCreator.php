@@ -14,12 +14,20 @@ class CtrlCreator {
     var $xmlFile;
     var $xml;
     var $bgImg;
+    var $col0;
+    var $col1;
+    var $col2;
+    var $font1;
     var $currAttr;
     var $debug = false;
     var $moduleXY = array(0,0);
 
     function __construct() {
         $this->debug = false;
+        if (!function_exists('imagepng')) {
+            die('you *really* need imagegd extension for this to work..');
+        }
+        $this->font1 = './nimbus-sans-l.bold.otf';
         //get the argument (xml filename) and store
         if (array_key_exists('argv', $_SERVER)) {
             $argv = $_SERVER['argv'];
@@ -123,9 +131,12 @@ class CtrlCreator {
             $bgcolor = $this->getAttr('bgcolor');
             if ($bgcolor != '') {
                 $rgb = $this->hex2rgb($bgcolor);
-                $bgCol = imagecolorallocate($this->bgImg, $rgb[0], $rgb[1], $rgb[2]);
-                imagefill($this->bgImg, 0, 0, $bgCol);
+                $this->col0 = imagecolorallocate($this->bgImg, $rgb[0], $rgb[1], $rgb[2]);
+                imagefill($this->bgImg, 0, 0, $this->col0);
             }
+            $this->col1 = imagecolorallocate($this->bgImg,160,120,60);
+            $this->col2 = imagecolorallocate($this->bgImg,200,80,30);
+
         } else {
             //output image and defaults.json
             if (!$this->debug) {
@@ -146,11 +157,14 @@ class CtrlCreator {
             if ($this->debug) {
                 echo serialize($xy) . ', ' . serialize($wh) . '<hr/>';
             }
-            $col = imagecolorallocate($this->bgImg,255,255,255);
-            imagerectangle($this->bgImg, $xy[0], $xy[1], $xy[0]+$wh[0], $xy[1]+$wh[1], $col);
-            //imagerectangle($this->bgImg, $xy[0]+1, $xy[1]+1, $xy[0]+$wh[0]-1, $xy[1]+$wh[1]-1, $col);
+            imagerectangle($this->bgImg, $xy[0], $xy[1], $xy[0]+$wh[0], $xy[1]+$wh[1], $this->col1);
+            imagerectangle($this->bgImg, $xy[0]+1, $xy[1]+1, $xy[0]+$wh[0]-1, $xy[1]+$wh[1]-1, $this->col1);
+            //
             $label = strtoupper($this->getAttr('label','the label'));
-            imagettftext($this->bgImg, 20, 0, $xy[0]+20, $xy[1]+10, $col, './nimbus-sans-l.bold.otf',$label);
+            $a = imagettfbbox(20,0,$this->font1, $label);
+            $w = $a[4] - $a[0];
+            imagefilledrectangle($this->bgImg, $xy[0]+15, $xy[1]-5, $xy[0]+$w+25, $xy[1]+5, $this->col0);
+            imagettftext($this->bgImg, 20, 0, $xy[0]+20, $xy[1]+10, $this->col1, $this->font1, $label);
             //html
         } else {
             //close
@@ -162,17 +176,44 @@ class CtrlCreator {
         //just an empty module, can't do much..
     }
     
-    function tag_button($attr, $type) {
+    function addLabel($xy, $offset=60) {
+        $label = $this->getAttr('label');
+        $a = imagettfbbox(16,0,$this->font1, $label);
+        $w = $a[4] - $a[0];
+        imagettftext($this->bgImg, 16, 0, $xy[0] - floor($w/2), $xy[1]+$offset, $this->col1, $this->font1, $label);
+    }
+
+    function tag_optbutton($attr, $type) {
         $this->setAttr($attr);
         //xy relative to module.
         $xy = $this->getXY();
-        $col = imagecolorallocate($this->bgImg,255,255,255);
-        imagerectangle($this->bgImg, $xy[0]-20, $xy[1]-20, $xy[0]+20, $xy[1]+20,$col);
+        imagerectangle($this->bgImg, $xy[0]-20, $xy[1]-20, $xy[0]+20, $xy[1]+20,$this->col1);
+        $this->addLabel($xy, 60);
     }
 
-    function tag_knob() {}
+    function tag_knob($attr, $type) {
+        $this->setAttr($attr);
+        //xy relative to module.
+        $xy = $this->getXY();
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 70, 70, 0-128-90,128-90,$this->col2,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 62, 62, 0-128-90,128-90,$this->col0,0);
+        //
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 50, 50, $this->col1);
+        $this->addLabel($xy, 60);
+    }
 
-    function tag_centerknob() {}
+    function tag_centerknob($attr, $type) {
+        $this->setAttr($attr);
+        //xy relative to module.
+        $xy = $this->getXY();
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 70, 70, 0-128-90,128-90,$this->col2,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 62, 62, 0-128-90,128-90,$this->col0,0);
+        imagefilledrectangle($this->bgImg, $xy[0]-8, $xy[1] - 35, $xy[0]+8,$xy[1]-30,$this->col0);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1] - 32, 6, 6, $this->col2);
+        //
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 50, 50, $this->col1);
+        $this->addLabel($xy, 60);
+    }
 
     function tag_knobswitch() {}
 
@@ -184,8 +225,22 @@ class CtrlCreator {
         $this->setAttr($attr);
         //xy relative to module.
         $xy = $this->getXY();
-        $col = imagecolorallocate($this->bgImg,255,255,255);
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 50, 50, $col);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 50, 50, $this->col1);
+        //add some dots based on count of values..
+        $values = $this->getAttr('values','1,2,3');
+        $valArr = explode(',',$values);
+        //angle is *not* 270 like real pot, but 256 to match range of CC.
+        $angle = 256 / (sizeof($valArr)-1);
+        for($i=0;$i<sizeof($valArr);$i++) {
+            $radAngle = round(-128+360+$angle*$i) % 360 / 180 * pi();
+            $dotSin = round(cos($radAngle) * 33) * -1;
+            $dotCos = round(sin($radAngle) * 33);
+            //if ($i==1) die('angle: ' . $radAngle / pi() * 180 . ', dotSin: ' . $dotSin . ' , dotCos:' . $dotCos);
+            //die($values);
+            imagefilledellipse($this->bgImg, $xy[0] + $dotCos, $xy[1] + $dotSin, 6, 6, $this->col2);
+        }
+
+        $this->addLabel($xy, 60);
     }
 }
 
