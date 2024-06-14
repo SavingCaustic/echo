@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+define('crlf', chr(13) . chr(10));
 /*
 HOWTO: Run this from the command line with synth or effect as argument: 
 
@@ -13,28 +14,35 @@ It will read the controllers.xml and generate a background image and a defaults.
 class CtrlCreator {
     var $xmlFile;
     var $xml;
-    var $bgImg;
+    var $theme;
+    var $defs;
+    //refs
     var $col0;
     var $col1;
     var $col2;
+    //
     var $font1;
     var $currAttr;
     var $debug = false;
     var $moduleXY = array(0,0);
+    //output
+    var $defaults;
+    var $enums;
+    var $bgImg;
+    var $html;
 
     function __construct() {
         $this->debug = false;
         if (!function_exists('imagepng')) {
             die('you *really* need imagegd extension for this to work..');
         }
-        $this->font1 = './nimbus-sans-l.bold.otf';
         //get the argument (xml filename) and store
         if (array_key_exists('argv', $_SERVER)) {
             $argv = $_SERVER['argv'];
             if (sizeof($argv) == 1) {
                 die('Enter directory for controller source, as synths/subsynth' . "\r\n");
             } else {
-                $fn = $a[1];
+                $fn = $argv[1];
             }
         } else {
             $fn = @$_GET['fn'];
@@ -48,6 +56,8 @@ class CtrlCreator {
         } else {
             $this->xmlFile = $fn;
         }
+        //now we need to know what to output.
+        //default is to output html and save image as tmp_bg.png
     }
 
     function parseXml() {
@@ -108,10 +118,21 @@ class CtrlCreator {
         }
     }
 
+    function addDefault($name) {
+        $this->defaults[$name] = $this->getAttr('default',0);
+    }
+
     function getXY() {
         $xy = $this->getAttr('xy','100,100');
         $a = explode(',',$xy);
         return array(floor($a[0] + $this->moduleXY[0]), floor($a[1] + $this->moduleXY[1]));
+    }
+
+    function getRelXY($size) {
+        //used by html to get relative xy
+        $xy = $this->getAttr('xy','100,100');
+        $a = explode(',',$xy);
+        return array(floor($a[0] - $size), floor($a[1] - $size));
     }
 
     function getWH() {
@@ -124,6 +145,25 @@ class CtrlCreator {
         list($r, $g, $b) = sscanf($hex, "#%02x%02x%02x");
         return array($r, $g, $b);
     }
+
+    function addLabel($xy, $offset=68) {
+        $label = $this->getAttr('label');
+        $a = imagettfbbox(18,0,$this->font1, $label);
+        $w = $a[4] - $a[0];
+        imagettftext($this->bgImg, 18, 0, $xy[0] - floor($w/2), $xy[1]+$offset, $this->col0, $this->font1, $label);
+    }
+
+    //output now, before tags..
+
+    function saveDefaults() {
+        $ctrlPath = $this->xmlFile;
+        $defaultsFile = str_replace('controllers.xml','defaults.json',$ctrlPath);
+        file_put_contents($defaultsFile, json_encode($this->defaults, JSON_UNESCAPED_SLASHES));
+        //and enums..
+        $enumFile = str_replace('controllers.xml','enums.json',$ctrlPath);
+        file_put_contents($enumFile, json_encode($this->enums, JSON_UNESCAPED_SLASHES));
+    }
+
 
     function tag_comment($attr,$type) {
         //nothing to do..
@@ -138,25 +178,82 @@ class CtrlCreator {
         if ($type == 'open') {
             //setup bg-image and get theme
             $this->setAttr($attr);
+            $this->theme = $this->getAttr('theme','bakelite');
+            $this->defs = json_decode(file_get_contents('./' . $this->theme . '/defs.json'),true);
             $size = $this->getAttr('size','640x480');
             $a = explode('x',$size);
             $this->bgImg = imagecreatetruecolor($a[0],$a[1]);
-            $bgcolor = $this->getAttr('bgcolor');
+            $bgcolor = $this->defs['col0'];
             if ($bgcolor != '') {
                 $rgb = $this->hex2rgb($bgcolor);
                 $this->col0 = imagecolorallocate($this->bgImg, $rgb[0], $rgb[1], $rgb[2]);
                 imagefill($this->bgImg, 0, 0, $this->col0);
             }
-            $this->col1 = imagecolorallocate($this->bgImg,160,120,60);
-            $this->col2 = imagecolorallocate($this->bgImg,200,80,30);
-
+            $rgb = $this->hex2rgb($this->defs['col1']);
+            $this->col1 = imagecolorallocate($this->bgImg,$rgb[0],$rgb[1],$rgb[2]);
+            $rgb = $this->hex2rgb($this->defs['col2']);
+            $this->col2 = imagecolorallocate($this->bgImg,$rgb[0],$rgb[1],$rgb[2]);
+            $this->font1 = './' . $this->defs['font1'];
+            //putting this here disallows multiple panels. Not sure..
+            $this->html = '<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>iframed really</title>
+    <link rel="stylesheet" href="' . $this->theme . '/style.css">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <script src="bakelite/vue.js"></script>
+  </head>
+  <body bgcolor="#221811" margin="10"><div id="app" style="display:flex;align-items:center;justify-content:center;height:95vh;">
+  <div id="panel" style="position:relative;width:1900px;height:900px;background-image:url(\'tmp_bg.png\');">
+  ';
         } else {
+            $this->saveDefaults();
             //output image and defaults.json
-            if (!$this->debug) {
+            imagepng($this->bgImg, 'tmp_bg.png');
+            //
+            /*if (!$this->debug) {
                 header('content-type: image/png');
                 echo imagepng($this->bgImg);
                 die();
-            }
+            }*/
+            $this->html .= "</div>
+</div>
+<script>
+const app = Vue.createApp({
+    data() {
+        return {  
+            cc_osc1_modulation: 100,
+            cc_osc2_detune: 30,
+            cc_peg_amp: 20
+        }
+    },
+    //here methods are a bit mis-used since rule of thumb is that methods should only be used for actions,
+    //computed properties for the rest.
+    methods: {
+        getFromMethod(test) {
+            return 'fuction return, ' + this.theName;
+        }
+    }
+});
+const mountedApp = app.mount('#app');
+
+function hello(evt) {
+    evt.preventDefault();
+    let s = evt.target.id;
+    console.debug(JSON.stringify(s));
+    alert('hello');
+}
+
+element = document.getElementById('app');
+element.addEventListener(\"click\", hello); 
+</script>
+</body>
+</html>
+";
+            echo $this->html;
         }
     }
 
@@ -172,6 +269,7 @@ class CtrlCreator {
             }
             imagerectangle($this->bgImg, $xy[0], $xy[1], $xy[0]+$wh[0], $xy[1]+$wh[1], $this->col1);
             imagerectangle($this->bgImg, $xy[0]+1, $xy[1]+1, $xy[0]+$wh[0]-1, $xy[1]+$wh[1]-1, $this->col1);
+            imagefilledrectangle($this->bgImg, $xy[0], $xy[1]+$wh[1]-30, $xy[0]+$wh[0], $xy[1]+$wh[1], $this->col1);
             //
             $label = strtoupper($this->getAttr('label','the label'));
             $a = imagettfbbox(20,0,$this->font1, $label);
@@ -179,9 +277,12 @@ class CtrlCreator {
             imagefilledrectangle($this->bgImg, $xy[0]+15, $xy[1]-5, $xy[0]+$w+25, $xy[1]+5, $this->col0);
             imagettftext($this->bgImg, 20, 0, $xy[0]+20, $xy[1]+10, $this->col1, $this->font1, $label);
             //html
+            $this->html .= '<div style="position:absolute;left:' . $xy[0] . 'px;top:' . $xy[1] . 
+            'px;width:' . $wh[0] . 'px;height:' . $wh[1] . 'px;" id="module_' . $this->getAttr('name') . '" class="module">' . crlf;
         } else {
             //close
             $this->moduleXY = array(0,0);
+            $this->html .= '</div>' . crlf;
         }
     }
 
@@ -189,43 +290,50 @@ class CtrlCreator {
         //just an empty module, can't do much..
     }
     
-    function addLabel($xy, $offset=60) {
-        $label = $this->getAttr('label');
-        $a = imagettfbbox(16,0,$this->font1, $label);
-        $w = $a[4] - $a[0];
-        imagettftext($this->bgImg, 16, 0, $xy[0] - floor($w/2), $xy[1]+$offset, $this->col1, $this->font1, $label);
-    }
-
     function tag_optbutton($attr, $type) {
         $this->setAttr($attr);
         //xy relative to module.
         $xy = $this->getXY();
         imagerectangle($this->bgImg, $xy[0]-20, $xy[1]-20, $xy[0]+20, $xy[1]+20,$this->col1);
-        $this->addLabel($xy, 60);
+        $this->addLabel($xy);
     }
 
     function tag_knob($attr, $type) {
         $this->setAttr($attr);
+        $this->addDefault($this->getAttr('name'));
         //xy relative to module.
         $xy = $this->getXY();
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 70, 70, 0-128-90,128-90,$this->col2,0);
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 62, 62, 0-128-90,128-90,$this->col0,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 86, 86, 0-128-90,128-90,$this->col2,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-90,128-90,$this->col0,0);
         //
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 50, 50, $this->col1);
-        $this->addLabel($xy, 60);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 42, 42, $this->col1);
+        $this->addLabel($xy);
+        //HTML - now we need xy without module offset.. and we need to re-center too..
+        $xy = $this->getRelXY(60);
+        $name = $this->getAttr('name');
+        $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
+        <img class="knob" id="cc_' . $name . '" width="80" data-val="30" src="bakelite/cap.png" draggable="false">
+        </div>' . crlf;
     }
 
     function tag_centerknob($attr, $type) {
         $this->setAttr($attr);
+        $this->addDefault($this->getAttr('name'));
         //xy relative to module.
         $xy = $this->getXY();
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 70, 70, 0-128-90,128-90,$this->col2,0);
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 62, 62, 0-128-90,128-90,$this->col0,0);
-        imagefilledrectangle($this->bgImg, $xy[0]-8, $xy[1] - 35, $xy[0]+8,$xy[1]-30,$this->col0);
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1] - 32, 6, 6, $this->col2);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 86, 86, 0-128-90,128-90,$this->col2,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-90,128-90,$this->col0,0);
+        imagefilledrectangle($this->bgImg, $xy[0]-8, $xy[1] - 42, $xy[0]+8,$xy[1]-25,$this->col0);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1] - 41, 6, 6, $this->col2);
         //
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 50, 50, $this->col1);
-        $this->addLabel($xy, 60);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 42, 42, $this->col1);
+        $this->addLabel($xy);
+        //HTML - now we need xy without module offset.. and we need to re-center too..
+        $xy = $this->getRelXY(60);
+        $name = $this->getAttr('name');
+        $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
+        <img class="centerknob" src="bakelite/cap.png" width="80" id="cc_' . $name . '" data-val="30" style="getRotation" draggable="false">
+        </div><input style="width:50px" v-model="cc_' . $name . '">' . crlf;
     }
 
     function tag_knobswitch() {}
@@ -234,7 +342,19 @@ class CtrlCreator {
 
     function tag_dualknob() {}
 
-    function tag_vslider() {}
+    function tag_vslider($attr, $type) {
+        $this->setAttr($attr);
+        $this->addDefault($this->getAttr('name'));
+        //xy relative to module.
+        $xy = $this->getXY();
+        $wh = $this->getWH();
+        $width = $wh[0] / 10;
+        imagefilledrectangle($this->bgImg, 
+        $xy[0]-$width,$xy[1]-$wh[1]/2,
+        $xy[0]+$width,$xy[1]+$wh[1]/2,$this->col1);
+        //
+        $this->addLabel($xy, $wh[1]/2+52);
+    }
 
     function tag_hslider() {}
 
@@ -242,27 +362,45 @@ class CtrlCreator {
         //add a mini button that can side beside of a label not being a button) 
     }
 
+    function tag_microbutton($attr, $type) {
+        //add an even smaller, like silly small button to sit somewhere.
+    }
+
     function tag_rotaryswitch($attr, $type) {
         $this->setAttr($attr);
+        $this->addDefault($this->getAttr('name'));
         //xy relative to module.
         $xy = $this->getXY();
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 50, 50, $this->col1);
+        $potSize = 42;
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], $potSize, $potSize, $this->col1);
         //add some dots based on count of values..
         $values = $this->getAttr('values','1,2,3');
         $valArr = explode(',',$values);
         //angle is *not* 270 like real pot, but 256 to match range of CC.
         $angle = 256 / (sizeof($valArr)-1);
+        $dotPotSize = 41;
+        $enums = [];
         for($i=0;$i<sizeof($valArr);$i++) {
+            $enums[] = $valArr[$i];
             $radAngle = round(-128+360+$angle*$i) % 360 / 180 * pi();
-            $dotSin = round(cos($radAngle) * 33) * -1;
-            $dotCos = round(sin($radAngle) * 33);
+            $dotSin = round(cos($radAngle) * $dotPotSize) * -1;
+            $dotCos = round(sin($radAngle) * $dotPotSize);
             //if ($i==1) die('angle: ' . $radAngle / pi() * 180 . ', dotSin: ' . $dotSin . ' , dotCos:' . $dotCos);
             //die($values);
             imagefilledellipse($this->bgImg, $xy[0] + $dotCos, $xy[1] + $dotSin, 6, 6, $this->col2);
         }
-
-        $this->addLabel($xy, 60);
+        $this->enums[$this->getAttr('name')] = $enums;
+        $this->addLabel($xy);
+        //HTML
+        $xy = $this->getRelXY(60);
+        $name = $this->getAttr('name');
+        $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
+        <img class="rotaryswitch" src="bakelite/cap.png" id="cc_' . $name . '" width="80" draggable="false">
+        </div>' . crlf;
+        
     }
+
+
 }
 
 //Dancing with myself..
