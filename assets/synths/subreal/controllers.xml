@@ -7,14 +7,9 @@
     <centerknob name="osc2_detune" xy="340,60" values="0,0.5,1" label="Detune"/>
   </module>
   <module name="osc2" label="OSC 2" xy="20,185" wh="400,135">
-    <rotaryswitch name="osc2_wf" xy="60,60" label="Shape" default="Sine" values="Sine,Triangle,Sawtooth,Square" />
+    <optbutton name="osc2_wf" label="Shape" default="false" xy="60,60" values="off,sin,tri,sqr,saw,noi,cw1,cw2"/>
     <rotaryswitch name="osc2_oct" default="0" xy="200,60" label="Octave" values="-3,-2,-1,0,1,2,3" />
     <rotaryswitch name="osc2_semis" default="0" xy="340,60" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
-  </module>
-  <module name="noise" label="Noise" xy="20,350" wh="400,135">
-    <rotaryswitch name="noise_colour" default="0" xy="60,60" label="Colour" values="off,brown,pink,white,grey,blue,violett" />
-    <knob name="noise_decay" default="0" xy="200,60" label="Decay" values="-3,-2,-1,0,1,2,3" />
-    <knob name="noise_level" default="0" xy="340,60" label="Level" values="-3,-2,-1,0,1,2,3" />
   </module>
   <module name="osc_mix" label="Mix" xy="440,20" wh="160,300">
     <knob name="osc_mix" xy="80,80" label="Mix"/>
@@ -62,5 +57,19 @@
   <module name="modwheel" xy="1570,185" label="Mod.wheel" wh="300,300">
     <knob name="modw_lfo1_speed" xy="80,60" label="LFO1 spd"/>
     <knob name="modw_lfo1_depth" xy="220,60" label="LFO1 ppt"/>
+  </module>
+  <module name="modwheel" xy="1570,185" label="Mod.wheel" wh="300,300">
+    <knob name="modw_lfo1_speed" xy="80,60" label="LFO1 spd"/>
+    <knob name="modw_lfo1_depth" xy="220,60" label="LFO1 ppt"/>
+  </module>
+  <module name="velmod" xy="20,510" wh="600,135" label="Velocity modulation">
+    <knob name="velmod_vca_attack" xy="80,60" label="VCA Attack"/>
+    <knob name="velmod_vcf_cutoff" xy="220,60" label="VCF Cutoff"/>
+    <knob name="velmod_lfo1_depth" xy="360,60" label="LFO1 dph"/>
+  </module>
+  <module name="trackmod" xy="640,510" wh="600,135" label="Tracking modulation">
+    <centerknob name="trkmod_vcf_depth" xy="80,60" label="VCF Cutoff"/>
+    <knob name="trkmod_pan" xy="220,60" label="Pan"/>
+    <knob name="velmod_lfo1_depth" xy="360,60" label="LFO1 dph"/>
   </module>
 </panel>
