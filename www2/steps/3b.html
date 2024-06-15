@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+body {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.dial {
+    margin:4px;
+    border:1px solid #ccc;
+    background-image: url('cap_bg.png');
+}
+
+.big {
+    font-size:20px;
+    width:128px;
+}
+
+#dial1 {
+    border:1px solid #fa0;
+}
+
+.dial > img {
+/*    transition: 100ms ease all;*/
+}
+
+    </style>
+    <script src="vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+        <div @mousedown="swypeBegin($event)" @touchstart.prevent="swypeBegin($event)">
+        <h2>Step 3B - events. Mouse and touch working</h2>
+        <p>Swype => calc new CC-value => send to server => recieve new value to $data => rotate</p>
+            <h3 :class="titleClass">{{ title + '&nbsp;'}}</h3>
+        <div class="flexcontainer" style="display:flex">
+            <div class="dial" id="dial1">
+                <img id="cc_vca_attack" data-type="knob" draggable="false" src="cap.png" :style="calcKnobRotation('cc_vca_attack')"/>
+            </div>
+            <div class="dial" id="dial2">
+                <img id="cc_vca_release" data-type="knob" draggable="false" src="cap.png" :style="calcKnobRotation('cc_vca_release')"/>
+            </div>
+        </div>
+        <input class="big" v-model="cc_vca_attack" />
+        <input class="big" v-model="cc_vca_release" />
+        <div style="height:100px;"></div>
+        <textarea cols="160" rows="4"> {{ vueLog }} </textarea>
+        <textarea id="log" cols="160" rows="15"> {{ vueLog2 }}</textarea>
+    </div></div>
+
+    <script>
+const app = Vue.createApp({
+    data() {
+        return {  
+            eventTarget: '',
+            startX: 0,
+            startY: 0,
+            rotating: false,
+            title: 'the title',
+            titleClass: "theBold",
+            cc_vca_attack: 30,
+            cc_vca_release: 64,
+            vueLog: "duh",
+            vueLog2: "dah",
+        }
+    },
+    computed: {
+    },
+    methods: {
+        calcKnobRotation(prop) {
+            const rotationAngle = this[prop] * 2 - 128;
+            return {
+                rotate: rotationAngle + 'deg'
+            }
+        },
+        getTitleClass() {
+            return this.titleClass;
+        },
+
+        swypeBegin(event) {
+            // Check if the event target is an image
+            if (event.target.dataset.type === 'knob') {
+                event.preventDefault();
+                //this.startX = event.clientX || event.touches[0].clientX;
+                //this.startY = event.clientY || event.touches[0].clientY;
+                this.startX = event.touches ? event.touches[0].clientX : event.clientX;
+                this.startY = event.touches ? event.touches[0].clientY : event.clientY;
+                this.eventTarget = event.target.id;
+                this.swypeAxis = '';
+                this.orgCC = this[this.eventTarget];
+                this.rotating = true;
+
+                // Log the data-type attribute value
+                const dataType = event.target.dataset.type;
+                this.vueLog = `data-type attribute value: ${dataType}`;
+
+                document.addEventListener('mousemove', this.swypeDo);
+                document.addEventListener('mouseup', this.swypeEnd);
+                document.addEventListener('touchmove', this.swypeDo);
+                document.addEventListener('touchend', this.swypeEnd);
+            }
+        },
+
+        swypeDo(event) {
+            if (this.rotating) {
+                //const diffX = (event.clientX || event.touches[0].clientX) - this.startX;
+                const diffX = (event.touches ? event.touches[0].clientX : event.clientX) - this.startX;
+                //const diffY = this.startY - (event.clientY || event.touches[0].clientY);
+                const diffY = this.startY - (event.touches ? event.touches[0].clientY : event.clientY);
+                this.vueLog = `Mouse diff at (${diffX}, ${diffY})`;
+                //based on current data value and offset, calc new cc-value
+                //we can't use this, provides funny results on long press: const currCC = this[this.eventTarget];
+                let newCC = this.orgCC;
+                switch(this.swypeAxis) {
+                    case '':
+                        //find out which axis to go.
+                        if (Math.abs(diffY) > 3 && Math.abs(diffX) < 3) {
+                            this.swypeAxis = 'Y';
+                        }
+                        if (Math.abs(diffX) > 3 && Math.abs(diffY) < 3) {
+                            this.swypeAxis = 'X';
+                        }
+                        //continue
+                    case 'Y':
+                        newCC = Math.round(this.orgCC + diffY / 2);
+                        break;
+                    case 'X':
+                        newCC = Math.round(this.orgCC + diffX / 10);
+                        break;
+                }
+                if (newCC < 0) newCC = 0;
+                if (newCC > 127) newCC = 127; 
+                this.sendCC(this.eventTarget,newCC);
+            }
+        },
+        sendCC(ccName, ccVal) {
+            //really send this to web-socket server and let that server set the data anytime,
+            //but fake now.
+            //wsRequest('yada-yada'..)
+            this[ccName] = ccVal;
+        },
+
+        swypeEnd(event) {
+            this.rotating = false;
+            document.removeEventListener('mousemove', this.swypeDo);
+            document.removeEventListener('mouseup', this.swypeEnd);
+            document.removeEventListener('touchmove', this.swypeDo);
+            document.removeEventListener('touchend', this.swypeEnd);
+        },
+    }
+});
+const mountedApp = app.mount('#app');
+</script>
+<script>
+    // Get the target element
+    var target = document.getElementById('dial1');
+    
+    // Function to log all fired events
+    function logEvent(event) {
+        //console.log('Event fired:', event.type);
+        document.getElementById('log').innerHTML += event.type + ', ';
+    }
+    </script>
+    
+  </body>
+</html>

@@ -4,98 +4,139 @@
     <meta charset="UTF-8" />
     <style>
 body {
-    -moz-user-select: none; /* nice but wabout safari? */
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: moz-none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
 }
 
 .dial {
     margin:4px;
     border:1px solid #ccc;
+    background-image: url('cap_bg.png');
 }
 
 #dial1 {
     border:1px solid #fa0;
 }
+
+.dial > img {
+    transition: 100ms ease all;
+}
+
     </style>
     <script src="vue.js"></script>
   </head>
   <body>
-    <h2>Step 3 - events. Mouse and touch working - without hammer.js :)</h2>
-    <p>no data though. next step, components.</p>
     <div id="app">
-        <h3 :class="titleClass">{{ title + '&nbsp;'}}</h3>
+        <div @mousemove.prevent="swypeDo($event)" 
+        @mouseup.prevent="swypeEnd($event)"
+        @touchmove.prevent="tSwypeDo($event)" 
+        @touchend.prevent="tSwypeEnd($event)">
+        <h2>Step 3 - events. Mouse and touch working</h2>
+        <p>no data though. next step, components.</p>
+            <h3 :class="titleClass">{{ title + '&nbsp;'}}</h3>
         <div class="flexcontainer" style="display:flex">
             <div class="dial" id="dial1" draggable="false"
-                @mousedown.prevent="rotateBegin($event)" 
-                @mousemove.prevent="rotateDo($event)" 
-                @mouseup.prevent="rotateEnd($event)"
-                @touchstart.prevent="touchRotateBegin($event)" 
-                @touchmove.prevent="touchRotateDo($event)" 
-                @touchend.prevent="touchRotateEnd($event)">
-                <img draggable="false" src="cap.png" />
+                @mousedown.prevent="swypeBegin($event)" 
+                @touchstart.prevent="tSwypeBegin($event)">
+                <img id="cc_vca_attack" draggable="false" src="cap.png" :style="calcKnobRotation('cc_vca_attack')"/>
             </div>
-            <div class="dial" draggable="false" 
-                @mousedown.prevent="rotateBegin($event)" 
-                @mousemove.prevent="rotateDo($event)" 
-                @mouseup.prevent="rotateEnd($event)"
-                @touchstart.prevent="touchRotateBegin($event)" 
-                @touchmove.prevent="touchRotateDo($event)" 
-                @touchend.prevent="touchRotateEnd($event)">
-                <img draggable="false" src="cap.png" />
+            <div class="dial" id="dial2" draggable="false"
+                @mousedown.prevent="swypeBegin($event)" 
+                @touchstart.prevent="tSwypeBegin($event)">
+                <img id="cc_vca_release" draggable="false" src="cap.png" :style="calcKnobRotation('cc_vca_release')"/>
             </div>
         </div>
-        <input v-model="title" />
+        <input v-model="cc_vca_attack" />
         <div style="height:100px;"></div>
         <textarea cols="160" rows="4"> {{ vueLog }} </textarea>
-        <textarea id="log" cols="160" rows="8"></textarea>
-    </div>
+        <textarea id="log" cols="160" rows="8"> {{ vueLog2 }}</textarea>
+    </div></div>
 
     <script>
 const app = Vue.createApp({
     data() {
         return {  
+            eventTarget: '',
             startX: 0,
             startY: 0,
             rotating: false,
             title: 'the title',
             titleClass: "theBold",
+            cc_vca_attack: 30,
+            cc_vca_release: 64,
             vueLog: "duh",
-            items: [
-                {id: 53, text: 'some text', val: 10},
-                {id: 64, text: 'some text2', val: 20},
-                {id: 12, text: 'asdf', val: -5}
-            ]
+            vueLog2: "dah",
         }
     },
     computed: {
     },
     methods: {
-        calcStyle(val) {
+        calcKnobRotation(prop) {
+            const rotationAngle = this[prop] * 2 - 128;
             return {
-                rotate: val + 'deg'
+                rotate: rotationAngle + 'deg'
             }
         },
         getTitleClass() {
             return this.titleClass;
         },
-        rotateBegin(event) {
+        swypeBegin(event) {
             //save the xy of mouse so we have anything to calc on.
+            this.eventTarget = event.target.id;
             this.startX = event.clientX;
             this.startY = event.clientY;
+            this.swypeAxis = '';
+            this.orgCC = this[this.eventTarget];
             this.rotating = true;
-            //this.vueLog = `Mouse down at (${mouseX}, ${mouseY})`;
-            console.log(event);
+            this.vueLog = `Mouse down at (${this.startX}, ${this.startY})`;
+            console.log(event.target.id);
         },
-        rotateDo(event) {
+        swypeDo(event) {
             if (this.rotating) {
                 const diffX = event.clientX - this.startX;
-                const diffY = event.clientY - this.startY;
+                const diffY = (event.clientY - this.startY) * -1;
                 this.vueLog = `Mouse diff at (${diffX}, ${diffY})`;
-        
+                //based on current data value and offset, calc new cc-value
+                //we can't use this, provides funny results on long press: const currCC = this[this.eventTarget];
+                let newCC = this.orgCC;
+                switch(this.swypeAxis) {
+                    case '':
+                        //find out which axis to go.
+                        if (Math.abs(diffY) > 3 && Math.abs(diffX) < 3) {
+                            this.swypeAxis = 'Y';
+                        }
+                        if (Math.abs(diffX) > 3 && Math.abs(diffY) < 3) {
+                            this.swypeAxis = 'X';
+                        }
+                        //continue
+                    case 'Y':
+                        newCC = Math.round(this.orgCC + diffY / 2);
+                        break;
+                    case 'X':
+                        newCC = Math.round(this.orgCC + diffX / 10);
+                        break;
+                }
+                if (newCC < 0) newCC = 0;
+                if (newCC > 127) newCC = 127; 
+                this.sendCC(this.eventTarget,newCC);
             }
         },
-        rotateEnd(event) {
-            this.rotating = false;
+        sendCC(ccName, ccVal) {
+            //really send this to web-socket server and let that server set the data anytime,
+            //but fake now.
+            //wsRequest('yada-yada'..)
+            this[ccName] = ccVal;
         },
+
+        swypeEnd(event) {
+            this.rotating = false;
+            console.log('swype end');
+        },
+
         touchRotateBegin(event) {
             const touch = event.touches[0];
             this.startX = touch.clientX;
@@ -127,21 +168,6 @@ const mountedApp = app.mount('#app');
         //console.log('Event fired:', event.type);
         document.getElementById('log').innerHTML += event.type + ', ';
     }
-    
-    // Attach event listeners for all possible events
-    // 'mouseenter',  'mousemove', 'mouseover',  'mouseout', 'mouseleave',
-    var events = [
-        'click', 'dblclick', 'mousedown', 'mouseup',  
-        'keydown', 'keypress', 'keyup',
-        'focus', 'blur', 'change', 'input', 'submit',
-        'touchstart', 'touchend', 'touchmove', 'touchcancel',
-        'drag', 'dragstart', 'dragend', 'dragenter', 'dragleave', 'dragover', 'drop',
-        'scroll', 'resize', 'load', 'unload', 'error'
-    ];
-    
-    events.forEach(function(eventName) {
-        target.addEventListener(eventName, logEvent);
-    });
     </script>
     
   </body>
