@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>iframed really</title>
+    <link rel="stylesheet" href="bakelite/style.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="bakelite/vue.js"></script>
+    <style>
+      html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #panel {
+            /* this does not cover devices that may have ratio 24:9. Will crop image. */
+            position:relative;
+            width:100%;
+            height:auto;
+            padding-top: 50%; /* (960 / 1920) * 100 to maintain aspect ratio */
+            background-image:url('tmp_bg.png');
+            background-size:cover;
+            background-position:center;
+            background-repeat: no-repeat;
+        }
+    </style>
+  </head>
+  <body bgcolor="#221811">
+    <div id="app" style="display:flex;align-items:center;justify-content:center;">
+        <div id="panel">
+          <!-- position is 0.2833*1920. Fuck it. if size is 2000x1000 we can calc percent easier.? -->
+            <div style="position:absolute;left:27.2%;top:8.2%;width:3.5%;transform: translate(-50%, -50%);">
+                <img src="bakelite/cap.png" style="width:100%;"/>
+            </div>
+            <div style="position:absolute;left:27.2%;top:25.9%;width:3.5%;transform: translate(-50%, -50%);">
+              <img src="bakelite/cap.png" style="width:100%;"/>
+          </div>
+          <div style="position:absolute;left:11.2%;top:43.5%;width:3.5%;transform: translate(-50%, -50%);">
+            <img src="bakelite/cap.png" style="width:100%;"/>
+        </div>
+    </div>
+    </div>
+    </body>
+    </html>
+

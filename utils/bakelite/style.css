@@ -30,3 +30,9 @@ body {
 .rotaryswitch {
     padding:0px;
 }
+
+.whiteKey {
+    height:5rem;
+    width:100%;
+    background-color:#FFE;
+}

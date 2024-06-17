@@ -3,6 +3,20 @@
 ## device
 Settings and methods for device running the app. Not song-related.
 
+error = device.setVal(name,intVal)
+int = device.getVal(name)
+device.setStr(name,str)
+
+device.setVal('buffer_size',1024);
+device.getVal('buffer_size');
+
+array = device.listSongs()
+
+device.loadSong('asdf')
+device.resaveSong
+device.saveSongAs('asdf2')
+??
+
 ### .settings
 buffer_size
 device_id

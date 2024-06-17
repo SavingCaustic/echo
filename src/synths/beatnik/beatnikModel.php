@@ -55,7 +55,8 @@ class BeatnikModel implements SynthInterface {
       'lm-2/tom-hh.wav',
       'lm-2/tom-h.wav',
       'lm-2/tom-m.wav',
-      'lm-2/tom-l.wav',
+      'lm-2/conga-h.wav'
+      //'lm-2/tom-l.wav',
     );
     $WR = new WavReader();
 

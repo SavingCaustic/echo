@@ -123,22 +123,23 @@ class CtrlCreator {
     }
 
     function getXY() {
-        $xy = $this->getAttr('xy','100,100');
+        $xy = $this->getAttr('xy','8,8');
         $a = explode(',',$xy);
-        return array(floor($a[0] + $this->moduleXY[0]), floor($a[1] + $this->moduleXY[1]));
+        //now convert rem to px
+        return array(floor($a[0]*16 + $this->moduleXY[0]), floor($a[1]*16 + $this->moduleXY[1]));
     }
 
     function getRelXY($size) {
         //used by html to get relative xy
-        $xy = $this->getAttr('xy','100,100');
+        $xy = $this->getAttr('xy','8,8');
         $a = explode(',',$xy);
-        return array(floor($a[0] - $size), floor($a[1] - $size));
+        return array(floor($a[0]*16 - $size), floor($a[1]*16 - $size));
     }
 
     function getWH() {
-        $xy = $this->getAttr('wh','100,100');
+        $xy = $this->getAttr('wh','16,16');
         $a = explode(',',$xy);
-        return array(floor($a[0]), floor($a[1]));
+        return array(floor($a[0]*16), floor($a[1]*16));
     }
 
     function hex2rgb($hex) {
@@ -146,7 +147,7 @@ class CtrlCreator {
         return array($r, $g, $b);
     }
 
-    function addLabel($xy, $offset=68) {
+    function addLabel($xy, $offset=73) {
         $label = $this->getAttr('label');
         $a = imagettfbbox(18,0,$this->font1, $label);
         $w = $a[4] - $a[0];
@@ -180,9 +181,9 @@ class CtrlCreator {
             $this->setAttr($attr);
             $this->theme = $this->getAttr('theme','bakelite');
             $this->defs = json_decode(file_get_contents('./' . $this->theme . '/defs.json'),true);
-            $size = $this->getAttr('size','640x480');
+            $size = $this->getAttr('size','80x40');
             $a = explode('x',$size);
-            $this->bgImg = imagecreatetruecolor($a[0],$a[1]);
+            $this->bgImg = imagecreatetruecolor($a[0]*16,$a[1]*16);
             $bgcolor = $this->defs['col0'];
             if ($bgcolor != '') {
                 $rgb = $this->hex2rgb($bgcolor);
@@ -207,7 +208,7 @@ class CtrlCreator {
     <script src="bakelite/vue.js"></script>
   </head>
   <body bgcolor="#221811" margin="10"><div id="app" style="display:flex;align-items:center;justify-content:center;height:95vh;">
-  <div id="panel" style="position:relative;width:1900px;height:900px;background-image:url(\'tmp_bg.png\');">
+  <div id="panel" style="position:relative;width:1920px;height:960px;background-image:url(\'tmp_bg.png\');">
   ';
         } else {
             $this->saveDefaults();
@@ -292,9 +293,12 @@ element.addEventListener(\"click\", hello);
     
     function tag_optbutton($attr, $type) {
         $this->setAttr($attr);
-        //xy relative to module.
+        $this->currAttr['WH'] = '5,3';
         $xy = $this->getXY();
-        imagerectangle($this->bgImg, $xy[0]-20, $xy[1]-20, $xy[0]+20, $xy[1]+20,$this->col1);
+        //xy relative to module.
+        $wh = $this->getWH();
+        //just a placeholder really. could be smaller
+        imagerectangle($this->bgImg, $xy[0] - $wh[0]*0.5, $xy[1] - $wh[1]*0.5 - 8, $xy[0] + $wh[0]*0.5, $xy[1] + $wh[1]*0.5,$this->col1);
         $this->addLabel($xy);
     }
 
@@ -304,7 +308,7 @@ element.addEventListener(\"click\", hello);
         //xy relative to module.
         $xy = $this->getXY();
         imagefilledarc($this->bgImg, $xy[0], $xy[1], 86, 86, 0-128-90,128-90,$this->col2,0);
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-90,128-90,$this->col0,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-92,128-88,$this->col0,0);
         //
         imagefilledellipse($this->bgImg, $xy[0], $xy[1], 42, 42, $this->col1);
         $this->addLabel($xy);
@@ -322,9 +326,9 @@ element.addEventListener(\"click\", hello);
         //xy relative to module.
         $xy = $this->getXY();
         imagefilledarc($this->bgImg, $xy[0], $xy[1], 86, 86, 0-128-90,128-90,$this->col2,0);
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-90,128-90,$this->col0,0);
-        imagefilledrectangle($this->bgImg, $xy[0]-8, $xy[1] - 42, $xy[0]+8,$xy[1]-25,$this->col0);
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1] - 41, 6, 6, $this->col2);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-92,128-88,$this->col0,0);
+        imagefilledrectangle($this->bgImg, $xy[0]-9, $xy[1] - 42, $xy[0]+9,$xy[1]-25,$this->col0);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1] - 41, 8, 8, $this->col2);
         //
         imagefilledellipse($this->bgImg, $xy[0], $xy[1], 42, 42, $this->col1);
         $this->addLabel($xy);
@@ -333,7 +337,7 @@ element.addEventListener(\"click\", hello);
         $name = $this->getAttr('name');
         $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
         <img class="centerknob" src="bakelite/cap.png" width="80" id="cc_' . $name . '" data-val="30" style="getRotation" draggable="false">
-        </div><input style="width:50px" v-model="cc_' . $name . '">' . crlf;
+        </div>' . crlf;
     }
 
     function tag_knobswitch() {}
@@ -398,6 +402,21 @@ element.addEventListener(\"click\", hello);
         <img class="rotaryswitch" src="bakelite/cap.png" id="cc_' . $name . '" width="80" draggable="false">
         </div>' . crlf;
         
+    }
+
+    function tag_keyboard($attr,$type) {
+        //just for show now..
+        $this->setAttr($attr);
+        $keys = $this->getAttr('keys',24); //on a 12-tone scale
+        $width = 1900;
+        $kwWhite = $width / $keys * 12 / 7;
+        $s = '<div style="position:relative;top:700px;left:0px;">asdf' . crlf;
+        for($i=0;$i<$keys;$i++) {
+            $s .= '<div class="whiteKey"></div>' . crlf;
+        }
+        //start at either C or F. Enough.
+        $s .= '</div>' . crlf;
+        return $s;
     }
 
 
