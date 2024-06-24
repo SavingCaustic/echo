@@ -32,6 +32,7 @@ class CtrlCreator {
     var $enums;
     var $bgImg;
     var $html;
+    var $imgWidths = array();
 
     function __construct() {
         $this->debug = false;
@@ -272,7 +273,8 @@ preData = {
 foreach($this->defaults as $key=>$val) {
     $this->html .= '    cc_' . $key . ':' . $val . ',' . crlf;        
 }
-$this->html .= '    cc_dummy_end: 0' . crlf;
+//add imgWidth here?
+$this->html .= '    imgWidths: ' . json_encode($this->imgWidths);
 $this->html .= "};
 </script>
 <script src=\"bakelite/ui.js?ts=asdfasdfasdf\"></script>
@@ -344,7 +346,7 @@ $this->html .= "};
         src="img_' . $this->getAttr('name') . '.png">
         </div>
         </div>' . crlf;
-
+        $this->imgWidths[$name] = $wh[0];
     }
 
     function tag_knob($attr, $type) {

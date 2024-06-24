@@ -9,7 +9,7 @@
 #    <knob name="osc1_text" default="0" label="Mod*" xy="29,4" values="0,1" />
   </module>
   <module name="osc2" label="OSC 2" xy="20,12" wh="34,9">
-    <optbutton name="osc2_wf" label="Shape" default="sine" xy="5,4" wh="5,3" values="saw,off,sin,tri,sqr,saw,noi,us1,us2"/>
+    <optbutton name="osc2_wf" label="Shape" default="sine" xy="5,4" wh="5,3" values="off,sin,tri,sqr,saw,noi,us1,us2"/>
     <rotaryswitch name="osc2_oct" default="0" xy="13,4" label="Octave" values="-3,-2,-1,0,1,2,3" />
     <rotaryswitch name="osc2_semitones" default="0" xy="21,4" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
     <centerknob name="osc2_detune" xy="29,4" values="0,0.5,1" label="Detune*"/>
@@ -54,7 +54,7 @@
     <optbutton name="lfo2_wf" xy="22,4" wh="8,3" label="Target" values="Cutoff,Sine,Tri,Square,Saw,S &amp; H" />
   </module>
   <module name="modwheel" xy="75,23" label="Mod.wheel" wh="14,9">
-    <optbutton name="mw_target" xy="7,4" wh="10,3" label="Target" values="LFO DPH,Tri,Square,Saw,S &amp; H" />
+    <optbutton name="mw_target" xy="7,4" wh="10,3" label="Target" values="LFO1 DPH,LFO1 SPD" />
   </module>
   <module name="velmod" xy="90,23" wh="26,9" label="Velocity modulation">
     <knob name="velmod_vca_attack" xy="5,4" label="Attack"/>
