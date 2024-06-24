@@ -21,13 +21,23 @@ const app = Vue.createApp({
                 this.sendCC(this.eventTarget,newCC);
             }
         },
-        calcOptButtonOffset(prop) {
-            //86 is fake. it should really get the data-length from the tag.
-            const leftOffset = this[prop] * 86 * -1;
-            return {
-                left: leftOffset + 'px'
+        /*calcOptButtonOffset(prop) {
+            //how can i get the width of the image?
+            //const dataCount = event.target.dataset.count;
+            const elm = document.getElementById(prop);
+            //alert(elm);
+            if (elm != null) {
+                alert('q');
+                const dataWidth = elm.dataset.width;
+                //the image-generating service adds 3px of padding so we need to deal with that.
+                const leftOffset = this[prop] * (dataWidth+6) * -1;
+                return {
+                    left: leftOffset + 'px'
+                }
+            } else {
+                //initial load. not sure what to do..
             }
-        },
+        },*/
         calcKnobRotation(prop) {
             const rotationAngle = this[prop] * 2 - 128;
             return {
@@ -93,6 +103,7 @@ const app = Vue.createApp({
             //really send this to web-socket server and let that server set the data anytime,
             //but fake now.
             //wsRequest('yada-yada'..)
+            //alert(ccName + ':' + ccVal);
             this[ccName] = ccVal;
         },
         swypeEnd(event) {
