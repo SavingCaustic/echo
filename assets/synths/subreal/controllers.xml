@@ -42,7 +42,7 @@
     <optbutton name="peg_target" label="Target" default="false" xy="13,15" wh="5,3" values="Osc2,None,Osc1,Osc2,O1+2"/>
   </module>
   <module name="lfo1" xy="1,23" wh="44,9" label="LFO1">
-    <optbutton name="lfo1_wf" xy="5,4" wh="5,3" label="Shape" values="Sine,Tri,Square,Saw,S &amp; H" />
+    <optbutton name="lfo1_wf" xy="5,4" wh="5,3" label="Shape" values="Sine,Tri,SRQ,Saw,S &amp; H" />
     <knob name="lfo1_ramp" min="0.1" max="10" xy="13,4" label="Ramp" curve="log" unit="mS" />
     <knob name="lfo1_speed" min="0.1" max="10" xy="21,4" label="Speed" curve="log" unit="Hz" />
     <knob name="lfo1_depth" min="0.1" max="10" xy="29,4" label="Depth" curve="log" unit="Hz" />

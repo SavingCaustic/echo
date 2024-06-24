@@ -21,23 +21,14 @@ const app = Vue.createApp({
                 this.sendCC(this.eventTarget,newCC);
             }
         },
-        /*calcOptButtonOffset(prop) {
+        calcOptButtonOffset(prop) {
             //how can i get the width of the image?
             //const dataCount = event.target.dataset.count;
-            const elm = document.getElementById(prop);
-            //alert(elm);
-            if (elm != null) {
-                alert('q');
-                const dataWidth = elm.dataset.width;
-                //the image-generating service adds 3px of padding so we need to deal with that.
-                const leftOffset = this[prop] * (dataWidth+6) * -1;
-                return {
-                    left: leftOffset + 'px'
-                }
-            } else {
-                //initial load. not sure what to do..
+            const leftOffset = this[prop] * 86 * -1;
+            return {
+                left: leftOffset + 'px'
             }
-        },*/
+        },
         calcKnobRotation(prop) {
             const rotationAngle = this[prop] * 2 - 128;
             return {

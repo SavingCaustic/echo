@@ -270,7 +270,7 @@ preData = {
     startY: 0,
     rotating: false," . crlf;
 foreach($this->defaults as $key=>$val) {
-    $this->html .= '    cc_' . $key . ':' . $val+1 . ',' . crlf;        
+    $this->html .= '    cc_' . $key . ':' . $val . ',' . crlf;        
 }
 $this->html .= '    cc_dummy_end: 0' . crlf;
 $this->html .= "};
@@ -339,7 +339,7 @@ $this->html .= "};
         $this->html .= '<div class="optbuttonCont" 
         style="position:absolute;left:' . $xy[0] - $wh[0] * 0.5 . 'px;top:' . $xy[1] - $wh[1]*0.5 . 'px;">
         <div style="position:relative;overflow:hidden;width:' . $wh[0]*1 . 'px;height:' . $wh[1] . 'px;">
-        <img class="optbutton" id="cc_' . $name . '" style="calcOptButtonOffset(\'cc_' . $name . '\')"
+        <img class="optbutton" id="cc_' . $name . '" :style="calcOptButtonOffset(\'cc_' . $name . '\')"
         data-width="' . $wh[0] . '" data-type="optbutton" data-count="' . $valCount . '" 
         src="img_' . $this->getAttr('name') . '.png">
         </div>
