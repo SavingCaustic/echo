@@ -387,8 +387,10 @@ $this->html .= "};
         //HTML - now we need xy without module offset.. and we need to re-center too..
         $xy = $this->getRelXY(60);
         $name = $this->getAttr('name');
+        //for now, I can't see in what way this would be different in BE-communication than
+        //an ordinary knob, so removing centerknob now from class and data-type
         $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
-        <img class="centerknob" id="cc_' . $name . '" data-type="centerknob"  width="80" draggable="false"
+        <img class="knob" id="cc_' . $name . '" data-type="knob"  width="80" draggable="false"
         src="' . $this->theme . '/cap.png"  :style="calcKnobRotation(\'cc_' . $name . '\')" >
         </div>' . crlf;
     }
