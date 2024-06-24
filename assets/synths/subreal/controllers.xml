@@ -50,7 +50,7 @@
   </module>
   <module name="lfo2" xy="46,23" wh="28,9" label="LFO 2">
     <knob name="lfo2_speed" xy="5,4" label="Speed" min="0" max="100" unit="%" />
-    <knob name="lfo1_depth" min="0.1" max="10" xy="13,4" label="Depth" curve="log" unit="Hz" />
+    <knob name="lfo2_depth" min="0.1" max="10" xy="13,4" label="Depth" curve="log" unit="Hz" />
     <optbutton name="lfo2_wf" xy="22,4" wh="8,3" label="Target" values="Cutoff,Sine,Tri,Square,Saw,S &amp; H" />
   </module>
   <module name="modwheel" xy="75,23" label="Mod.wheel" wh="14,9">

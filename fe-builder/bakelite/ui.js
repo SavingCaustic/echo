@@ -1,55 +1,41 @@
-//preData generated at build
+// preData generated at build
 
 const app = Vue.createApp({
     data() {
         return preData;
     },
-    computed: {
-    },
+    computed: {},
     methods: {
         clickBegin(event) {
-            //based on vue behavior, this should maybe just be called click?
+            // Handle optbutton clicks
             if (event.target.dataset.type == 'optbutton') {
-                //is a enum value being shifted. if the FE knows count, it could just spin and send
-                //value to backend. To avoid race, BE repiles and image changes.
                 event.preventDefault();
                 this.eventTarget = event.target.id;
-                // Log the data-type attribute value
-                this.orgCC = this[this.eventTarget];
                 const dataCount = event.target.dataset.count;
-                const newCC = (this.orgCC + 1) % dataCount;
-                this.sendCC(this.eventTarget,newCC);
+                const newCC = (this[this.eventTarget] + 1) % dataCount;
+                this.sendCC(this.eventTarget, newCC);
             }
         },
         calcOptButtonOffset(prop) {
-            //how can i get the width of the image?
-            //const dataCount = event.target.dataset.count;
-            const leftOffset = this[prop] * 86 * -1;
+            const leftOffset = this[prop] * (-this.imgWidths[prop] - 6);
             return {
                 left: leftOffset + 'px'
             }
         },
         calcKnobRotation(prop) {
-            const rotationAngle = this[prop] * 2 - 128;
+            const rotationAngle = (this[prop] * 2) - 128;
             return {
-                rotate: rotationAngle + 'deg'
+                transform: `rotate(${rotationAngle}deg)`
             }
         },
         swypeBegin(event) {
-            // Check if the event target is an image
             if (event.target.dataset.type === 'knob') {
                 event.preventDefault();
-                //this.startX = event.clientX || event.touches[0].clientX;
-                //this.startY = event.clientY || event.touches[0].clientY;
                 this.startX = event.touches ? event.touches[0].clientX : event.clientX;
                 this.startY = event.touches ? event.touches[0].clientY : event.clientY;
                 this.eventTarget = event.target.id;
-                this.swypeAxis = '';
                 this.orgCC = this[this.eventTarget];
                 this.rotating = true;
-
-                // Log the data-type attribute value
-                const dataType = event.target.dataset.type;
 
                 document.addEventListener('mousemove', this.swypeDo);
                 document.addEventListener('mouseup', this.swypeEnd);
@@ -57,53 +43,65 @@ const app = Vue.createApp({
                 document.addEventListener('touchend', this.swypeEnd);
             }
         },
-
         swypeDo(event) {
-            if (this.rotating) {
-                //const diffX = (event.clientX || event.touches[0].clientX) - this.startX;
-                const diffX = (event.touches ? event.touches[0].clientX : event.clientX) - this.startX;
-                //const diffY = this.startY - (event.clientY || event.touches[0].clientY);
-                const diffY = this.startY - (event.touches ? event.touches[0].clientY : event.clientY);
-                //based on current data value and offset, calc new cc-value
-                //we can't use this, provides funny results on long press: const currCC = this[this.eventTarget];
-                this.vueLog = 'Mouse diff at (' + diffX + ',' + diffY + ')';
-                let newCC = this.orgCC;
-                switch(this.swypeAxis) {
-                    case '':
-                        //find out which axis to go.
-                        if (Math.abs(diffY) > 3 && Math.abs(diffX) < 3) {
-                            this.swypeAxis = 'Y';
-                        }
-                        if (Math.abs(diffX) > 3 && Math.abs(diffY) < 3) {
-                            this.swypeAxis = 'X';
-                        }
-                        //continue
-                    case 'Y':
-                        newCC = Math.round(this.orgCC + diffY / 2);
-                        break;
-                    case 'X':
-                        newCC = Math.round(this.orgCC + diffX / 10);
-                        break;
+            if (!this.rotating) return;
+
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+            const deltaX = clientX - this.startX;
+            const deltaY = clientY - this.startY;
+
+            if (this.swypeAxis === '') {
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    this.swypeAxis = 'x';
+                } else {
+                    this.swypeAxis = 'y';
                 }
-                if (newCC < 0) newCC = 0;
-                if (newCC > 127) newCC = 127; 
-                this.sendCC(this.eventTarget,newCC);
             }
-        },
-        sendCC(ccName, ccVal) {
-            //really send this to web-socket server and let that server set the data anytime,
-            //but fake now.
-            //wsRequest('yada-yada'..)
-            //alert(ccName + ':' + ccVal);
-            this[ccName] = ccVal;
+
+            let newCC;
+            if (this.swypeAxis === 'x') {
+                newCC = Math.min(127, Math.max(0, this.orgCC + deltaX));
+            } else {
+                newCC = Math.min(127, Math.max(0, this.orgCC - deltaY));
+            }
+
+            this.sendCC(this.eventTarget, newCC);
         },
         swypeEnd(event) {
-            this.rotating = false;
+            if (!this.rotating) return;
+
             document.removeEventListener('mousemove', this.swypeDo);
             document.removeEventListener('mouseup', this.swypeEnd);
             document.removeEventListener('touchmove', this.swypeDo);
             document.removeEventListener('touchend', this.swypeEnd);
+
+            this.rotating = false;
         },
+        sendCC(target, value) {
+            this[target] = value;
+            // Update the knob rotation immediately
+            this.$nextTick(() => {
+                const knob = document.getElementById(target);
+                if (knob && knob.dataset.type === 'knob') {
+                    knob.style.transform = `rotate(${(value * 2) - 128}deg)`;
+                }
+            });
+            // Simulate sending CC message to backend (replace with actual backend call)
+            console.log(`Sending CC message: ${target} = ${value}`);
+        }
+    },
+    mounted() {
+        // Update initial knob positions
+        this.$nextTick(() => {
+            for (const prop in this.imgWidths) {
+                const element = document.getElementById(prop);
+                if (element && element.dataset.type === 'knob') {
+                    element.style.transform = `rotate(${(this[prop] * 2) - 128}deg)`;
+                }
+            }
+        });
     }
 });
-const mountedApp = app.mount('#app');
+
+app.mount('#app');
