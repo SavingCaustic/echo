@@ -33,6 +33,7 @@ class CtrlCreator {
     var $bgImg;
     var $html;
     var $imgWidths = array();
+    var $rotarySteps = array();
 
     function __construct() {
         $this->debug = false;
@@ -269,12 +270,14 @@ preData = {
     vueLog: 'testing',
     startX: 0,
     startY: 0,
+    swypeAxis: '',
     rotating: false," . crlf;
 foreach($this->defaults as $key=>$val) {
     $this->html .= '    cc_' . $key . ':' . $val . ',' . crlf;        
 }
 //add imgWidth here?
-$this->html .= '    imgWidths: ' . json_encode($this->imgWidths);
+$this->html .= '    imgWidths: ' . json_encode($this->imgWidths) . ',' . crlf;
+$this->html .= '    rotarySteps: ' . json_encode($this->rotarySteps);
 $this->html .= "};
 </script>
 <script src=\"" . $this->theme . "/ui.js?ts=" . time() . "\"></script>
@@ -449,9 +452,11 @@ $this->html .= "};
         $xy = $this->getRelXY(60);
         $name = $this->getAttr('name');
         $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
-        <img class="rotaryswitch" src="' . $this->theme . '/cap.png" id="cc_' . $name . '" width="80" draggable="false">
+        <img class="rotaryswitch" id="cc_' . $name . '" data-type="rotaryswitch" width="80" draggable="false"
+        src="' . $this->theme . '/cap.png" :style="calcRotarySwitchRotation(\'cc_' . $name . '\')">
         </div>' . crlf;
-        
+        $this->rotarySteps['cc_' . $name] = sizeof($valArr);
+        //$this->html .= '<input class="big" style="width:40px;" v-model="cc_' . $name . '" />' . crlf;
     }
 
     function tag_keyboard($attr,$type) {
