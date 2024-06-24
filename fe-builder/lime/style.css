@@ -1,0 +1,54 @@
+body {
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    /*transform: scale(0.6);*/
+}
+
+.module {
+/*    background-color:#0f0;*/
+    opacity:1;
+}
+
+.dial {
+    padding:3px;
+    position: absolute;
+    display: flex;
+    align-items:center;
+    background-size:cover;
+    background-image: url('cap_bg.png');
+}
+
+.optbuttonCont {
+    padding:0px;
+    position: absolute;
+    display: flex;
+    align-items:center;
+}
+
+.optbutton {
+    /*the clickable image */
+    position:absolute;
+    top:0px;
+    left:0px;
+}
+
+.knob {
+    /*background-color:#00f;*/
+}
+
+.centerknob {
+}
+
+.rotaryswitch {
+    padding:0px;
+}
+
+.whiteKey {
+    height:5rem;
+    width:100%;
+    background-color:#FFE;
+}

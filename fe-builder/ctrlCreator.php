@@ -230,8 +230,8 @@ class CtrlCreator {
             $this->col2 = imagecolorallocate($this->bgImg,$rgb[0],$rgb[1],$rgb[2]);
             $rgb = $this->hex2rgb($this->defs['col3']);
             $this->col3 = imagecolorallocate($this->bgImg,$rgb[0],$rgb[1],$rgb[2]);
-            $this->font1 = './bakelite/' . $this->defs['font1'];
-            $this->font2 = './bakelite/' . $this->defs['font2'];
+            $this->font1 = $this->theme . '/' . $this->defs['font1'];
+            $this->font2 = $this->theme . '/' . $this->defs['font2'];
             //putting this here disallows multiple panels. Not sure..
             $this->html = '<!DOCTYPE html>
 <html lang="en">
@@ -242,7 +242,7 @@ class CtrlCreator {
     <title>iframed really</title>
     <link rel="stylesheet" href="' . $this->theme . '/style.css">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <script src="bakelite/vue.js"></script>
+    <script src="' . $this->theme . '/vue.js"></script>
   </head>
   <body bgcolor="#221811" style="margin:20px 0px;"><div id="app" style="display:flex;align-items:center;justify-content:center;height:95vh;">
   <div id="panel" @mousedown="swypeBegin($event)" @touchstart.prevent="swypeBegin($event)" @click="clickBegin($event)"
@@ -277,7 +277,7 @@ foreach($this->defaults as $key=>$val) {
 $this->html .= '    imgWidths: ' . json_encode($this->imgWidths);
 $this->html .= "};
 </script>
-<script src=\"bakelite/ui.js?ts=asdfasdfasdf\"></script>
+<script src=\"" . $this->theme . "/ui.js?ts=" . time() . "\"></script>
 </body>
 </html>
 ";
@@ -364,7 +364,7 @@ $this->html .= "};
         $name = $this->getAttr('name');
         $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
         <img class="knob" id="cc_' . $name . '" data-type="knob" width="80" draggable="false" 
-        src="bakelite/cap.png" :style="calcKnobRotation(\'cc_' . $name . '\')"/>
+        src="' . $this->theme . '/cap.png" :style="calcKnobRotation(\'cc_' . $name . '\')"/>
         </div>' . crlf;
         //$this->html .= '<input class="big" style="width:40px;" v-model="cc_' . $name . '" />' . crlf;
     }
@@ -386,7 +386,7 @@ $this->html .= "};
         $name = $this->getAttr('name');
         $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
         <img class="centerknob" id="cc_' . $name . '" data-type="centerknob"  width="80" draggable="false"
-        src="bakelite/cap.png"  :style="calcKnobRotation(\'cc_' . $name . '\')" >
+        src="' . $this->theme . '/cap.png"  :style="calcKnobRotation(\'cc_' . $name . '\')" >
         </div>' . crlf;
     }
 
@@ -449,7 +449,7 @@ $this->html .= "};
         $xy = $this->getRelXY(60);
         $name = $this->getAttr('name');
         $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
-        <img class="rotaryswitch" src="bakelite/cap.png" id="cc_' . $name . '" width="80" draggable="false">
+        <img class="rotaryswitch" src="' . $this->theme . '/cap.png" id="cc_' . $name . '" width="80" draggable="false">
         </div>' . crlf;
         
     }
