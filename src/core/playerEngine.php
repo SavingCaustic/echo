@@ -59,8 +59,9 @@ class PlayerEngine {
       $this->timeSignDenom = $timeSignDenom;
       $this->tickToClockRatio = 4;
       $this->ticksInBar = $this->tickToClockRatio * 96 * $this->timeSignNom / $this->timeSignDenom;
-      $this->ticksInBeat = $this->ticksInBar / $this->timeSignNom;
-      $this->ticksPerSec = $tempo / 60 * $this->ticksInBeat;
+      //always quarter, even 6/8 etc.
+      $ticksInQuarter = $this->ticksInBar / $this->timeSignNom * $this->timeSignDenom / 4;
+      $this->ticksPerSec = $tempo / 60 * $ticksInQuarter;
       $this->samplesPerTick = (int) round(1/$this->ticksPerSec * 44100 / SR_IF);
       echo 'samples per tick: ' . $this->samplesPerTick . "\n";
       $this->clockDivisor = 0;

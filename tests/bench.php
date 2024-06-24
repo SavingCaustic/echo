@@ -10,7 +10,7 @@ $myRack = $PE->getRackRef(1);
 $mySub = $myRack->getSynthRef();
 
 //$myDelay = $myRack->loadEffect('delay');
-require('../utils/wavWriter.php');
+require('wavWriter.php');
 $ww = new WavWriter('bench.wav',5000,44100 / SR_IF);
 $timer = microtime(true);
 

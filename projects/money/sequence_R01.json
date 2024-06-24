@@ -1,0 +1,7 @@
+{
+    "blocks": [
+        [0,28,2],
+        [28,28,1]
+    ],
+    "hint":"the above elements are start-beat, beat-length, pattern. 28 is 7*4 so 4 bars in 7/4 measures"
+}

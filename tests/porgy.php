@@ -8,7 +8,7 @@ $myRack = $PE->getRackRef(1);
 $mySub = $myRack->getSynthRef();
 
 //$myDelay = $myRack->loadEffect('delay');
-require('../utils/wavWriter.php');
+require('wavWriter.php');
 $ww = new WavWriter('porgy.wav',20000);
 $timer = microtime(true);
 

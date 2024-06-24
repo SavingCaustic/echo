@@ -1,67 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel theme="bakelite" size="125x62.5" bgcolor="#403020">
+<panel theme="bakelite" size="117x60" bgcolor="#403020">
 #(comments can't currently be above root element panel) size, xy, wh are in em measures (16px)
-#maybe use rem as unit, so all / 16.
-  <module name="osc1mix" label="OSC 1 &amp; Mix" xy="21,1" wh="34,9">
-    <optbutton name="osc1_wf" label="Shape" default="false" xy="5,4" values="off,sin,tri,sqr,saw,noi,cw1,cw2"/>
-    <knob name="osc1_modlevel" default="0" label="Mod*" xy="13,4" values="0,1" />
-    <knob name="osc_mix" xy="21,4" label="Mix"/>
-    <knob name="osc1_text" default="0" label="Mod*" xy="29,4" values="0,1" />
+#maybe use rem as unit, so all / 16. Not inside modules yet..
+  <module name="osc1mix" label="OSC 1 &amp; Mix" xy="20,1" wh="34,9">
+    <optbutton name="osc1_wf" label="Shape" default="sine" xy="5,4" wh="5,3" values="off,sin,tri,sqr,saw,noi,us1,us2"/>
+    <knob name="osc1_modlevel" default="0.5" label="Mod*" xy="13,4" values="0,1" />
+    <knob name="osc1_mix" xy="21,4" default="0.5" label="Mix"/> 
+#    <knob name="osc1_text" default="0" label="Mod*" xy="29,4" values="0,1" />
   </module>
-  <module name="osc2" label="OSC 2" xy="21,12" wh="34,9">
-    <optbutton name="osc2_wf" label="Shape" default="false" xy="5,4" values="off,sin,tri,sqr,saw,noi,cw1,cw2"/>
+  <module name="osc2" label="OSC 2" xy="20,12" wh="34,9">
+    <optbutton name="osc2_wf" label="Shape" default="sine" xy="5,4" wh="5,3" values="saw,off,sin,tri,sqr,saw,noi,us1,us2"/>
     <rotaryswitch name="osc2_oct" default="0" xy="13,4" label="Octave" values="-3,-2,-1,0,1,2,3" />
-    <rotaryswitch name="osc2_semis" default="0" xy="21,4" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
+    <rotaryswitch name="osc2_semitones" default="0" xy="21,4" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
     <centerknob name="osc2_detune" xy="29,4" values="0,0.5,1" label="Detune*"/>
   </module>
-  <module name="filter" xy="57,1" wh="10,20" label="Filter">
-    <knob name="vcf_cutoff" label="Cutoff" xy="5,5"/>
-    <knob name="vcf_responance" label="Resonance" xy="5,15"/>
-#    <knobswitch name="filter_type" default="Low-pass" label="Type" values="Low-pass,Band-pass,High-pass" />
-#    <switch name="filter_db" default="12" label="db/oct" values="12,24" />
-#    <dualknob name="vca_attack" name2="vca_attack_velsens" label="Attack\n(velocity)" />
+  <module name="filter" xy="55,1" wh="10,20" label="Filter">
+    <knob name="vcf_cutoff" label="Cutoff" default="4000" min="100" max="10000" curve="log" xy="5,4"/>
+    <optbutton name="vcf_type" label="Type" default="false" xy="5,9.5" wh="6,3" values="LPF,Off,LPF,HPF,BPF"/>
+    <knob name="vcf_responance" label="Resonance" default="0" xy="5,15"/>
   </module>
-  <module name="vca" xy="69,1" wh="50,9" label="VCA">
-    <knob name="vca_attack" label="Attack" xy="5,4"/>
-    <knob name="vca_decay" label="Decay" xy="13,4"/>
-    <knob name="vca_sustain" label="Sustain" xy="21,4" />
-    <knob name="vca_hold" label="Hold" xy="29,4"/>
-    <knob name="vca_release" label="Release" xy="37,4"/>
-    <knob name="trkmod_pan" label="Trck-pan" xy="45,4"/>
+  <module name="vca" xy="66,1" wh="50,9" label="VCA">
+    <knob name="vca_attack" default="10" min="1" max="1000" label="Attack" xy="5,4"/>
+    <knob name="vca_decay" default="50" label="Decay" min="1" max="1000" xy="13,4"/>
+    <knob name="vca_sustain" default="0.8" min="0" max="1" label="Sustain" xy="21,4" />
+    <knob name="vca_hold" default="3000" min="1000" max="10000" label="Hold" xy="29,4"/>
+    <knob name="vca_release" label="Release" min="10" max="1000" xy="37,4"/>
+    <knob name="trkmod_pan" label="Trck-pan" min="0" max="1" default="0" xy="45,4"/>
   </module>
-  <module name="vcf" xy="69,12" wh="50,9" label="VCF">
-    <knob name="vcf_attack" label="Attack" xy="5,4"/>
-    <knob name="vcf_decay" label="Decay" xy="13,4"/>
-    <knob name="vcf_sustain" label="Sustain" xy="21,4" />
-    <knob name="vcf_hold" label="Hold" xy="29,4"/>
-    <knob name="vcf_release" label="Release" xy="37,4"/>
-    <centerknob name="vcf_tracking" label="Tracking" xy="45,4"/>
+  <module name="vcf" xy="66,12" wh="50,9" label="VCF" default="30" min="10" max="1000">
+    <knob name="vcf_attack" label="Attack" xy="5,4" default="100" />
+    <knob name="vcf_decay" label="Decay" xy="13,4" min="100" max="1000"/>
+    <knob name="vcf_sustain" label="Sustain" xy="21,4" min="0" max="1" default="0.7"/>
+    <knob name="vcf_hold" label="Hold" xy="29,4" min="1000" max="10000" default="2000"/>
+    <knob name="vcf_release" label="Release" xy="37,4" min="100" max="10000" default="100"/>
+    <centerknob name="vcf_tracking" label="Tracking" xy="45,4" min="-1" max="1" default="0"/>
   </module>
   <module name="peg" xy="1,1" wh="18,20" label="PEG">
     <knob name="peg_attack" label="Attack" xy="5,5" min="1" max="1000" curve="log"/>
     <knob name="peg_release" label="Release" xy="13,5" min="1" max="1000" curve="log"/>
     <centerknob name="peg_amp" label="Depth" xy="5,15" min="-12" max="12"/>
-    <optbutton name="peg_target" label="Target" default="false" xy="13,15" values="None,Osc1,Osc2,Osc1+2"/>
+    <optbutton name="peg_target" label="Target" default="false" xy="13,15" wh="5,3" values="Osc2,None,Osc1,Osc2,O1+2"/>
   </module>
-  <module name="lfo1" xy="1,23" wh="45,9" label="LFO1">
-    <optbutton name="lfo1_wf" xy="5,4" label="Shape" values="Sine,Tri,Square,Saw,S &amp; H" />
+  <module name="lfo1" xy="1,23" wh="44,9" label="LFO1">
+    <optbutton name="lfo1_wf" xy="5,4" wh="5,3" label="Shape" values="Sine,Tri,Square,Saw,S &amp; H" />
     <knob name="lfo1_ramp" min="0.1" max="10" xy="13,4" label="Ramp" curve="log" unit="mS" />
     <knob name="lfo1_speed" min="0.1" max="10" xy="21,4" label="Speed" curve="log" unit="Hz" />
     <knob name="lfo1_depth" min="0.1" max="10" xy="29,4" label="Depth" curve="log" unit="Hz" />
-    <optbutton name="osc1_wf" label="Routing" default="false" xy="39,4" wh="8,4"/>
+    <optbutton name="lfo1_target" label="Target" default="false" xy="38,4" wh="8,3" values="Osc 1+2,Osc1,Osc2"/>
   </module>
-  <module name="lfo2" xy="48,23" wh="27,9" label="LFO 2">
+  <module name="lfo2" xy="46,23" wh="28,9" label="LFO 2">
     <knob name="lfo2_speed" xy="5,4" label="Speed" min="0" max="100" unit="%" />
     <knob name="lfo1_depth" min="0.1" max="10" xy="13,4" label="Depth" curve="log" unit="Hz" />
-    <optbutton name="lfo1_wf" xy="22,4" wh="8,4" label="Routing" values="Sine,Tri,Square,Saw,S &amp; H" />
+    <optbutton name="lfo2_wf" xy="22,4" wh="8,3" label="Target" values="Cutoff,Sine,Tri,Square,Saw,S &amp; H" />
   </module>
-  <module name="modwheel" xy="77,23" label="Mod.wheel" wh="14,9">
-    <optbutton name="lfo1_wf" xy="7,4" wh="148,64" label="Routing" values="Sine,Tri,Square,Saw,S &amp; H" />
+  <module name="modwheel" xy="75,23" label="Mod.wheel" wh="14,9">
+    <optbutton name="mw_target" xy="7,4" wh="10,3" label="Target" values="LFO DPH,Tri,Square,Saw,S &amp; H" />
   </module>
-  <module name="velmod" xy="93,23" wh="26,9" label="Velocity modulation">
+  <module name="velmod" xy="90,23" wh="26,9" label="Velocity modulation">
     <knob name="velmod_vca_attack" xy="5,4" label="Attack"/>
     <knob name="velmod_vcf_cutoff" xy="13,4" label="Cutoff"/>
     <knob name="velmod_lfo1_depth" xy="21,4" label="LFO1 dph"/>
   </module>
-  # now comments are ok like this.
 </panel>

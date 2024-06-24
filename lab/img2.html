@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Offset with Vue.js</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+}
+
+.image-viewport {
+    width: 166px; /* width of one value */
+    height: 54px; /* adjust to the height of the image */
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #000;
+}
+
+.image-viewport img {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+.controls button {
+    margin-right: 10px;
+    padding: 5px 10px;
+}
+</style>
+</head>
+<body>
+    <div id="app">
+        <div class="image-viewport">
+            <img :src="imageSrc" :style="imageStyle" alt="Values Image">
+        </div>
+        <div class="controls">
+            <button v-for="(value, index) in values" :key="index" @click="setActiveValue(index)">
+                {{ value }}
+            </button>
+        </div>
+    </div>
+
+    <script src="vue.js"></script>
+    <script>
+const { createApp } = Vue;
+
+createApp({
+    data() {
+        return {
+            imageSrc: 'img_LFO1_WF.png', // path to your image
+            activeValueIndex: 0,
+            valueWidth: 166, // width of each value in pixels
+            values: ['Value 1', 'Value 2', 'Value 3', 'Value 4', 'Value 5'] // your values
+        };
+    },
+    computed: {
+        imageStyle() {
+            const offset = -this.activeValueIndex * this.valueWidth;
+            return {
+                left: `${offset}px`
+            };
+        }
+    },
+    methods: {
+        setActiveValue(index) {
+            this.activeValueIndex = index;
+        }
+    }
+}).mount('#app');
+    </script>
+</body>
+</html>

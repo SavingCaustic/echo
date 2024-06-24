@@ -13,7 +13,7 @@ $myEV1 = $myRack->loadEventor('octaver',1);
 $myEV2 = $myRack->loadEventor('retrigger',2);
 
 //$myDelay = $myRack->loadEffect('delay');
-require('../utils/wavWriter.php');
+require('wavWriter.php');
 $ww = new WavWriter('eventor.wav',5000,44100 / SR_IF);
 $timer = microtime(true);
 

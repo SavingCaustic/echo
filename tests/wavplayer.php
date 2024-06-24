@@ -11,7 +11,7 @@ $myRack = $PE->getRackRef(1);
 $myDelay = $myRack->loadEffect('delay');
 
 //$myDelay = $myRack->loadEffect('delay');
-require('../utils/wavWriter.php');
+require('wavWriter.php');
 $ww = new WavWriter('wavplayer.wav',15000,44100 / SR_IF);
 $timer = microtime(true);
 

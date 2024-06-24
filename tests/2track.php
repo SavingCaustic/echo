@@ -27,7 +27,7 @@ $myDelay = $mySecondRack->loadEffect('delay');
 $myDelay->setParam('TIME',80/120/4);
 $myEV1 = $mySecondRack->loadEventor('octaver',1);
 
-require('../utils/wavWriter.php');
+require('wavWriter.php');
 $ww = new WavWriter('2track.wav',5000);
 $timer = microtime(true);
 

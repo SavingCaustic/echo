@@ -9,7 +9,7 @@ $myRack = $PE->getRackRef(1);
 $mySub = $myRack->getSynthRef();
 //$myEV1 = $myRack->loadEventor('octaver',1);
 
-require('../utils/wavWriter.php');
+require('wavWriter.php');
 $ww = new WavWriter('subreal2.wav',5000);
 
 $mySub->setParam('VCA_ATTACK', 20);

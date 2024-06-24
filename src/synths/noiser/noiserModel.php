@@ -53,7 +53,7 @@ class NoiserModel implements SynthInterface {
       //}
       $this->buffer = $this->noiseOscRef->getSamples($bufferSize);
       //die(serialize($this->buffer));
-      $this->buffer = $this->filterRef->applyFilter($this->buffer,0.95);
+      $this->buffer = $this->filterRef->applyFilter($this->buffer,1);
       if ($this->filterDir == 'up') {
         $this->filterFreq *= 1.0002;
       } else {

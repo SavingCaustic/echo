@@ -48,4 +48,8 @@ To run project, have a PHP-cli installation, > PHP8.
 ## Remember
 * Currently, everything is subject to change.
  
-![image info](./overview.svg)
+![image info](doc/overview_1.svg)
+
+![image info](doc/overview_2.svg)
+
+![image info](doc/overview_3.svg)
