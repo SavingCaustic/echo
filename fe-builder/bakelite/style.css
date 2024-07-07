@@ -47,6 +47,19 @@ body {
     padding:0px;
 }
 
+.slider {
+    padding:3px;
+    position: absolute;
+    display: flex;
+    align-items:start;
+    background-size:cover;
+}
+
+.vslider {
+    position: relative;
+}
+
+
 .whiteKey {
     height:5rem;
     width:100%;

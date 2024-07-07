@@ -120,7 +120,7 @@ class SubrealVoice {
                 $sample = $this->filter->applyFilter($sample) * $ampMod;
                 //
                 //$sample *= $ampMod; //introduces noise * (0.5 + sqrt(abs($pitchMod*0.1)));
-                $this->synthModel->buffer[$i+$j] += $sample;
+                $this->synthModel->buffer[$i+$j] += $sample * 0.5; //0.5 = really 1/voicecount..
             }
         }
     }

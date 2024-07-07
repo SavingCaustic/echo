@@ -34,6 +34,7 @@ class CtrlCreator {
     var $html;
     var $imgWidths = array();
     var $rotarySteps = array();
+    var $sliderLengths = array();
 
     function __construct() {
         $this->debug = false;
@@ -209,16 +210,71 @@ class CtrlCreator {
         //
     }
 
+    function octag_view($attr, $type) {
+        if ($type == 'open') {
+            $this->setAttr($attr);
+            $this->theme = $this->getAttr('theme','bakelite');
+            $this->defs = json_decode(file_get_contents('./' . $this->theme . '/defs.json'),true);
+            $this->html = '<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>iframed really</title>
+        <link rel="stylesheet" href="' . $this->theme . '/style.css">
+        <link rel="icon" href="./favicon.ico" type="image/x-icon">
+        <script src="' . $this->theme . '/vue.js"></script>
+    </head>
+    <body>
+        <div class="appContainer">
+            <div class="uiContainer" id="app">' . crlf;
+        } else {
+            $this->html .= '
+            </div>
+            <div class="part2">B asfd asdf asdf</div>
+            <div class="part3">C</div>
+            </div>
+            </div>
+    <script>
+function updateScale() {
+    const container = document.querySelector(\'.appContainer\');
+    const currentWidth = window.innerWidth;
+    const currentHeight = window.innerHeight;
+    //the app has proportions of 2:1, right?
+    let scaleFactor = currentWidth / 1920;
+    if ((currentWidth / currentHeight) > 2) {
+        scaleFactor = currentHeight / 960;
+    }
+    //scaleFactor = 0.2;
+    container.style.transform = `scale(${scaleFactor})`;
+}
+
+// Initial scale update
+updateScale();
+
+// Update scale on window resize
+window.addEventListener(\'resize\', updateScale);
+    </script>
+    </body>
+</html>
+';
+        echo $this->html;
+        }
+    }
+
+    function octag_ipanel($attr, $type) {
+        //this is really stupid, for now outputs nothing.
+    }
+
     function octag_panel($attr, $type) {
         //create size of dest image
         if ($type == 'open') {
             //setup bg-image and get theme
             $this->setAttr($attr);
-            $this->theme = $this->getAttr('theme','bakelite');
-            $this->defs = json_decode(file_get_contents('./' . $this->theme . '/defs.json'),true);
             $size = $this->getAttr('size','80x40');
             $a = explode('x',$size);
-            $this->bgImg = imagecreatetruecolor($a[0]*16,$a[1]*16);
+            $this->bgImg = imagecreatetruecolor(round($a[0]*16),round($a[1]*16));
             $bgcolor = $this->defs['col0'];
             if ($bgcolor != '') {
                 $rgb = $this->hex2rgb($bgcolor);
@@ -234,20 +290,8 @@ class CtrlCreator {
             $this->font1 = $this->theme . '/' . $this->defs['font1'];
             $this->font2 = $this->theme . '/' . $this->defs['font2'];
             //putting this here disallows multiple panels. Not sure..
-            $this->html = '<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>iframed really</title>
-    <link rel="stylesheet" href="' . $this->theme . '/style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <script src="' . $this->theme . '/vue.js"></script>
-  </head>
-  <body bgcolor="#221811" style="margin:20px 0px;"><div id="app" style="display:flex;align-items:center;justify-content:center;height:95vh;">
-  <div id="panel" @mousedown="swypeBegin($event)" @touchstart.prevent="swypeBegin($event)" @click="clickBegin($event)"
-    style="position:relative;width:117rem;height:60rem;background-image:url(\'tmp_bg.png\');background-size:cover;">
+            $this->html .= '<div class="part1" id="panel" @mousedown="swypeBegin($event)" @touchstart.prevent="swypeBegin($event)" _click="clickBegin($event)"
+    style="position:relative;width:' . $a[0] . 'rem;height:' . $a[1] . 'rem;background-image:url(\'tmp_bg.png\');background-size:cover;">
   ';
         } else {
             $this->saveDefaults();
@@ -261,9 +305,8 @@ class CtrlCreator {
             }*/
             //the value of setting the params to their defaults is LOW.
             //values should be coming from model, *through controller*
-            $this->html .= "<textarea cols=\"160\" rows=\"4\" style=\"position:relative;top:800px;background-color:#ccc\"> {{ vueLog }} </textarea>
-            </div>
-</div>
+            //$this->html .= "<textarea cols=\"160\" rows=\"4\" style=\"position:relative;top:800px;background-color:#ccc\"> {{ vueLog }} </textarea>';
+            $this->html .= "</div>
 <script>
 preData = {  
     eventTarget: '',
@@ -277,14 +320,12 @@ foreach($this->defaults as $key=>$val) {
 }
 //add imgWidth here?
 $this->html .= '    imgWidths: ' . json_encode($this->imgWidths) . ',' . crlf;
-$this->html .= '    rotarySteps: ' . json_encode($this->rotarySteps);
+$this->html .= '    rotarySteps: ' . json_encode($this->rotarySteps) . ',' . crlf;
+$this->html .= '    sliderLengths: ' . json_encode($this->sliderLengths);
 $this->html .= "};
 </script>
 <script src=\"" . $this->theme . "/ui.js?ts=" . time() . "\"></script>
-</body>
-</html>
 ";
-            echo $this->html;
         }
     }
 
@@ -357,16 +398,31 @@ $this->html .= "};
         $this->addDefault($this->getAttr('name'));
         //xy relative to module.
         $xy = $this->getXY();
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 86, 86, 0-128-90,128-90,$this->col2,0);
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-92,128-88,$this->col0,0);
+        $size = strtolower($this->getAttr('size','m'));
+        switch($size) {
+            case 's':
+                $scale = 0.8;
+                $dialOffset = 25;
+                break;
+            case 'l':
+                $scale = 1.25;
+                $dialOffset = 6;
+                break;
+            default:
+                $scale = 1;
+                $dialOffset = 17;
+                break;
+        }
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], round(86 * $scale), round(86 * $scale), 0-128-90,128-90,$this->col3,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], round(78 * $scale), round(78 * $scale), 0-128-92,128-88,$this->col0,0);
         //
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 42, 42, $this->col1);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 10, 10, $this->col1);
         $this->addLabel($xy);
         //HTML - now we need xy without module offset.. and we need to re-center too..
         $xy = $this->getRelXY(60);
         $name = $this->getAttr('name');
-        $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
-        <img class="knob" id="cc_' . $name . '" data-type="knob" width="80" draggable="false" 
+        $this->html .= '<div class="dial" style="left:' . $xy[0]+$dialOffset . 'px;top:' . $xy[1]+$dialOffset . 'px;">
+        <img class="knob" id="cc_' . $name . '" data-type="knob" width="' . round(80 * $scale) . '" draggable="false" 
         src="' . $this->theme . '/cap.png" :style="calcKnobRotation(\'cc_' . $name . '\')"/>
         </div>' . crlf;
         //$this->html .= '<input class="big" style="width:40px;" v-model="cc_' . $name . '" />' . crlf;
@@ -377,20 +433,35 @@ $this->html .= "};
         $this->addDefault($this->getAttr('name'));
         //xy relative to module.
         $xy = $this->getXY();
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 86, 86, 0-128-90,128-90,$this->col2,0);
-        imagefilledarc($this->bgImg, $xy[0], $xy[1], 78, 78, 0-128-92,128-88,$this->col0,0);
-        imagefilledrectangle($this->bgImg, $xy[0]-9, $xy[1] - 42, $xy[0]+9,$xy[1]-25,$this->col0);
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1] - 41, 8, 8, $this->col2);
+        $size = strtolower($this->getAttr('size','m'));
+        switch($size) {
+            case 's':
+                $scale = 0.8;
+                $dialOffset = 25;
+                break;
+            case 'l':
+                $scale = 1.25;
+                $dialOffset = 6;
+                break;
+            default:
+                $scale = 1;
+                $dialOffset = 17;
+                break;
+        }
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], round(86 * $scale), round(86 * $scale), 0-128-90,128-90,$this->col3,0);
+        imagefilledarc($this->bgImg, $xy[0], $xy[1], round(78 * $scale), round(78 * $scale), 0-128-92,128-88,$this->col0,0);
+        imagefilledrectangle($this->bgImg, $xy[0]-round(9 * $scale), $xy[1] - round(42 * $scale), $xy[0]+round(9 * $scale),$xy[1]-round(25 * $scale),$this->col0);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1] - round(41 * $scale), round(8 * $scale), round(8 * $scale), $this->col3);
         //
-        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 42, 42, $this->col1);
+        imagefilledellipse($this->bgImg, $xy[0], $xy[1], 10, 10, $this->col1);
         $this->addLabel($xy);
         //HTML - now we need xy without module offset.. and we need to re-center too..
         $xy = $this->getRelXY(60);
         $name = $this->getAttr('name');
         //for now, I can't see in what way this would be different in BE-communication than
         //an ordinary knob, so removing centerknob now from class and data-type
-        $this->html .= '<div class="dial" style="left:' . $xy[0]+17 . 'px;top:' . $xy[1]+17 . 'px;">
-        <img class="knob" id="cc_' . $name . '" data-type="knob"  width="80" draggable="false"
+        $this->html .= '<div class="dial" style="left:' . $xy[0]+$dialOffset . 'px;top:' . $xy[1]+$dialOffset . 'px;">
+        <img class="knob" id="cc_' . $name . '" data-type="knob"  width="' . round(80 * $scale) . '" draggable="false"
         src="' . $this->theme . '/cap.png"  :style="calcKnobRotation(\'cc_' . $name . '\')" >
         </div>' . crlf;
     }
@@ -406,13 +477,24 @@ $this->html .= "};
         $this->addDefault($this->getAttr('name'));
         //xy relative to module.
         $xy = $this->getXY();
-        $wh = $this->getWH();
-        $width = $wh[0] / 10;
+        $size = $this->getAttr('size','m');
+        $wh = array(3*16,12*16); //h is stroke. Line needs to be a bit longer.
+        $width = $wh[0] / 20;
         imagefilledrectangle($this->bgImg, 
-        $xy[0]-$width,$xy[1]-$wh[1]/2,
-        $xy[0]+$width,$xy[1]+$wh[1]/2,$this->col1);
-        //
-        $this->addLabel($xy, $wh[1]/2+52);
+        round($xy[0]-$width),round($xy[1]-$wh[1]/1.8),
+        round($xy[0]+$width),round($xy[1]+$wh[1]/1.8),$this->col1);
+        //hardcoded again, improve..
+        $this->addLabel($xy, $wh[1]/2+66);
+        //html
+        $name = $this->getAttr('name');
+        //height of image has to be calculated for the height of the containing div
+        //background-color:rgba(200,50,50,0.6);
+        $cHeight = $wh[1] + 80 - 30; //this calculation needs to take into account that slider is drawn from center
+        $this->html .= '<div class="slider" style="left:' . 13 . 'px;top:' . '20' . 'px;height:' . $cHeight . 'px;">
+        <img class="vslider" id="cc_' . $name . '" data-type="vslider" data-length="' . $wh[1] . '" width="80" draggable="false"
+        src="' . $this->theme . '/vslider.png" :style="calcVsliderPosition(\'cc_' . $name . '\')" >
+        </div>' . crlf;
+        $this->sliderLengths['cc_' . $name] = $wh[1];
     }
 
     function tag_hslider() {}
@@ -430,7 +512,7 @@ $this->html .= "};
         $this->addDefault($this->getAttr('name'));
         //xy relative to module.
         $xy = $this->getXY();
-        $potSize = 42;
+        $potSize = 10;
         imagefilledellipse($this->bgImg, $xy[0], $xy[1], $potSize, $potSize, $this->col1);
         //add some dots based on count of values..
         $values = $this->getAttr('values','1,2,3');
@@ -446,7 +528,7 @@ $this->html .= "};
             $dotCos = round(sin($radAngle) * $dotPotSize);
             //if ($i==1) die('angle: ' . $radAngle / pi() * 180 . ', dotSin: ' . $dotSin . ' , dotCos:' . $dotCos);
             //die($values);
-            imagefilledellipse($this->bgImg, $xy[0] + $dotCos, $xy[1] + $dotSin, 6, 6, $this->col2);
+            imagefilledellipse($this->bgImg, $xy[0] + $dotCos, $xy[1] + $dotSin, 6, 6, $this->col3);
         }
         $this->enums[$this->getAttr('name')] = $enums;
         $this->addLabel($xy);

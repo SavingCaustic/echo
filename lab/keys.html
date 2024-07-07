@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+.keys {
+    display:flex;
+}
+
+.octave {
+    width:25rem;
+    position: relative;
+}
+
+.whites {
+    display:flex;
+}
+
+.whites div {
+    width:14.3%;
+    border:1px solid #000;
+    border-radius:0px 0px 3px 3px;
+    height:10rem;
+}
+
+.whites span {
+    position:absolute;
+    padding:3px;
+    font-size:0.8rem;
+    color:#666;
+    bottom:0px;
+}
+
+.blacks {
+    position:absolute;
+    /*f-key left:-43%; */
+    top:0px;
+    width:100%;
+}
+
+.blacks div {
+    position:absolute;
+    width:8%;
+    border:1px solid #000;
+    border-radius:0px 0px 4px 4px;
+    background-color:#000;
+    height:6rem;
+}
+
+.blacks div:nth-child(1) {left:8.75%;}
+.blacks div:nth-child(2) {left:25.25%;}
+.blacks div:nth-child(3) {left:51%;}
+.blacks div:nth-child(4) {left:67%;}
+.blacks div:nth-child(5) {left:83%;}
+
+    </style>
+</head>
+<body>
+<div class="keys">
+    <div class="octave">
+        <div class="whites">
+            <div><span>C3</span></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="blacks">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div class="octave">
+        <div class="whites">
+            <div><span>C4</span></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="blacks">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div class="octave">
+        <div class="whites">
+            <div><span>C5</span></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <div class="blacks">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>    
+</body>
+</html>

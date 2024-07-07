@@ -3,14 +3,13 @@ define('SR_IF',1);                  //sample-rate inverse factor. 2 for 22050Hz,
                                     //app and playerEngine really two different things. What to setup first?
 require('../src/core/playerEngine.php');
 $PE = new PlayerEngine();           //it doesn't have to autostart really..
-$PE->rackSetup(1,'beatnik');        //dunno really why the test-scripts would need the app? skip that.
+$PE->rackSetup(1,'beatnik');        
 $myRack = $PE->getRackRef(1);
 $myBeat = $myRack->getSynthRef();
 
-$PE->rackSetup(2,'subreal');        //dunno really why the test-scripts would need the app? skip that.
+$PE->rackSetup(2,'subreal');        
 $mySecondRack = $PE->getRackRef(2);
 $mySub = $mySecondRack->getSynthRef();
-
 
 //test 1 - re-trigger same note.
 $mySub->setParam('VCA_SUSTAIN', 0.4);
@@ -21,7 +20,7 @@ $mySub->setParam('OSC2_OCT', 0);
 $mySub->setParam('VCF_CUTOFF', 2000);
 $mySub->setParam('VCF_RESONANCE', 0.8);
 
-//$mySub->pushAllParams();
+$mySub->pushAllParams();
 
 $myDelay = $mySecondRack->loadEffect('delay');
 $myDelay->setParam('TIME',80/120/4);
@@ -30,7 +29,6 @@ $myEV1 = $mySecondRack->loadEventor('octaver',1);
 require('wavWriter.php');
 $ww = new WavWriter('2track.wav',5000);
 $timer = microtime(true);
-
 
 //note: clock is 24ppqn, tick is 96 ppqn.
 $pattern = array();

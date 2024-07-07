@@ -1,0 +1,9 @@
+{
+    "name": "Money",
+    "bpm": 116,
+    "ppqn": 96,
+    "time_sign": "7/4",
+    "swing": [0,0,0],
+    "master_tune": 432,
+    "play_mode": "pattern"
+}

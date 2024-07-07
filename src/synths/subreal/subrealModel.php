@@ -41,40 +41,9 @@ class SubrealModel implements SynthInterface {
   }
 
   function initSettings() {
-    //parameters to be picked up at run-time.
-    //validation, enumeration etc in parameters.json
-    //akward fix
-    if(isset($_SESSION['OSC1_WF'])) {
-      $this->settings = $_SESSION;
-      return;
-    }
-    $this->settings = array(
-      'OSC1_WF' => 'sine',
-      'OSC2_WF' => 'sine',
-      'OSC2_OCT' => 1,
-      'OSC2_SEMITONES' => 5,
-      'OSC2_MODTYPE' => 'NONE',
-      'OSC2_MODLEVEL' => 0.5,
-      'OSC_MIX' => 0.2, 
-      'VCA_ATTACK' => 5,
-      'VCA_DECAY' => 10,
-      'VCA_SUSTAIN' => 0.8,
-      'VCA_HOLD' => 3000,
-      'VCA_RELEASE' => 1000,
-      'VCF_ATTACK' => 5,
-      'VCF_DECAY' => 10,
-      'VCF_SUSTAIN' => 0.8,
-      'VCF_HOLD' => 3000,
-      'VCF_RELEASE' => 1000,
-      'LFO1_WF' => 'sine',
-      'LFO1_DEPTH' => 0,
-      'LFO1_RATE' => 5, 
-      'LFO1_ATTACK' => 1000,
-      'VCF_CUTOFF' => 1000,
-      'VCF_RESONANCE' => 1,
-    );
-    //save these default settings to be picked up by www-player
-    file_put_contents(__DIR__ . '/defaults.json',json_encode($this->settings));
+    $json = file_get_contents(__DIR__ . '/defaults.json');
+    $this->settings = json_decode($json,true);
+    $this->pushAllParams();
   }
 
   public function pushAllParams() {
@@ -114,13 +83,6 @@ class SubrealModel implements SynthInterface {
         if (!array_key_exists($name, $this->settings)) die('bad setting ' . $name);
     }
   }
-
-/*  public function setParam($name,$val) {
-    //used by test-scripts so keep..
-    if (!array_key_exists($name, $this->settings)) die('bad setting ' . $name);
-    $this->settings[$name] = $val;
-    $this->pushSetting($name);
-  }*/
 
   function setupVoices($voiceCnt) {
     //called on init or polyphony change
@@ -219,7 +181,7 @@ class SubrealModel implements SynthInterface {
     }
     if ($blockCreated) {
       //check for any analog distorsion fix
-      $distLevel = 1.5;
+      $distLevel = 2.5; //dunno really what to make of this. Should i have voice-amp based on voices?
       $distFactor = 1.4;
       $distFactorNeg = 2.2;
       for($i=0;$i<$blockSize;$i++) {

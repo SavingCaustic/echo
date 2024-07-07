@@ -1,0 +1,20 @@
+  <module name="wfbuilder" xy="1,34" wh="82,17" label="Waveform builder - not for automation (where to put it!?)">
+    <knob name="wfb_1f" xy="10,4" label="1f"/>
+    <knob name="wfb_2f" xy="18,4" label="2f"/>
+    <knob name="wfb_3f" xy="26,4" label="3f"/>
+    <knob name="wfb_4f" xy="34,4" label="4f"/>
+    <knob name="wfb_5f" xy="42,4" label="5f"/>
+    <knob name="wfb_6f" xy="50,4" label="6f"/>
+    <knob name="wfb_7f" xy="58,4" label="7f"/>
+    <knob name="wfb_8f" xy="66,4" label="8f"/>
+    <knob name="wfb_9f" xy="74,4" label="9f"/>
+    <knob name="wfb_half" xy="6,12" label="1/2f"/>
+    <knob name="wfb_half" xy="14,12" label="1.5f"/>
+    <knob name="wfb_half" xy="22,12" label="2.5f"/>
+    <knob name="wfb_half" xy="30,12" label="3.5f"/>
+    <knob name="wfb_half" xy="38,12" label="3.5f"/>
+    <knob name="wfb_half" xy="46,12" label="4.5f"/>
+    <knob name="wfb_half" xy="54,12" label="5.5f"/>
+    <knob name="wfb_half" xy="62,12" label="6.5f"/>
+    <knob name="wfb_half" xy="70,12" label="7.5f"/>
+  </module>

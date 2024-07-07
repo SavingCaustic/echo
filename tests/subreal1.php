@@ -10,7 +10,7 @@ $myRack = $PE->getRackRef(1);
 $mySub = $myRack->getSynthRef();
 $myEV1 = $myRack->loadEventor('octaver',1);
 
-//$myDelay = $myRack->loadEffect('delay');
+$myDelay = $myRack->loadEffect('delay');
 require('wavWriter.php');
 $ww = new WavWriter('subreal1.wav',15000,44100 / SR_IF);
 $timer = microtime(true);

@@ -1,5 +1,5 @@
 <?php
-
+//this can't be static probably because it needs a state.
 class WavReader {
     //could probably do quite much in the end, scrubbing etc.
     //minimal now.

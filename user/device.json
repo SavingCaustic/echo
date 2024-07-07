@@ -1,0 +1,12 @@
+{
+    "buffer_size": 1024,
+    "run_in_background": true,
+    "dsp_cores": 2,
+    "master_tune": 442,
+    "audio_device": "intel-analog",
+    "midi_device": "Axiom49",
+    "ftp_server": "myftp.com",
+    "ftp_type": "sftp",
+    "ftp_user": "asdf",
+    "ftp_password": "asdf"
+}

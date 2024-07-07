@@ -1,12 +1,22 @@
 <?php
 declare(strict_types=1);
+require('rack.php');
 
 //this must be run in the audio thread, and optionally as background-process when app minimized.
 
 class PlayerEngine {
-    var $rackRefs;
+    var $settings;            //key-val high-level settings
+    var $appDir;
+    //
+    var $rackRefs;            //racks
+    var $masterRef = null;    //mixer(?) and reverb
+    var $sequencerRef = null; //sequencer
+    //
+    var $rackCount;
     var $rackRenderSize;
     var $masterRenderSize;
+    //
+    var $playMode;
     var $tempo;   //bpm
     var $timeSignNom;
     var $timeSignDenom;
@@ -15,6 +25,7 @@ class PlayerEngine {
     var $ticksPerSec;
     var $samplesPerTick;
     var $lastTickPlayhead;
+    //
     var $bar;
     var $tick;
     var $isPlaying;
@@ -25,10 +36,9 @@ class PlayerEngine {
     function __construct() {
       require('../appdir.php');
       $this->appDir = getAppDir();
-      require($this->appDir  . '/src/core/rack.php');
       $this->rackRenderSize = 128;
       $this->masterRenderSize = 1024;
-      $this->rackCount = 14;
+      $this->rackCount = 8;
       $this->rackRefs = array();
       //perhaps metronome should sit at rack 0.
       for($i=0; $i < $this->rackCount; $i++) {
@@ -41,6 +51,7 @@ class PlayerEngine {
     }
 
     function reset() {
+      //When requested? Does it clear all the racks or just resets the player?
       $this->bar = 0;
       $this->processTick = false;   //signal to rack that a new tick has arrived.
       $this->clock = 0;
@@ -51,6 +62,44 @@ class PlayerEngine {
       $this->processClock = false;
       $this->processTick = false;
       $this->samplesSinceClock = 0;
+    }
+
+    function pushAllParams() {
+      //just as synth, high level settings should be distributed.
+      foreach($this->settings as $key=>$val) {
+        $this->setVal($key, $val) ;
+      }
+    }
+
+    function setVal($key,$val) {
+      switch($key) {
+        case 'bpm':
+          //also get time-sign and skip separate treatment for them.
+          $timeSign = explode('/', $this->settings['time_sign']);
+          $this->setTempo($val, $timeSign[0], $timeSign[1]);
+          break;
+        case 'master_tune':
+          //set in dspCore. Not sure how to access it..
+          //$this->dspCore->masterTune = $val;
+          break;
+        case 'play_mode':
+          $this->playMode = 'pattern';
+          break;
+        case 'swing':
+          //
+          break;
+        case 'name':
+          //it's in settings. Enough?
+          break;
+        case 'ppqn':
+          break;
+        case 'time_sign':
+          //dunno really..
+          break;
+        default:
+          die('unknown song setting: ' . $key);
+          break;
+      }
     }
 
     function setTempo($tempo = 120, $timeSignNom = 4, $timeSignDenom = 4) {
@@ -152,6 +201,7 @@ class PlayerEngine {
     }
 
     function testRender($blocks = 128) {
+      //move this to outside of masterPlayer
       //this is like main() for tests. Returns a wave of floats that could be converted to wav.
       //note this signal should be stereo.
       $blocks = $blocks / SR_IF;
@@ -189,12 +239,4 @@ class PlayerEngine {
       //forward to rack *buffer*
     }
 
-    //since we can't be faster than this there's really no need for callbacks.
-    
-    //read audio in
-    //maybe is the inverse, on bufferOut empty, start reading audioIn so rack has new food.
-    
-
-    //read midi in
-  }
-  
+}

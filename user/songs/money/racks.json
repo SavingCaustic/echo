@@ -1,0 +1,66 @@
+{
+    "racks": [
+    {
+        "slot": 1,
+        "curr_pattern":1,
+        "synth": {
+            "type": "beatnik",
+            "patch": "LM-2",
+            "params": {}
+        }
+    },{
+        "slot": 2,
+        "curr_pattern":1,
+        "patch": "SubReal Octaver",
+        "eventor1": {
+            "type":"doubler-ignore..",
+            "params": "base64data..asdf"
+        },
+        "eventor2": {
+            "type":"none"
+        },
+        "synth": {
+            "type":"subreal",
+            "patch":"Analog base",
+            "params": {
+                "OSC1_MIX":0.8,
+                "OSC1_WF":"SAW",
+                "OSC2_MODLEVEL":0.4,
+                "OSC2_MODTYPE":"FM",
+                "OSC2_SEMITONES":0,
+                "OSC2_OCT":-1,
+                "VCA_RELEASE":250,
+                "VCF_CUTOFF":1000,
+                "VCF_RESONANCE":0.7
+            }
+        },
+        "effect1": {
+            "type":"delay",
+            "params": {
+                "TIME":400,
+                "FEEDBACK":0.3,
+                "WET":0.5
+            }
+        }
+    },{
+        "slot": 3,
+        "curr_pattern":1,
+        "synth": {
+            "type":"subreal",
+            "patch":"Analog keys",
+            "params": {
+                "OSC1_MIX":0,
+                "OSC1_WF":"SINE",
+                "OSC2_MODLEVEL":0.2,
+                "OSC2_MODTYPE":"FM",
+                "OSC2_SEMITONES":7,
+                "OSC2_OCT":1,
+                "VCA_SUSTAIN":0.7,
+                "VCA_RELEASE":250,
+                "VCF_CUTOFF":4000,
+                "VCF_RESONANCE":1
+            }
+        }
+    }
+    ]
+}

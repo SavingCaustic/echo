@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Page Title</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+body {
+    margin:0px;
+    background-color:#000;
+}
+
+.appContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+    height:100vh;
+}
+
+.uiContainer {
+    display: flex;
+    flex-direction: column;
+    width:1920px;
+    background-color:#0f0;    
+}
+
+.uiContainer div {
+    border:1px solid #f00;
+}
+
+.part1 {
+    height:560px;
+}
+
+.part2 {
+    height:276px;
+}
+
+.part3 {
+    height:60px;
+}
+
+    </style>
+</head>
+<body>
+    <!-- three parts should be distributed vertically
+    1 60%
+    2 30%
+    3 10% 
+    -->
+    <div class="appContainer">
+        <div class="uiContainer">
+            <div class="part1">
+                    A. Could be fixed width of 1920. Would mean fixed height of 1920*0.3 => 576
+            </div>
+            <div class="part2">B</div>
+            <div class="part3">C</div>
+            </div>
+    </div>
+    <script>
+function updateScale() {
+    const container = document.querySelector('.appContainer');
+    const currentWidth = window.innerWidth;
+    const currentHeight = window.innerHeight;
+    //the app has proportions of 2:1, right?
+    let scaleFactor = currentWidth / 1920;
+    if ((currentWidth / currentHeight) > 2) {
+        scaleFactor = currentHeight / 960;
+    }
+    container.style.transform = `scale(${scaleFactor})`;
+}
+
+// Initial scale update
+updateScale();
+
+// Update scale on window resize
+window.addEventListener('resize', updateScale);
+    </script>
+</body>
+</html>

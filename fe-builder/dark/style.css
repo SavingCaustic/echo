@@ -1,0 +1,105 @@
+html {
+}
+
+body {
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    margin:0px;
+    background-color:#000;
+}
+
+.appContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+    height:100vh;
+}
+
+.appContainer > div {
+    border:1px solid #f00;
+}
+
+.uiContainer {
+    display: flex;
+    flex-direction: column;
+    width:1920px;
+}
+
+.part1 {
+    height:576px;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.part2 {
+    height:276px;
+}
+
+.part3 {
+    height:60px;
+}
+
+
+.module {
+/*    background-color:#0f0;*/
+    opacity:1;
+}
+
+.dial {
+    padding:3px;
+    position: absolute;
+    display: flex;
+    align-items:center;
+    background-size:cover;
+    background-image: url('cap_bg.png');
+}
+
+.optbuttonCont {
+    padding:0px;
+    position: absolute;
+    display: flex;
+    align-items:center;
+}
+
+.optbutton {
+    /*the clickable image */
+    position:absolute;
+    top:0px;
+    left:0px;
+}
+
+.knob {
+    /*background-color:#00f;*/
+}
+
+.centerknob {
+}
+
+.rotaryswitch {
+    padding:0px;
+}
+
+.slider {
+    padding:3px;
+    position: absolute;
+    display: flex;
+    align-items:start;
+    background-size:cover;
+}
+
+.vslider {
+    position: relative;
+}
+
+
+.whiteKey {
+    height:5rem;
+    width:100%;
+    background-color:#FFE;
+}

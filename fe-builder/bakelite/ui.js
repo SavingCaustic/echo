@@ -26,6 +26,15 @@ const app = Vue.createApp({
                 transform: `rotate(${rotationAngle}deg)`
             }
         },
+        calcVsliderPosition(prop) {
+            const stroke = (this.sliderLengths[prop]);
+            const myProp = this[prop];
+            const topOffset = stroke - Math.round(myProp/127 * stroke);
+            return {
+                top: topOffset + 'px'
+            }
+        },
+
         clickBegin(event) {
             // Handle optbutton clicks
             if (event.target.dataset.type == 'optbutton') {
@@ -61,9 +70,21 @@ const app = Vue.createApp({
                 document.addEventListener('mouseup', this.swypeEnd);
                 document.addEventListener('touchmove', this.swypeDo);
                 document.addEventListener('touchend', this.swypeEnd);
+            } else if(event.target.dataset.type == 'vslider') {
+                event.preventDefault();
+                this.startX = event.touches ? event.touches[0].clientX : event.clientX;
+                this.startY = event.touches ? event.touches[0].clientY : event.clientY;
+                this.eventTarget = event.target.id;
+                this.orgCC = this[this.eventTarget];
+                this.rotating = true;   //refactor..??
+                document.addEventListener('mousemove', this.swypeDo);
+                document.addEventListener('mouseup', this.swypeEnd);
+                document.addEventListener('touchmove', this.swypeDo);
+                document.addEventListener('touchend', this.swypeEnd);                
             }
         },
         swypeDo(event) {
+            //well here we should maybe pick up vslider?
             if (!this.rotating) return;
 
             const clientX = event.touches ? event.touches[0].clientX : event.clientX;

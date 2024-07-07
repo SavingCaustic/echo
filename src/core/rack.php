@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-
 require(__DIR__ . '/dspCore.php');
-
 require(__DIR__ . '/../synths/synthInterface.php');
 require(__DIR__ . '/../eventors/eventorInterface.php');
 require(__DIR__ . '/../effects/effectInterface.php');
@@ -69,10 +67,6 @@ class Rack {
         // should call ->reset on construct $this->hSynth->init();
     }
 
-    function getSynthRef() {
-      return $this->hSynth;
-    }
-
     function loadEffect($effectName, $slot = 1) {
         require_once(__DIR__ . '/../effects/' . $effectName . '/' . $effectName . 'Model.php');
         $class = $effectName . 'Model';
@@ -94,8 +88,13 @@ class Rack {
       }
     }
 
+    function getSynthRef()  {
+      return $this->hSynth;
+    }
+
     function loadPattern($pattern, $barCount, $signNom = 4, $signDenom = 4) {
       //here timing should be 96PPQN always.
+      //signnom and denom should really default to signature of playerEngine
       $this->pattern = $pattern;
       $this->ticksInPattern = $barCount * 96 * 4 * $signNom / $signDenom;
       $this->patternPtr = 0;
@@ -168,7 +167,7 @@ class Rack {
 
 
     function setSwing($time = 48, $depth = 0, $debug = false) {
-      //well, this could be a class of its own. Swing should probably not be in each rack by default.
+      //This is really swing-override as default swing is set in player, not rack. 
       //48 = swing distributed over 48 ticks => 16th notes.
       $this->swingTime = $time;
       $this->swingDepth = $depth; //0-1
@@ -207,4 +206,34 @@ class Rack {
       }
     }
 
+
+    function loadPatch($target, $patchName) {
+      //decide type from name
+      switch($target) {
+        case 'eventor1':
+        case 'eventor2':
+          //load eventorPatch
+          break;
+        case 'synth':
+          //load synthPatch (based on type?)
+          break;
+        case 'effect1':
+        case 'effect2':
+          //load effect patch - really??
+          break;
+        default:
+          //unknown target, just ignore..
+          break;
+      }
+    }
+
+  function saveRackPatch($name) {
+    //ok, all settings for eventors etc should be saved as a rack-patch..
+  }   
+
+  function loadRackPatch($name) {
+    //this is better. No effect patches and bla bla bla...
+  }
+
+  
 }
