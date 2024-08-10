@@ -213,18 +213,6 @@ class PlayerEngine {
         return $masterWave;
     }
 
-    function testRender($blocks = 128) {
-        //move this to outside of masterPlayer
-        //this is like main() for tests. Returns a wave of floats that could be converted to wav.
-        //note this signal should be stereo.
-        $waveOut = array();
-        for ($i = 0; $i < $blocks; $i++) {
-            $wave = $this->renderNextBlock($i);
-            $waveOut = array_merge($waveOut, $wave);
-        }
-        return $waveOut;
-    }
-
     function manageMidiInBuffer() {
         //if we're recording too, we'd probably like to add them to the json-events also, right?
         //that's a job for the low-prio thread so then we push the messages to its log.
