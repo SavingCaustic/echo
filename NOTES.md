@@ -1,20 +1,20 @@
-#theplayhead
+# theplayhead
 (saving caustic)
 
 ## Semantics
-//Frame//
+**Frame**
 A chunck of 64 samples, creating a time of 64/48000 sec in realtime. Frames is what drives
 all timing forward.
 
-//Pulse//
+**Pulse**
 Pulse is a float between 0-95 (1/8th based on PPQN 192). Pulse is increased by every frame,
 and in relation to tempo, sets the beat as the pulse counter overflows. Pulse is always without swing.
 
-//Tick//
+**Tick**
 Tick is a high resolution (192 PPQN) measure to time recorded events. Ticks may be swung, either
 through standard swing or rack custom swing settings.
 
-//Clock// 
+**Clock** 
 Clock is standard Midi 24 PPQN, driving events, effects and sending midi clock out. It may be swung too.
 
 
