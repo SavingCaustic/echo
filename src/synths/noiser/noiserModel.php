@@ -10,6 +10,8 @@ class NoiserModel implements SynthInterface {
     var $filterRef;
     var $settings;
     var $buffer;
+    var $type;
+    var $filterDir;
     var $filterFreq;
     private $oscillators;
     private $oscCount;
@@ -27,7 +29,7 @@ class NoiserModel implements SynthInterface {
       $this->oscCount = 0;
       $this->filterFreq = 5000;
       $this->filterDir = 'up';
-      $this->filterRef->calculateCoefficients($this->filterFreq, 44100 / SR_IF, 2, $this->type);
+      $this->filterRef->calculateCoefficients($this->filterFreq, TPH_SAMPLE_RATE, 2, $this->type);
     }
 
     private function initSettings() {
@@ -47,7 +49,7 @@ class NoiserModel implements SynthInterface {
 
     public function renderNextBlock() {
       //this should be converted to stero signal.
-      $bufferSize = $this->dspCore->rackRenderSize;
+      $bufferSize = TPH_RACK_RENDER_SIZE;
       //for($i=0;$i<$bufferSize;$i++) {
           //$this->buffer[$i] = $this->noiseOscRef->getNextSample();
       //}
@@ -59,8 +61,8 @@ class NoiserModel implements SynthInterface {
       } else {
         $this->filterFreq *= 0.9998;
       }
-      if ($this->filterDir == 'up' && $this->filterFreq > 14000) $this->filterDir = 'down';
-      if ($this->filterDir == 'down' && $this->filterFreq < 5000) $this->filterDir = 'up';
+      if ($this->filterDir == 'up' && $this->filterFreq > 12000) $this->filterDir = 'down';
+      if ($this->filterDir == 'down' && $this->filterFreq < 2000) $this->filterDir = 'up';
 
       $this->filterRef->calculateCoefficients($this->filterFreq, 44100, 2, $this->type);
     }

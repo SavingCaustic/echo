@@ -3,6 +3,7 @@
             die('you *really* need imagegd extension for this to work..');
         }
 ?>
+<!DOCTYPE html>
 <html>
     <body style="margin:10px 0px;" bgcolor="#000000">
         <center>

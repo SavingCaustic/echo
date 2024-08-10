@@ -1,4 +1,10 @@
 <?php
+//how is this different from player engine?
+//player-engine is the cheep-dog, keeping everything in sync.
+//this does something else, dunno what really..
+//it creates wave tables that may be used like anywhere,
+//so maybe ist's really a LUTSine we'd like. And a LUTWave
+
 declare(strict_types=1);
 
 require('dspParts/oscillator.php');

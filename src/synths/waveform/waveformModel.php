@@ -76,7 +76,7 @@ class WaveformModel implements SynthInterface {
 
     public function renderNextBlock() {
       //this should be converted to stero signal.
-      $bufferSize = $this->dspCore->rackRenderSize;
+      $bufferSize = TPH_RACK_RENDER_SIZE;
       $attenuation = 1 / $this->oscCount;
       for($i=0;$i<$bufferSize;$i++) {
           $val = 0;

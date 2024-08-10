@@ -1,8 +1,8 @@
 {
     "buffer_size": 1024,
     "run_in_background": true,
-    "dsp_cores": 2,
-    "master_tune": 442,
+    "render_pool": 4,
+    "master_tune": 432,
     "audio_device": "intel-analog",
     "midi_device": "Axiom49",
     "ftp_server": "myftp.com",

@@ -1,38 +1,25 @@
 <?php
-define('SR_IF',1);                  //sample-rate inverse factor. 2 for 22050Hz, 4 for 11025.
-                                    //app and playerEngine really two different things. What to setup first?
-require('../src/core/playerEngine.php');
-$PE = new PlayerEngine();           //it doesn't have to autostart really..
-$PE->rackSetup(1,'beatnik');        //dunno really why the test-scripts would need the app? skip that.
+echo "Testing eventor running without play command. \r\n";
+require('testWriter.php');
+$TW = new TestWriter(20000);
+
+$PE = $TW->getPE();
+$PE->rackSetup(1, 'beatnik');
 $myRack = $PE->getRackRef(1);
 $mySub = $myRack->getSynthRef();
 
 //$myDelay = $myRack->loadEffect('delay');
-require('wavWriter.php');
-$ww = new WavWriter('beatnik0.wav',20000);
+
 $timer = microtime(true);
-
-//note: clock is 24ppqn, tick is 96 ppqn.
-$pattern = array();
-for($i=0;$i<8;$i++) {
-    $vel = ($i % 16 == 0) ? 127 : 60;
-    $pattern[] = [$i*48, 0x90, 50, $vel];
-    $pattern[] = [$i*48 + 8, 0x80, 50, 0];
-}
-
-$PE->setTempo(120);
-$myRack->loadPattern($pattern, 1);
-$myRack->setSwing(96,0,false); //swing may also be negative!
-
-//yep, good question - where should test-render be?
-$ww->append($PE->testRender(0));
-//$app->playMode('pattern');
-$PE->play();
-$ww->append($PE->testRender(100)); //90 * 1024
-$PE->stop();
-$ww->append($PE->testRender(10));
-
-$ww->close();
-
-echo 'Time: ' . (microtime(true) - $timer);
-$PE->close();   //should maybe be quit. 
+$myRack->loadEventor('sixteener');
+$PE->setVal('bpm', 105);
+$PE->setVal('play_mode', 'pattern');
+$PE->setVal('swing_level', 0.33);
+$PE->setVal('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
+//what here. Buttons are being
+$PE->hTapeController->respondToKey('STOP');
+//clock should run here, even though tick doesn't
+$TW->render(120);
+$myRack->unloadEventor(1);
+$TW->render(20);
+$TW->close();

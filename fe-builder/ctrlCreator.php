@@ -204,6 +204,17 @@ class CtrlCreator {
         //nothing to do..
     }
 
+    function tag_value($attr, $type) {
+        //non visual. get the name, min, max and log.
+        $this->setAttr($attr);
+        $this->addDefault($this->getAttr('name'));
+    }
+    
+    function tag_enum($attr, $type) {
+        //non visual enum.
+        die('to be written');
+    }
+    
     /* END OF BASE CLASS - BELOW SHOULD BE CUSTOMIZABLE */
 
     function octag_controller($attr, $type) {
@@ -228,12 +239,10 @@ class CtrlCreator {
     </head>
     <body>
         <div class="appContainer">
-            <div class="uiContainer" id="app">' . crlf;
+            <fdiv class="uiContainer" id="app">' . crlf;
         } else {
             $this->html .= '
-            </div>
-            <div class="part2">B asfd asdf asdf</div>
-            <div class="part3">C</div>
+            </fdiv>
             </div>
             </div>
     <script>

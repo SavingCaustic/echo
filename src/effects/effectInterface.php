@@ -17,5 +17,6 @@ interface EffectInterface {
     function process(&$bufferOut);
     //dsp process
 
+    function processClock();
 }
 

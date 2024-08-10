@@ -77,7 +77,7 @@ class wavplayerModel {
 
     function renderNextBlock() {
         // Read the data (samples)
-        $bufferSize = $this->dspCore->rackRenderSize;
+        $bufferSize = TPH_RACK_RENDER_SIZE;
         $samples = [];
         for ($i = 0; $i < $bufferSize; $i++) {
             if ($this->samplePtr < $this->sampleCnt) {

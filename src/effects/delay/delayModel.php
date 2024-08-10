@@ -1,7 +1,8 @@
 <?php
 
-class DelayModel implements effectInterface {
+class DelayModel extends ParamsAbstract implements effectInterface {
     //simple delay acting more or less as an interface for writing effects
+    var $rackRef;
     var $lfp;
     var $time;
     var $feedback;
@@ -16,10 +17,14 @@ class DelayModel implements effectInterface {
         $this->rackRef = &$rack;
         //$this->lpf = new ResonantLowPassFilter(44100,100,2);
         //$this->lpf = new ButterLPFopt(44100,1000);
-        $this->fifoSize = 22050; //0.5 sec max. Fixed array best for performance?
+        $this->fifoSize = 48000; //0.5 sec max. Fixed array best for performance?
         $this->fifoIdx = 0;
         $this->fifoMax = 1000;
         $this->reset();
+    }
+
+    public function processClock() {
+        //nothing
     }
 
     public function reset() {
@@ -28,8 +33,8 @@ class DelayModel implements effectInterface {
         $this->fifo = array_fill(0,$this->fifoSize,0);
 
         $this->params = array(
-            'FEEDBACK' => 0.2,
-            'TIME' => 0.2,
+            'FEEDBACK' => 0.1,
+            'TIME' => 0.25,
             'MIX'=> 0.5
         );
         $this->pushAllParams();
@@ -51,19 +56,17 @@ class DelayModel implements effectInterface {
         }
     }
 
-    function pushParam($name, $val) {
-        //experimental function that pushes settings to non-readable, optimized registers.
-        $se = $this->params;
+    function pushParam($name) {
+        $se = $this->getAllParams();
         $this->feedback = $se['FEEDBACK'];
         $this->mix = $se['MIX'];
-        //
-        $fifoReqSize = floor($se['TIME'] * 44100 / SR_IF);
+        $fifoReqSize = floor($se['TIME'] * TPH_SAMPLE_RATE * 1.1);
         if ($fifoReqSize > $this->fifoSize) $fifoReqSize = $this->fifoSize;
         $this->fifoMax = $fifoReqSize;    
     }
 
     function process(&$buffer) {        
-        $bufferSize = $this->rackRef->rackRenderSize;
+        $bufferSize = TPH_RACK_RENDER_SIZE;
         $bufferOut = array();
         for($i=0;$i<$bufferSize;$i++) {
             $echo = $this->fifo[$this->fifoIdx];

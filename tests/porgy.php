@@ -1,21 +1,13 @@
 <?php
-define('SR_IF',1);                  //sample-rate inverse factor. 2 for 22050Hz, 4 for 11025.
-                                    //app and playerEngine really two different things. What to setup first?
-require('../src/core/playerEngine.php');
-$PE = new PlayerEngine();           //it doesn't have to autostart really..
-$PE->rackSetup(1,'beatnik');        //dunno really why the test-scripts would need the app? skip that.
+require('testWriter.php');
+$TW = new TestWriter(20000);
+
+$PE = $TW->getPE();
+
+$PE->rackSetup(1, 'beatnik');        //dunno really why the test-scripts would need the app? skip that.
 $myRack = $PE->getRackRef(1);
 $mySub = $myRack->getSynthRef();
 
-//$myDelay = $myRack->loadEffect('delay');
-require('wavWriter.php');
-$ww = new WavWriter('porgy.wav',20000);
-$timer = microtime(true);
-
-
-//note: clock is 24ppqn, tick is 96 ppqn.
-
-$pattern = array();
 $strPattern = array(
     '1234123412341234',
     'x..x.x.x...x....',
@@ -23,36 +15,46 @@ $strPattern = array(
     '.............x..',
     'xxxxxx.x.x......'
 );
-$notes = array(0,60,62,63,71);
-for($row=1;$row<sizeof($strPattern);$row++) {
+$pNotes = array();
+$notes = array(0, 60, 62, 63, 71);
+for ($row = 1; $row < sizeof($strPattern); $row++) {
     $pRow = $strPattern[$row];
-    for($i=0;$i<16;$i++) {
+    for ($i = 0; $i < 16; $i++) {
         if ($pRow[$i] == 'x') {
-            $pattern[] = [$i*24, 0x90, $notes[$row], 70];
-            $pattern[] = [$i*24+4, 0x80, $notes[$row], 0];
+            $pNotes[] = array(
+                'id' => $i + $row*16, 
+                'tick' => $i * 48, 
+                'note' => $notes[$row], 
+                'len' => 24,
+                'vel' => 70
+            );
         }
     }
 }
 
-//die(serialize($pattern));
 
-$a = array_column($pattern,0);
-array_multisort($a, SORT_ASC, $pattern);
-//die(print_r($pattern));
+$PE->setVal('bpm',105);
+$pattern = array(
+    'notes' => $pNotes,
+    'barCount' => 1,
+    'signNom' => 4,
+    'signDenom' => 4,
+    'grid' => 16
+);
+$json = json_encode($pattern, JSON_UNESCAPED_SLASHES);
 
-$PE->setTempo(105);
-$myRack->loadPattern($pattern, 1);
-$myRack->setSwing(48,0.07,true); //swing may also be negative!
+$myRack->loadPatternFromJSON($json, 1);
+$PE->setVal('swing_level', 0.3);
+$PE->setVal('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
 
-//yep, good question - where should test-render be?
-$ww->append($PE->testRender(0));
-//$app->playMode('pattern');
-$PE->play();
-$ww->append($PE->testRender(300));
-$PE->stop();    //pause not working!
-$ww->append($PE->testRender(30));
+$myDelay = $myRack->loadEffect('delay');
+$myDelay->setParam('FEEDBACK',0.1);
+$myDelay->setParam('TIME',0.25);
 
-$ww->close();
-
-echo 'Time: ' . (microtime(true) - $timer);
-$PE->close();   //should maybe be quit. 
+$PE->hTapeController->respondToKey('PLAY');
+//clock should run here, even though tick doesn't
+$TW->render(215);
+$myDelay->setParam('FEEDBACK',0.5);
+$PE->hTapeController->respondToKey('STOP');
+$TW->render(50);
+$TW->close();

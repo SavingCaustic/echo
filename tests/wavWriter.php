@@ -8,7 +8,7 @@ class WavWriter {
     private $amp;
     private $sampleRate;
 
-    public function __construct($filename,$amp = 5000, $sampleRate = 44100) {
+    public function __construct($filename,$amp = 5000, $sampleRate = 48000) {
         $this->fileHandle = fopen($filename, 'wb');
         $this->sampleRate = $sampleRate;
         $this->writeHeader();

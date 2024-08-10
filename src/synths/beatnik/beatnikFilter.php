@@ -10,7 +10,6 @@ class BeatnikFilter {
     private $type;
     private $cutoff;
     private $resonance;
-    private $sampleRate;
     private $c;
     private $a1;
     private $a2;
@@ -20,8 +19,7 @@ class BeatnikFilter {
     private $out1;
     private $out2;
 
-    public function __construct($sampleRate) {
-        $this->sampleRate = $sampleRate;
+    public function __construct() {
     }
 
     public function setParams($type, $cutoff, $resonance) {
@@ -47,7 +45,7 @@ class BeatnikFilter {
         $this->cutoff = $cutoff;
         if (!is_null($resonance)) $this->resonance = $resonance;
         // Pre-calculate values for filter coefficients
-        $this->c = 1.0 / tan(M_PI * $this->cutoff / $this->sampleRate);
+        $this->c = 1.0 / tan(M_PI * $this->cutoff / TPH_SAMPLE_RATE);
         $this->a1 = 1.0 / (1.0 + $this->resonance * $this->c + $this->c * $this->c);
         $this->a2 = 2 * $this->a1;
         $this->a3 = $this->a1;
@@ -94,13 +92,11 @@ class SubsynthFilter2 { //MoogFilter
     private $buf2;
     private $buf3;
 
-    public function __construct($sampleRate) {
-        $this->sampleRate = $sampleRate;
+    public function __construct() {
     }
 
     public function setParams($type, $cutoff, $resonance) {
-        $sampleRate = $this->sampleRate;
-        $this->cutoff = 2 * cos(M_PI * min(0.25, max(0, $cutoff / $sampleRate)));
+        $this->cutoff = 2 * cos(M_PI * min(0.25, max(0, $cutoff / TPH_SAMPLE_RATE)));
         $this->resonance = $resonance;
         $this->f = 0;
         $this->p = 0;

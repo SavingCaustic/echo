@@ -21,7 +21,7 @@ class SubrealFilter {
     private $out1;
     private $out2;
 
-    public function __construct($sampleRate) {
+    public function __construct($sampleRate = 48000) {
         $this->sampleRate = $sampleRate;
     }
 

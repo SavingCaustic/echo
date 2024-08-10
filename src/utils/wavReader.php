@@ -43,7 +43,7 @@ class WavReader {
         //for some stupid reason, unpack starts at [1], so fix that with a slow iteration now.
         $floats = array();
         for($i=1;$i<=$number_of_samples;$i++) {
-            $floats[$i-1] = $integers[$i * SR_IF] / 32768;
+            $floats[$i-1] = $integers[$i] / 32768;
         }
         return $floats;
     }

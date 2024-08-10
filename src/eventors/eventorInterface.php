@@ -14,6 +14,8 @@ interface EventorInterface {
 
     function sendMidi();
 
+    function processClock();
+    
     function tick();
     //probably called from F8 but who knows, right?
 

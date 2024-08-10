@@ -5,7 +5,7 @@ require __DIR__ . '/../../utils/wavReader.php';
 //a 8-channel sample player. We add filters and stuff later. minimal now.
 //voices could be static, no need for classes really.
 
-class BeatnikModel implements SynthInterface {
+class BeatnikModel extends ParamsAbstract implements SynthInterface {
   //objects
   var $dspCore;
   var $voices;
@@ -26,7 +26,7 @@ class BeatnikModel implements SynthInterface {
   }
 
   public function reset() {
-    $this->settings = array();
+    $this->params = array();
     $this->setupDefaultSamples();
     $this->bufferEmpty = 0;
     $this->pushAllParams();
@@ -46,7 +46,10 @@ class BeatnikModel implements SynthInterface {
   }
 
   function setupDefaultSamples() {
-    //this should really be done by controller but lets just create something now.
+    //this is good for now. Maybe later we have an xml-def with loops and stuff but until then:
+    //keys: CDEFGAH
+    //maybe adjcent keys for pitch adjustments, so 8x3=24
+    //HCC# = sample1
     $default = array(
       'lm-2/kick.wav',
       'lm-2/snare-m.wav',
@@ -66,18 +69,12 @@ class BeatnikModel implements SynthInterface {
     }
   } 
 
-  function pushAllParams() {
-    //iterate over all settings and set them to respective (private) register.
-    foreach($this->settings as $key=>$val) {
-      $this->pushParam($key,$val);
-    }
-  }
-
-  public function setParam($name,$val) {
+  protected function pushParam($name) {
     //used by test-scripts so keep..
-    if (!array_key_exists($name, $this->settings)) die('bad setting ' . $name);
-    $this->settings[$name] = $val;
-    $this->pushSetting($name);
+    switch($name) {
+        CASE 'CH1_PAN':
+            break;
+    }
   }
 
   public function parseMidi($cmd, $param1 = null, $param2 = null) {
@@ -101,7 +98,7 @@ class BeatnikModel implements SynthInterface {
 
   function renderNextBlock() {
     //make stuff not done inside chunk
-    $blockSize = $this->dspCore->rackRenderSize;
+    $blockSize = TPH_RACK_RENDER_SIZE;
     //only do this if needed. 
     if (!$this->bufferEmpty) {
       $this->buffer = array_fill(0,$blockSize,0);

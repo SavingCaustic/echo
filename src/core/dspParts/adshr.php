@@ -15,9 +15,9 @@ class ADSHR {
     var $level;
     var $mode;
 
-    function __construct($voice, $sampleRate) {
+    function __construct($voice) {
         $this->voice = $voice;
-        $this->srInv = 1000 / $sampleRate;
+        $this->srInv = 1000 / TPH_SAMPLE_RATE;
         $this->state = 'IDLE';
     }
     

@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<panel theme="lm2" size="1920x1080">
-  <module name="master">
-    <patches />
-    <button name="settings" />
-    <button name="playmode" />
-    <button name="mute" />
-    <button name="solo" />
-    <knob name="volume" label="Tune" default="0"/>
-    <vu />
-  </module>
-  <layer name="controls">
-    <module name="osc2" xy="0,0">
-      <button name="mute_01" value="M" />
-      <button name="solo_01" value="S" />
-      <knob name="tune_01" label="Tune" default="0"/>
-      <knob name="punch_01" label="Punch" default="0"/>
-      <knob name="decay_01" label="Decay" default="0"/>
-      <knob name="decay_01" label="Pan" default="0"/>
-      <knob name="decay_01" label="Vol" default="0.5"/>
+  <view theme="dark" >
+#well, i think view needs to go.
+  <panel size="120x35" bgcolor="#408020">
+    <module name="ch1" xy="1,1" wh="10,31" label="1">
+      <value name="sample_01" default="lm-2/kick.wav"/>
+      <knob name="tune_01" label="Tune" default="0" xy="5,5"/>
+      <knob name="punch_01" label="Punch" default="0" xy="5,12"/>
+      <centerknob name="pan_01" label="Pan" default="0" xy="5,19"/>
+      <knob name="vol_01" label="Vol" default="0.5" xy="5,26"/>
     </module>
-  </layer>
-  <layer>
-    <vbutton name="play_01" />
-  </layer>
-</panel>
+#i'm not really sure it's clever to always use defaults in this xml.
+#a default patch could be an option but we would have to be in sync with the names though.
+    <module name="ch2" xy="12,1" wh="10,31" label="2">
+      <value name="sample_02" default="lm-2/snare-h.wav"/>
+      <knob name="tune_02" label="Tune" default="0" xy="5,5"/>
+      <knob name="punch_02" label="Punch" default="0" xy="5,12"/>
+      <centerknob name="pan_02" label="Pan" default="0" xy="5,19"/>
+      <knob name="vol_02" label="Vol" default="0.5" xy="5,26"/>
+    </module>
+  </panel>
+</view>
