@@ -25,7 +25,7 @@ $mySub = $myRack2->getSynthRef();
 //test 1 - re-trigger same note.
 $mySub->setNum('VCA_ATTACK', 0);
 $mySub->setNum('VCA_SUSTAIN', 0.8);
-$mySub->setNum('VCA_RELEASE', 200);
+$mySub->setNum('VCA_RELEASE', 800);
 
 $mySub->setNum('OSC2_MODLEVEL', 0.4);
 $mySub->setStr('OSC2_MODTYPE', 'FM');
