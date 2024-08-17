@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 //maybe extract any pattern related stuff and have a separate PatternPlayer
 require(__DIR__ . '/dspCore.php');
-require(__DIR__ . '/paramsAbstract.php');
 require(__DIR__ . '/patternPlayer.php');
 require(__DIR__ . '/../synths/synthInterface.php');
 require(__DIR__ . '/../eventors/eventorInterface.php');
 require(__DIR__ . '/../effects/effectInterface.php');
 
 //maybe this class should be split into a rack- and a pattern-player class.
+//any settings here??
 
 class Rack {
     var $playerEngine;

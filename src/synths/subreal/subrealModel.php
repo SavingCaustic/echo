@@ -42,15 +42,8 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
         $this->loadDefaultParams(__DIR__ . '/defaults.json');
     }
 
-    public function pushParam($name) {
-        if (!array_key_exists($name, $this->params)) {
-            return;
-        }
-        $val = $this->params[$name];
+    public function pushNumParam($name, $val) {
         switch ($name) {
-            case 'LFO1_WF':
-                $this->lfo1->setWaveform($val);
-                break;
             case 'LFO1_ATTACK':
                 //just hold this and copy to voice when triggering one.
                 //
@@ -58,16 +51,24 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
             case 'OSC2_OCT':
             case 'OSC2_SEMITONES':
                 //look in settings
-                $this->osc2_noteOffset = $this->getParam('OSC2_OCT') * 12 + $this->getParam('OSC2_SEMITONES');
-                break;
-            case 'OSC2_MODTYPE':
-                $this->osc2_modType = $val;
+                $this->osc2_noteOffset = $this->getNum('OSC2_OCT') * 12 + $this->getNum('OSC2_SEMITONES');
                 break;
             case 'OSC2_MODLEVEL':
                 $this->osc2_modLevel = $val;
                 break;
             case 'OSC_MIX':
                 $this->osc_mix = $val;
+                break;
+        }
+    }
+
+    public function pushStrParam($name, $val) {
+        switch ($name) {
+            case 'LFO1_WF':
+                $this->lfo1->setWaveform($val);
+                break;
+            case 'OSC2_MODTYPE':
+                $this->osc2_modType = $val;
                 break;
         }
     }
@@ -152,7 +153,7 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
         $blockSize = TPH_RACK_RENDER_SIZE;
         //LFO1
         $se = $this->settings;
-        $lfoHz = $this->getParam('LFO1_RATE');
+        $lfoHz = $this->getNum('LFO1_RATE');
         $this->lfo1Sample = $this->lfo1->getNextSample($blockSize * $lfoHz);
         //iterate over all voices and create a summed output.
         $voiceCount = sizeof($this->voices);

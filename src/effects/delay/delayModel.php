@@ -32,7 +32,7 @@ class DelayModel extends ParamsAbstract implements effectInterface {
         //should really be read from XML
         $this->fifo = array_fill(0,$this->fifoSize,0);
 
-        $this->params = array(
+        $this->numParams = array(
             'FEEDBACK' => 0.1,
             'TIME' => 0.25,
             'MIX'=> 0.5
@@ -43,27 +43,23 @@ class DelayModel extends ParamsAbstract implements effectInterface {
         file_put_contents(__DIR__ . '/defaults.json',json_encode($this->params));
     }
 
-    function setParam($name, $val) {
-        if (!array_key_exists($name, $this->params)) die('bad setting ' . $name);
-        $this->params[$name] = $val;
-        $this->pushParam($name, $val);
-    }
-
-    function pushAllParams() {
-        //experimental function that pushes settings to non-readable, optimized registers.
-        foreach($this->params as $key=>$val) {
-            $this->pushParam($key, $val, false);
+    function pushNumParam($name, $val) {
+        switch($name) {
+            case 'FEEDBACK':
+                $this->feedback = $val;
+                break;
+            case 'MIX':
+                $this->mix = $val;
+                break;
+            case 'TIME':
+                $fifoReqSize = floor($val * TPH_SAMPLE_RATE * 1.1);
+                if ($fifoReqSize > $this->fifoSize) $fifoReqSize = $this->fifoSize;
+                $this->fifoMax = $fifoReqSize;    
+                break;
         }
     }
 
-    function pushParam($name) {
-        $se = $this->getAllParams();
-        $this->feedback = $se['FEEDBACK'];
-        $this->mix = $se['MIX'];
-        $fifoReqSize = floor($se['TIME'] * TPH_SAMPLE_RATE * 1.1);
-        if ($fifoReqSize > $this->fifoSize) $fifoReqSize = $this->fifoSize;
-        $this->fifoMax = $fifoReqSize;    
-    }
+    function pushStrParam($name, $val) {}
 
     function process(&$buffer) {        
         $bufferSize = TPH_RACK_RENDER_SIZE;

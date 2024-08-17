@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 const TPH_SAMPLE_RATE = 48000;      //new standard in iOS and Android  
@@ -6,6 +7,7 @@ const TPH_RACK_RENDER_SIZE = 64;
 const TPH_TICKS_PER_CLOCK = 8;      //PPQN = 192
 const TPH_RACK_COUNT = 4;           //keep small for easy debugging..
 
+require 'paramsAbstract.php';
 require 'rotator.php';
 require 'rack.php';
 require 'tapeController.php';
@@ -14,39 +16,40 @@ require 'renderPool.php';
 //require 'patternPool.php';
 require 'errorLog.php';
 require 'midiReciever.php';
+require 'midiSender.php';
 
-class PlayerEngine {
+class PlayerEngine extends ParamsAbstract {
     //VERIFIED
-    var $settings;                  //key-val high-level settings
-    var $appDir;
-    var $rackCount;                 //maximum racks
-    var $audioBufferSize;           //run-time adjustable (restart of audio device needed)
+    public $appDir;
+    public $masterTune;
+    public $swingCycle;
+    public $swingDepth;
+    public $isPlaying;                 //if patterns are running..
 
-    var $masterTune;
-    var $playMode;
-    var $isPlaying;                 //if patterns are running..
-    var $swingCycle;
-    var $swingDepth;
-    var $clockReset;
+    protected $rackCount;                 //maximum racks
+    protected $audioBufferSize;           //run-time adjustable (restart of audio device needed)
 
-    var $playPatterns;              //playPatterns. (Timing for eventors and effects are running always.)
-    var $bad_processedTick;         //this needs to go? In each rack instead.. lags behind rotators currTick
-    var $hErrorLog;
-    var $hMetronome;
-    var $hPatternPool;
+    protected $playMode;
+    protected $clockReset;
 
-    var $hTapeController;           //manages play, start etc.. Easy to test in php..
-    //NOT VERIFIED
-    var $hRotator;                  //keeps track of ticks, swings and clicks. All that stuff..
-    var $hMidiReciever;             //
+    protected $playPatterns;              //playPatterns. (Timing for eventors and effects are running always.)
+
+    protected $hErrorLog;
+    protected $hMetronome;
+    protected $hPatternPool;
+
+    public $hTapeController;           //manages play, start etc.. Easy to test in php..
+    protected $hRotator;                  //keeps track of ticks, swings and clicks. All that stuff..
+    protected $hMidiReciever;             //
     /**
      * @var Rack[]                  //fixes syntax in VS Code
      */
-    public array $hRacks;           //array of pointers to racks
+    protected array $hRacks;           //array of pointers to racks
 
     //NOT IMPLEMENTED (YET)
-    var $hMasterMixer = null;       //mixer(?) and reverb
-    var $hSequencer = null;         //sequencer
+    protected $hMasterMixer = null;       //mixer(?) and reverb
+    protected $hSequencer = null;         //sequencer
+    protected $hMidiSender;
 
 
 
@@ -66,6 +69,7 @@ class PlayerEngine {
         $this->hRotator = new Rotator($this);
         $this->hTapeController = new TapeController($this);
         $this->hMidiReciever = new MidiReciever($this);
+        $this->hMidiSender = new MidiSender($this);
         $this->hMetronome = new Metronome($this);
         //$this->hPatternPool = new PatternChainPool();
 
@@ -91,6 +95,7 @@ class PlayerEngine {
                 $this->hRacks[$i]->reset();
             }
         }
+        $this->loadDefaultParams($this->appDir . '/project_defaults.json');
         $this->clockReset();
     }
 
@@ -101,34 +106,18 @@ class PlayerEngine {
         $this->clockReset = true;   //will be cleared on next interrupt.
     }
 
-    function pushAllParams() {
-        //just as synth, high level settings should be distributed.
-        foreach ($this->settings as $key => $val) {
-            $this->setVal($key, $val);
-        }
-    }
-
-    function setVal($key, $val) {
+    function pushNumParam($key, $val) {
         switch ($key) {
             case 'bpm':
                 //also get time-sign and skip separate treatment for them.
                 $this->hRotator->setTempo($val);
                 break;
-            case 'time_sign':
-                $a = explode('/', $val);
-                //verify numbers?
-                //just defaults really for new patterns..
-                //$this->hRotator->setTimeSign($a[0], $a[1]);
             case 'master_tune':
                 $this->masterTune = $val;
                 break;
-            case 'play_mode':
-                //don't like to have string here. Should be enum or rename to song_play
-                $this->playMode = 'pattern';
-                break;
             case 'swing_cycle':
                 //in clocks, so we're not dependent on PPQN
-                $this->swingCycle = $val;// * TPH_TICKS_PER_CLOCK;
+                $this->swingCycle = $val; // * TPH_TICKS_PER_CLOCK;
                 break;
             case 'swing_level':
                 $this->swingDepth = $val; //we don't know ticks in Pattern here.
@@ -136,14 +125,26 @@ class PlayerEngine {
             case 'swing_offset':
                 die('to be implemented');
                 break;
-            case 'name':
-                //it's in settings. Enough?
-                break;
             default:
                 die('unknown song setting: ' . $key);
                 break;
         }
     }
+
+    function pushStrParam($key, $val) {
+        switch ($key) {
+            case 'time_sign':
+                $a = explode('/', $val);
+                //verify numbers?
+                //just defaults really for new patterns..
+                //$this->hRotator->setTimeSign($a[0], $a[1]);
+            case 'play_mode':
+                //don't like to have string here. Should be enum or rename to song_play
+                $this->playMode = $val;
+                break;
+        }
+    }
+
 
     function rackSetup(int $rackIdx, string $synth) {
         //in c++, not really sure in how to allocate objects and best practice of controlling their lifetime.
@@ -174,7 +175,7 @@ class PlayerEngine {
                 }
             }
         }
-        
+
         for ($outer = 0; $outer < $outerCnt; $outer++) {
             $this->manageMidiInBuffer();                        //will be forwarded to resp rack
             for ($i = 0; $i < $this->rackCount; $i++) {         //iterate over (t)racks. USE threads MULTI-CORE HERE

@@ -33,7 +33,7 @@ for ($row = 1; $row < sizeof($strPattern); $row++) {
 }
 
 
-$PE->setVal('bpm',105);
+$PE->setNum('bpm',105);
 $pattern = array(
     'notes' => $pNotes,
     'barCount' => 1,
@@ -44,17 +44,17 @@ $pattern = array(
 $json = json_encode($pattern, JSON_UNESCAPED_SLASHES);
 
 $myRack->loadPatternFromJSON($json, 1);
-$PE->setVal('swing_level', 0.3);
-$PE->setVal('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
+$PE->setNum('swing_level', 0.3);
+$PE->setNum('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
 
 $myDelay = $myRack->loadEffect('delay');
-$myDelay->setParam('FEEDBACK',0.1);
-$myDelay->setParam('TIME',0.25);
+$myDelay->setNum('FEEDBACK',0.1);
+$myDelay->setNum('TIME',0.25);
 
 $PE->hTapeController->respondToKey('PLAY');
 //clock should run here, even though tick doesn't
 $TW->render(215);
-$myDelay->setParam('FEEDBACK',0.5);
+$myDelay->setNum('FEEDBACK',0.5);
 $PE->hTapeController->respondToKey('STOP');
 $TW->render(50);
 $TW->close();

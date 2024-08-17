@@ -6,13 +6,9 @@ interface EventorInterface {
 
     function reset();
 
-    function setParam($name, $val);
-
-    function pushParams();
-
     function parseMidi();
 
-    function sendMidi();
+    function sendMidi($cmd, $param1 = 0, $param2 = 0);
 
     function processClock();
     

@@ -1,55 +1,83 @@
 <?php
 declare(strict_types=1);
-//can't be used by the player engine itself.
 
 abstract class ParamsAbstract {
+    abstract protected function pushNumParam($name, $val);
+    abstract protected function pushStrParam($name, $val);
+    
     //used by player, synths, effects and yada-yada.. 
-    protected $params = array();
+    protected $numParams = array();
+    protected $strParams = array();
 
     public function loadDefaultParams($path) {
         //this must not be called by player. use prepare.
         $json = file_get_contents($path);
-        $this->params = json_decode($json,true);
+        $array = json_decode($json,true);
+        $this->numParams = $array['num'];
+        $this->strParams = $array['str'];
     }
 
+    public function setNum($name, $val) {
+        if (array_key_exists($name, $this->numParams)) {
+            $this->numParams[$name] = $val;
+            $this->pushNumParam($name, $val);
+        }
+    }
 
-    public function setParam($name, $val) {
+    public function setStr($name, $val) {
         //only allow setting of key that already exists.
-        if (array_key_exists($name, $this->params)) {
-            $this->params[$name] = $val;
-            $this->pushParam($name);
+        if (array_key_exists($name, $this->strParams)) {
+            $this->strParams[$name] = $val;
+            $this->pushStrParam($name, $val);
         } else {
             //we can't do much because we don't have player-engine here.
         }
     }
 
-    protected function pushParam($name) {
-        //must be overridden by implementation
-        die('this method must be overridden');
-    }
-
-    function pushAllParams() {
-        foreach($this->params as $name) {
-            $this->pushParam($name);
+    public function pushAllParams() {
+        foreach($this->numParams as $name=>$val) {
+            $this->pushNumParam($name, $val);
+        }
+        foreach($this->strParams as $name=>$val) {
+            $this->pushStrParam($name, $val);
         }
     }
 
-    function getParam($name): string {
+    public function getNum($name): float {
         //to support waveform etc, string it must be..
-        if (array_key_exists($name, $this->params)) {
-            $val = (string) $this->params[$name];
+        if (array_key_exists($name, $this->numParams)) {
+            $val = $this->numParams[$name];
         } else {
-            $val = '';
+            $val = 0;
         }
         return $val;
     }
 
-    function getAllParams() {
-        //we can't do the the actual save right.. Different destinations..
-        //we could just return a pointer to the settings but really not cleaver right?
-        //JSON?
-        $output = $this->params;
-        return $output;
+    public function getStr($name): string {
+        //to support waveform etc, string it must be..
+        if (array_key_exists($name, $this->numParams)) {
+            $val = $this->strParams[$name];
+        } else {
+            //take a chance on me..
+            $val = 'DEFAULT';
+        }
+        return $val;
+    }
+
+    function getAllNumParams() {
+        return $this->numParams;
+    }
+
+    function getAllStrParams() {
+        return $this->strParams;
+    }
+
+    function paramsToJSON() {
+        $array = array(
+            'num' => $this->numParams,
+            'str' => $this->strParams
+        );
+        return json_encode($array, JSON_UNESCAPED_SLASHES);
     }
 
 }

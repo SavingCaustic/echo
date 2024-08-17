@@ -28,7 +28,8 @@ class CtrlCreator {
     var $debug = false;
     var $moduleXY = array(0,0);
     //output
-    var $defaults;
+    var $defaults;  //num
+    var $strDefaults;
     var $enums;
     var $bgImg;
     var $html;
@@ -194,7 +195,11 @@ class CtrlCreator {
     function saveDefaults() {
         $ctrlPath = $this->xmlFile;
         $defaultsFile = str_replace('controllers.xml','defaults.json',$ctrlPath);
-        file_put_contents($defaultsFile, json_encode($this->defaults, JSON_UNESCAPED_SLASHES));
+        $arr = array(
+            'num' => $this->defaults,
+            'str' => $this->strDefaults
+        );
+        file_put_contents($defaultsFile, json_encode($arr, JSON_UNESCAPED_SLASHES));
         //and enums..
         $enumFile = str_replace('controllers.xml','enums.json',$ctrlPath);
         file_put_contents($enumFile, json_encode($this->enums, JSON_UNESCAPED_SLASHES));
@@ -373,7 +378,6 @@ $this->html .= "};
     
     function tag_optbutton($attr, $type) {
         $this->setAttr($attr);
-        $this->defaults[$this->getAttr('name')] = 0;
         $xy = $this->getXY();
         //xy relative to module.
         $wh = $this->getWH();
@@ -382,6 +386,11 @@ $this->html .= "};
         $this->addLabel($xy);
         //generate image
         $values = explode(',',$this->getAttr('values','CAT,DOG'));
+        if ($this->getAttr('numeric') == "yes") {
+            $this->defaults[$this->getAttr('name')] = $this->getAttr('default');
+        } else {
+            $this->strDefaults[$this->getAttr('name')] = $this->getAttr('default');
+        }
         $valCount = sizeof($values);
         $this->genOptImage($this->getAttr('name'), $wh[0], $wh[1], $values,$this->font2);
         //place it, now we need the real xy.

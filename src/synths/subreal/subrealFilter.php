@@ -71,7 +71,7 @@ class SubrealFilter {
                 $output = $input - $output;
                 break;
             case self::BAND_PASS:
-                $output = $this->a1 * $input + $this->a2 * $wthis->out1 + $this->a3 * $this->out2 - $this->b1 * $this->out1 - $this->b2 * $this->out2;
+                $output = $this->a1 * $input + $this->a2 * $this->out1 + $this->a3 * $this->out2 - $this->b1 * $this->out1 - $this->b2 * $this->out2;
                 $output = $this->resonance * ($output - $this->out2) + $input;
                 break;
             default:
@@ -92,6 +92,7 @@ class SubrealFilter {
 class SubrealFilter2 { //MoogFilter
     private $cutoff;
     private $resonance;
+    private $sampleRate;
     private $f;
     private $p;
     private $q;

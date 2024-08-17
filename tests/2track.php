@@ -1,14 +1,13 @@
 <?php
-echo "sen kicka igång synth";
 require('testWriter.php');
 $TW = new TestWriter(5000);
 
 $PE = $TW->getPE();
 
-$PE->setVal('bpm', 105);
-$PE->setVal('play_mode', 'pattern');
-$PE->setVal('swing_level', 0.3);
-$PE->setVal('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
+$PE->setNum('bpm', 105);
+$PE->setNum('song_mode', 0);
+$PE->setNum('swing_level', 0.3);
+$PE->setNum('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
 
 $PE->rackSetup(1, 'beatnik');
 $myRack = $PE->getRackRef(1);
@@ -17,22 +16,30 @@ $myBeat = $myRack->getSynthRef();
 
 $PE->rackSetup(2, 'subreal');
 $myRack2 = $PE->getRackRef(2);
+
+/**
+* @var SubrealModel                  //fixes syntax in VS Code
+*/
 $mySub = $myRack2->getSynthRef();
 
 //test 1 - re-trigger same note.
-$mySub->setParam('VCA_SUSTAIN', 0.4);
-$mySub->setParam('VCA_RELEASE', 200);
-$mySub->setParam('OSC2_MODLEVEL', 0.4);
-$mySub->setParam('OSC2_MODTYPE', 'FM');
-$mySub->setParam('OSC2_OCT', -1);
-$mySub->setParam('VCF_CUTOFF', 2000);
-$mySub->setParam('VCF_RESONANCE', 0.8);
-$mySub->pushAllParams();
+$mySub->setNum('VCA_ATTACK', 0);
+$mySub->setNum('VCA_SUSTAIN', 0.8);
+$mySub->setNum('VCA_RELEASE', 200);
 
+$mySub->setNum('OSC2_MODLEVEL', 0.4);
+$mySub->setStr('OSC2_MODTYPE', 'FM');
+$mySub->setNum('OSC2_OCT', -1);
+$mySub->setNum('VCF_CUTOFF', 8000);
+$mySub->setNum('VCF_RESONANCE', 0.8);
+$mySub->pushAllParams();
 $myEV1 = $myRack2->loadEventor('octaver', 1);
 
 $PE->rackSetup(3, 'subreal');
 $myRack3 = $PE->getRackRef(3);
+/**
+* @var SubrealModel                  //fixes syntax in VS Code
+*/
 $mySub2 = $myRack3->getSynthRef();
 
 /*
@@ -78,15 +85,19 @@ $pattern['barCount'] = 2;
 $json = json_encode($pattern, JSON_UNESCAPED_SLASHES);
 $myRack3->loadPatternFromJSON($json);   //what should be reset here? as we load?
 
-$mySub2->setParam('LFO1_DEPTH', 3);
-$mySub2->setParam('VCA_RELEASE', 200);
-$mySub2->setParam('OSC2_MODLEVEL', 0.4);
-$mySub2->setParam('OSC2_MODTYPE', 'FM');
-$mySub2->setParam('OSC2_OCT', 0);
-$mySub2->setParam('VCF_ATTACK', 300);
-$mySub2->setParam('VCA_RELEASE', 1500);
-$mySub2->setParam('VCF_CUTOFF', 6000);
-$mySub2->setParam('VCF_RESONANCE', 0.8);
+$mySub2->setNum('LFO1_DEPTH', 3);
+$mySub2->setNum('VCA_RELEASE', 200);
+$mySub2->setNum('OSC2_MODLEVEL', 0.4);
+$mySub2->setStr('OSC2_MODTYPE', 'FM');
+$mySub2->setNum('OSC2_OCT', 0);
+$mySub2->setNum('VCA_ATTACK', 0);
+$mySub2->setNum('VCA_SUSTAIN', 1);
+$mySub2->setNum('VCA_RELEASE', 400);
+
+$mySub2->setNum('VCF_ATTACK', 300);
+$mySub2->setNum('VCA_RELEASE', 1500);
+$mySub2->setNum('VCF_CUTOFF', 6000);
+$mySub2->setNum('VCF_RESONANCE', 0.8);
 
 $TW->render(0);
 //$app->playMode('pattern');

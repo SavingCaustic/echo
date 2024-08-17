@@ -1,6 +1,6 @@
 <?php
 
-class SixteenerModel {
+class SixteenerModel extends ParamsAbstract implements EventorInterface {
     //super simple eventor to verify that the timing works also when not playing
     /**
      * @var Rack                  //fixes syntax in VS Code
@@ -11,7 +11,6 @@ class SixteenerModel {
     var $clockDivider;
     var $notes; //array of notes with velocety to process
     var $noteCount;
-    var $params;
     var $controllers; //array of controller values to process
 
 
@@ -19,7 +18,7 @@ class SixteenerModel {
         $this->hRack = &$rack;
         $this->position = $position;
         $this->reset(); //dunno..
-        $this->pushSettings();
+        $this->pushAllParams();
     }
 
     function reset() {
@@ -29,15 +28,19 @@ class SixteenerModel {
         $this->clockDivider = 0;
     }
 
-    function pushSettings() {
-        //experimental function that pushes settings to non-readable, optimized registers.
+    function tick() {}
+
+    function pushNumParam($name, $val) {
     }
 
-    function parseMidi($cmd, $param1 = null, $param2 = null) {
-        //act on midi command.
+    function pushStrParam($name, $val) {
     }
 
-    function sendMidi($cmd, $param1 = null, $param2 = null) {
+    function parseMidi() {
+        //act on midi command. yeah? don't get it really.
+    }
+
+    function sendMidi($cmd, $param1 = 0, $param2 = 0) {
         //this method is shared across all eventors so could be in rack actually..
         if (($this->position == 1) && (!is_null($this->hRack->hEventor2))) {
             $this->hRack->hEventor2->parseMidi($cmd, $param1, $param2);

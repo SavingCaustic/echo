@@ -6,8 +6,9 @@
             <knob name="peg_release" label="Release" xy="11,4" min="1" max="1000" size="s" curve="log"/>
             <centerknob name="peg_amp" label="Depth" xy="4,9.5" size="s" min="-12" max="12"/>
             <centerknob name="peg_amp" label="Depth" xy="4,15" size="s" min="-12" max="12"/>
-            <optbutton name="peg_target" label="Target" default="false" xy="11,15" wh="6,3" values="Osc2,None,Osc1,Osc2,O1+2"/>
+            <optbutton name="peg_target" label="Target" default="Osc1" xy="11,15" wh="6,3" values="Osc2,None,Osc1,Osc2,O1+2"/>
         </module>
+# "OSC1_WF":"sine","OSC1_MODTYPE":"off","OSC2_WF":"sine","VCF_TYPE":"false","LFO1_WF":"","LFO1_TARGET":"false","LFO2_WF":"","MW_TARGET":""}}
         <module name="osc1mix" label="OSC 1 &amp; Mix" xy="17,1" wh="32,9">
             <optbutton name="osc1_wf" label="Shape" default="sine" xy="4,4" wh="5,3" values="off,sin,tri,sqr,saw,noi,us1,us2"/>
             <knob name="osc1_modlevel" default="0.5" label="Mod*" xy="12,4" values="0,1" />
@@ -17,14 +18,14 @@
         </module>
         <module name="osc2" label="OSC 2" xy="17,12" wh="32,9">
             <optbutton name="osc2_wf" label="Shape" default="sine" xy="4,4" wh="5,3" values="off,sin,tri,sqr,saw,noi,us1,us2"/>
-            <rotaryswitch name="osc2_oct" default="0" xy="12,4" label="Octave" values="-3,-2,-1,0,1,2,3" />
-            <rotaryswitch name="osc2_semitones" default="0" xy="20,4" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
+            <rotaryswitch name="osc2_oct" default="0" numeric="yes" xy="12,4" label="Octave" values="-3,-2,-1,0,1,2,3" />
+            <rotaryswitch name="osc2_semitones" default="0" numeric="yes" xy="20,4" label="Semis" values="-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6" />
             <centerknob name="osc2_detune" xy="28,4" values="0,0.5,1" label="Detune*"/>
         </module>
         <module name="filter" xy="50,1" wh="9,20" label="Filter">
             <knob name="vcf_cutoff" label="Cutoff" default="4000" min="100" max="10000" curve="log" xy="4.5,4"/>
-            <optbutton name="vcf_type" label="Type" default="false" xy="4.5,9.5" wh="6,3" values="Off,LPF,HPF,BPF,/LPF,/HPF,/BPF"/>
-            <knob name="vcf_responance" label="Resonan." default="0" xy="4.5,15"/>
+            <optbutton name="vcf_type" label="Type" default="LPF" xy="4.5,9.5" wh="6,3" values="Off,LPF,HPF,BPF,/LPF,/HPF,/BPF"/>
+            <knob name="vcf_resonance" label="Resonan." default="0" xy="4.5,15"/>
         </module>
         <module name="vca" xy="60,1" wh="48,9" label="VCA">
             <knob name="vca_attack" default="10" min="1" max="1000" label="Attack" xy="4,4"/>
@@ -46,19 +47,19 @@
             <vslider name="volume" label="Vol" xy="3.5,9.5" size="l" _wh="3,14" min="0" max="1" default="0.7"/>
         </module>
         <module name="lfo1" xy="1,23" wh="44,9" label="LFO1">
-            <optbutton name="lfo1_wf" xy="5,4" wh="5,3" label="Shape" values="Sine,Tri,SRQ,Saw,S&amp;H" />
+            <optbutton name="lfo1_wf" xy="5,4" default="sine" wh="5,3" label="Shape" values="Sine,Tri,SRQ,Saw,S&amp;H" />
             <knob name="lfo1_speed" min="0.1" max="10" xy="13,4" label="Speed" curve="log" unit="Hz" />
             <knob name="lfo1_depth" min="0.1" max="10" xy="21,4" label="Depth" curve="log" unit="Hz" />
             <knob name="lfo1_ramp" min="0.1" max="10" xy="29,4" label="Ramp" curve="log" unit="mS" />
-            <optbutton name="lfo1_target" label="Target" default="false" xy="38,4" wh="8,3" values="Osc 1,Osc 2,Osc 1+2"/>
+            <optbutton name="lfo1_target" label="Target" default="Osc 1" xy="38,4" wh="8,3" values="Osc 1,Osc 2,Osc 1+2"/>
         </module>
         <module name="lfo2" xy="46,23" wh="28,9" label="LFO 2">
             <knob name="lfo2_speed" xy="5,4" label="Speed" min="0" max="100" unit="%" />
             <knob name="lfo2_depth" min="0.1" max="10" xy="13,4" label="Depth" curve="log" unit="Hz" />
-            <optbutton name="lfo2_wf" xy="22,4" wh="8,3" label="Target" values="Cutoff,Sine,Tri,Square,Saw,S &amp; H" />
+            <optbutton name="lfo2_wf" xy="22,4" wh="8,3" default="sine" label="Target" values="Sine,Tri,Square,Saw,S &amp; H" />
         </module>
         <module name="modwheel" xy="75,23" label="Mod.wheel" wh="14,9">
-            <optbutton name="mw_target" xy="7,4" wh="10,3" label="Target" values="LFO1 DPH,LFO1 SPD,CUTOFF,RESONAN." />
+            <optbutton name="mw_target" xy="7,4" wh="10,3" label="Target" default="lfo1_dph" values="LFO1 DPH,LFO1 SPD,CUTOFF,RESONAN." />
         </module>
         <module name="velmod" xy="90,23" wh="26,9" label="Velocity modulation">
             <knob name="velmod_vca_attack" xy="5,4" label="Attack"/>

@@ -15,18 +15,19 @@ class SubrealVoice {
 
     function __construct($synthModel) {
         $this->synthModel = &$synthModel;
-        $se = $this->synthModel->getAllParams();
+        $strSettings = $this->synthModel->getAllStrParams();
+        $numSettings = $this->synthModel->getAllNumParams();
         $this->active = false;
         //$this->lfo1 = new LFO($this->synthModel->dspCore);   //ok, this is the shared-lfo, not voice-lfo.
         $this->lfo1AR = new AR($this->synthModel->dspCore);
         $this->osc1 = new CoreOscillator($this->synthModel->dspCore);
-        $this->osc1->setWaveform($se['OSC1_WF']);
+        $this->osc1->setWaveform($strSettings['OSC1_WF']);
         $this->osc2 = new CoreOscillator($this->synthModel->dspCore);
-        $this->osc2->setWaveform($se['OSC2_WF']);
+        $this->osc2->setWaveform($strSettings['OSC2_WF']);
         $this->vcf = new ADSHR($this);
         $this->vca = new ADSHR($this);
         $this->filter = new SubrealFilter();      //maybe SubsynthFilter2 is cooler.. 
-        $this->filter->setParams('LOWPASS', $se['VCF_CUTOFF'], $se['VCF_RESONANCE']);
+        $this->filter->setParams('LOWPASS', $numSettings['VCF_CUTOFF'], $numSettings['VCF_RESONANCE']);
     }
 
     function noteOn($note, $vel) {
@@ -36,7 +37,7 @@ class SubrealVoice {
         //somehow make something out of velocity. What?
         $this->velocity = $vel; //1-127
         //$this->osc1->reset();
-        $se = $this->synthModel->getAllParams();
+        $se = $this->synthModel->getAllNumParams();
         $this->lfo1AR->reset();
         $this->lfo1AR->setAR($se['LFO1_RAMP'], 0, 'linear', 256);
         $this->vca->setValues($se['VCA_ATTACK'], $se['VCA_DECAY'], $se['VCA_SUSTAIN'], $se['VCA_HOLD'], $se['VCA_RELEASE']);
@@ -80,10 +81,12 @@ class SubrealVoice {
 
     function renderNextBlock($blockSize, $voiceIX) {        
         //for efficiency, some calculations are only done on intervals.
-        $se = $this->synthModel->getAllParams();
+        $se = $this->synthModel->getAllNumParams();
+        $seStr = $this->synthModel->getAllStrParams();
         $chunkSize = 64;
         $nextLevel = $this->lfo1AR->getNextLevel($blockSize);
         for($i=0;$i<$blockSize;$i+=$chunkSize) {
+            //maybe we should have a copy of the setting, right?
             //do filter calculations, to spare cpu, not every sample.
             $filterMod = $this->vcf->getNextLevel($chunkSize);
             $filterFreq = $se['VCF_CUTOFF'] * 0.2 + 0.8 * $se['VCF_CUTOFF'] * $filterMod;
@@ -91,10 +94,10 @@ class SubrealVoice {
             $this->filter->calcCoefficients($filterFreq, $filterRes);
             //$filterMod * $se['VCF_CUTOFF']);
             //LFO1
-            $lfoHz = $se['LFO1_RATE'];
+            $lfoHz = $se['LFO1_SPEED'];
             $lfoAmp = $se['LFO1_DEPTH'];
             $pmOsc1 = 0;
-            if ($se['LFO1_TARGET'] == 'OSC1') $pmOsc1 = $this->synthModel->lfo1Sample * $nextLevel * $lfoAmp;
+            if ($seStr['LFO1_TARGET'] == 'OSC1') $pmOsc1 = $this->synthModel->lfo1Sample * $nextLevel * $lfoAmp;
             $pmOsc2 = 0 * $pmOsc1;
             //$pmOsc1 = 0;
             //some memory here?

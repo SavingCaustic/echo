@@ -1,5 +1,5 @@
 <?php
-require('beatnikVoice.php');
+require 'beatnikVoice.php';
 require __DIR__ . '/../../utils/wavReader.php';
 
 //a 8-channel sample player. We add filters and stuff later. minimal now.
@@ -26,7 +26,6 @@ class BeatnikModel extends ParamsAbstract implements SynthInterface {
   }
 
   public function reset() {
-    $this->params = array();
     $this->setupDefaultSamples();
     $this->bufferEmpty = 0;
     $this->pushAllParams();
@@ -69,13 +68,9 @@ class BeatnikModel extends ParamsAbstract implements SynthInterface {
     }
   } 
 
-  protected function pushParam($name) {
-    //used by test-scripts so keep..
-    switch($name) {
-        CASE 'CH1_PAN':
-            break;
-    }
-  }
+  function pushNumParam($name, $val) {}
+
+  function pushStrParam($name, $val) {}
 
   public function parseMidi($cmd, $param1 = null, $param2 = null) {
     $cmdMSN = $cmd & 0xf0;
