@@ -9,12 +9,12 @@ $mySub = $myRack->getSynthRef();
 
 //$myDelay = $myRack->loadEffect('delay');
 
-$PE->setStr('time_sign','6/8');      //always quarter notes.
-$PE->setNum('bpm',50);               //always quarter notes.
+$PE->setStr('TIME_SIGN','6/8');      //always quarter notes.
+$PE->setNum('BPM',50);               //always quarter notes.
 
-$PE->setStr('play_mode', 'pattern');
-$PE->setNum('swing_level', 0.0);
-$PE->setNum('swing_cycle', 24);    //in clocks. so 24 = 1/4 => 8th swing.
+$PE->setStr('PLAY_MODE', 'pattern');
+$PE->setNum('SWING_LEVEL', 0.0);
+$PE->setNum('SWING_CYCLE', 24);    //in clocks. so 24 = 1/4 => 8th swing.
 
 $notes = array();
 $id = 1000;

@@ -108,21 +108,21 @@ class PlayerEngine extends ParamsAbstract {
 
     function pushNumParam($key, $val) {
         switch ($key) {
-            case 'bpm':
+            case 'BPM':
                 //also get time-sign and skip separate treatment for them.
                 $this->hRotator->setTempo($val);
                 break;
-            case 'master_tune':
+            case 'MASTER_TUNE':
                 $this->masterTune = $val;
                 break;
-            case 'swing_cycle':
+            case 'SWING_CYCLE':
                 //in clocks, so we're not dependent on PPQN
                 $this->swingCycle = $val; // * TPH_TICKS_PER_CLOCK;
                 break;
-            case 'swing_level':
+            case 'SWING_LEVEL':
                 $this->swingDepth = $val; //we don't know ticks in Pattern here.
                 break;
-            case 'swing_offset':
+            case 'SWING_OFFSET':
                 die('to be implemented');
                 break;
             default:
@@ -133,12 +133,12 @@ class PlayerEngine extends ParamsAbstract {
 
     function pushStrParam($key, $val) {
         switch ($key) {
-            case 'time_sign':
+            case 'TIME_SIGN':
                 $a = explode('/', $val);
                 //verify numbers?
                 //just defaults really for new patterns..
                 //$this->hRotator->setTimeSign($a[0], $a[1]);
-            case 'play_mode':
+            case 'PLAY_MODE':
                 //don't like to have string here. Should be enum or rename to song_play
                 $this->playMode = $val;
                 break;

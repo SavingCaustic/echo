@@ -4,10 +4,10 @@ $TW = new TestWriter(5000);
 
 $PE = $TW->getPE();
 
-$PE->setNum('bpm', 105);
-$PE->setNum('song_mode', 0);
-$PE->setNum('swing_level', 0.3);
-$PE->setNum('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
+$PE->setNum('BPM', 105);
+$PE->setStr('PLAY_MODE', 'pattern');
+$PE->setNum('SWING_LEVEL', 0.3);
+$PE->setNum('SWING_CYCLE', 12);    //in clocks. so 24 = 1/4 => 8th swing.
 
 $PE->rackSetup(1, 'beatnik');
 $myRack = $PE->getRackRef(1);

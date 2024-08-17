@@ -33,7 +33,12 @@ for ($row = 1; $row < sizeof($strPattern); $row++) {
 }
 
 
-$PE->setNum('bpm',105);
+$PE->setNum('BPM', 105);
+$PE->setStr('PLAY_MODE', 'pattern');
+$PE->setNum('SWING_LEVEL', 0.3);
+$PE->setNum('SWING_CYCLE', 12);    //in clocks. so 24 = 1/4 => 8th swing.
+
+
 $pattern = array(
     'notes' => $pNotes,
     'barCount' => 1,
@@ -44,8 +49,6 @@ $pattern = array(
 $json = json_encode($pattern, JSON_UNESCAPED_SLASHES);
 
 $myRack->loadPatternFromJSON($json, 1);
-$PE->setNum('swing_level', 0.3);
-$PE->setNum('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
 
 $myDelay = $myRack->loadEffect('delay');
 $myDelay->setNum('FEEDBACK',0.1);

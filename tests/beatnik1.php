@@ -11,10 +11,10 @@ $mySub = $myRack->getSynthRef();
 //$myDelay = $myRack->loadEffect('delay');
 
 $timer = microtime(true);
-$PE->setNum('bpm', 120);
-$PE->setStr('play_mode', 'pattern');
-$PE->setNum('swing_level', 0.3);
-$PE->setNum('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
+$PE->setNum('BPM', 120);
+$PE->setStr('PLAY_MODE', 'pattern');
+$PE->setNum('SWING_LEVEL', 0.3);
+$PE->setNum('SWING_CYCLE', 12);    //in clocks. so 24 = 1/4 => 8th swing.
 
 $notes = array();
 $id = 1000;

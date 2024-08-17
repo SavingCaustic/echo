@@ -1,12 +1,12 @@
 {
     "num": {
-      "bpm": 120,
-      "master_tune": 440,
-      "swing_cycle": 12,
-      "swing_level": 0
+      "BPM": 120,
+      "MASTER_TUNE": 440,
+      "SWING_CYCLE": 12,
+      "SWING_LEVEL": 0
     },
     "str": {
-      "time_sign": "4/4",
-      "play_mode": "pattern"
+      "TIME_SIGN": "4/4",
+      "PLAY_MODE": "pattern"
     }
   }

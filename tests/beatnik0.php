@@ -12,10 +12,10 @@ $mySub = $myRack->getSynthRef();
 
 $timer = microtime(true);
 $myRack->loadEventor('sixteener');
-$PE->setNum('bpm', 105);
-$PE->setStr('play_mode', 'pattern');
-$PE->setNum('swing_level', 0.1);
-$PE->setNum('swing_cycle', 12);    //in clocks. so 24 = 1/4 => 8th swing.
+$PE->setNum('BPM', 105);
+$PE->setStr('PLAY_MODE', 'pattern');
+$PE->setNum('SWING_LEVEL', 0.1);
+$PE->setNum('SWING_CYCLE', 12);    //in clocks. so 24 = 1/4 => 8th swing.
 //what here. Buttons are being
 $PE->hTapeController->respondToKey('STOP');
 //clock should run here, even though tick doesn't
