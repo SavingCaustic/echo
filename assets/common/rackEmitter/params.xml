@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<params>
+    <centerknob name="eq_high" label="Hi" xy="4,4" min="-10" max="10" default="0"/>
+    <centerknob name="eq_mid" xy="4,10" min="-10" max="10" default="0"/>
+    <centerknob name="eq_low" xy="4,16" min="-10" max="10" default="0"/>
+    <knob name="send_chorus" label="Chorus" xy="4,22" min="0" max="10" default="0"/>
+    <knob name="send_reverb" label="Reverb" xy="4,28" min="0" max="10" default="0"/>
+    <knob name="fader" label="Main" xy="4,34" min="-60" max="10" default="0"/>
+    <switch name="mute" />
+    <switch name="solo" />
+</params>

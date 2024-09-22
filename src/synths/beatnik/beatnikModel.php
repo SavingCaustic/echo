@@ -7,6 +7,7 @@ require __DIR__ . '/../../utils/wavReader.php';
 
 class BeatnikModel extends ParamsAbstract implements SynthInterface {
   //objects
+  var $rack;
   var $dspCore;
   var $voices;
   //variables
@@ -18,8 +19,10 @@ class BeatnikModel extends ParamsAbstract implements SynthInterface {
   var $settings;
   //private shared (non-voice) registers
   
-  function __construct($dspCore) {
-    $this->dspCore = &$dspCore;
+  function __construct($rack) {
+    $this->rack = &$rack;
+    $this->dspCore = &$this->rack->dspCore;
+    $this->buffer = &$this->rack->audioBuffer;
     $this->setupVoices(8);
     $this->debug = false;
     $this->reset();
@@ -91,12 +94,12 @@ class BeatnikModel extends ParamsAbstract implements SynthInterface {
     //no action
   }
 
-  function renderNextBlock() {
+  function renderNextBlock():bool {
     //make stuff not done inside chunk
     $blockSize = TPH_RACK_RENDER_SIZE;
     //only do this if needed. 
     if (!$this->bufferEmpty) {
-      $this->buffer = array_fill(0,$blockSize,0);
+      $this->buffer = array_fill(0,$blockSize * 2,0);
       $this->bufferEmpty = true;
     }
     //iterate over all voices and create a summed output.
@@ -108,5 +111,6 @@ class BeatnikModel extends ParamsAbstract implements SynthInterface {
         $this->bufferEmpty = false;
       }
     }
+    return true;
   }
 }

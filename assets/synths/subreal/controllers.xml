@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <view theme="dark">
+#this is mostly kept for historical reasons. We probably can't use this for much.
     <panel size="120x35" bgcolor="#403020">
         <module name="peg" xy="1,1" wh="15,20" label="PEG">
             <knob name="peg_attack" label="Attack" xy="4,4" min="1" max="1000" size="s" curve="log"/>

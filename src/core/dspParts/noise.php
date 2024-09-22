@@ -19,12 +19,13 @@ class NoiseOsc {
         return $this->seed / $this->c * 2 - 1;
     }
 
-    function getSamples($cnt) {
+    function genSamples(&$buffer, $cnt, $monoJump = false) {
+        //this *could* be mono but since noiser has no voices, make it stearo now.
         $samples = array();
-        for($i=0;$i<$cnt;$i++) {
+        $inc = $monoJump ? 2 : 1;
+        for($i=0;$i<$cnt;$i = $i + $inc) {
             $this->seed = ($this->a * $this->seed + $this->b) % $this->c;
-            $samples[] = $this->seed / $this->c * 2 - 1;
+            $buffer[$i] = $this->seed / $this->c * 2 - 1;
         }
-        return $samples;
     }
 }

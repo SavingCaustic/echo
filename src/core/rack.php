@@ -7,13 +7,14 @@ require(__DIR__ . '/patternPlayer.php');
 require(__DIR__ . '/../synths/synthInterface.php');
 require(__DIR__ . '/../eventors/eventorInterface.php');
 require(__DIR__ . '/../effects/effectInterface.php');
+require(__DIR__ . '/../common/rackEmitter/rackEmitter.php');
 
 //maybe this class should be split into a rack- and a pattern-player class.
 //any settings here??
 
 class Rack {
     var $playerEngine;
-
+    //
     var $rackIdx;
     var $dspCore;
     //                      
@@ -22,7 +23,8 @@ class Rack {
     var $swingDepth;        //0 - 1
     var $swingDebug = false;
 
-    var $bufferOut;
+    var $audioBuffer;       //all it pointing to this.
+    var $audioIsStereo;     //this is *probably* just for the summing-master to pick up. DSP-chain inside rack uses return arg to tell if stereo.
     //
     var $hPatternPlayer;    //we may not use it on eventors but keeps the code small.
     var $nextPattern;       //array of next pattern events (to be written)
@@ -47,14 +49,17 @@ class Rack {
      */
     var $hEffect1;
     var $hEffect2;
+    //the output is a bit different since it feeds to chorus & reverb. Not just an average effect
+    //eq is fine to do in pool but reverb and chorus is harder.
+    var $hRackEmitter;
 
     function __construct($rackIdx, &$playerEngine) {
         //store so we now outselfs which rack we're at.
         $this->rackIdx = $rackIdx;
         $this->playerEngine = &$playerEngine;
-        //i want dspCore to GO AWAY
-        $this->dspCore = new DSPCore(TPH_SAMPLE_RATE, $this->playerEngine->masterTune, TPH_RACK_RENDER_SIZE, $this->playerEngine->appDir);
+        $this->dspCore = &$this->playerEngine->dspCore;
         $this->hPatternPlayer = new PatternPlayer($this);
+        $this->hRackEmitter = new RackEmitter();
         //these are not mandatory.
         $this->hSynth = null;
         $this->hEventor1 = null;
@@ -68,8 +73,9 @@ class Rack {
         $this->swingCycle = 96;
         $this->swingDepth = 0;
         $this->clock24 = 0;
-        $this->bufferOut = array_fill(0, TPH_RACK_RENDER_SIZE, 0);
         $this->hPatternPlayer->reset();
+        $this->audioBuffer = array_fill(0, TPH_RACK_RENDER_SIZE * 2, 0);
+        $this->audioIsStereo = false;
     }
 
     function loadEventor($eventorName, $slot = 1) {
@@ -98,7 +104,7 @@ class Rack {
         require_once($this->playerEngine->appDir . '/src/synths/' . $synthName . '/' . $synthName . 'Model.php');
         //name of model to avoid name-conflicts?
         $class = $synthName . 'Model';
-        $this->hSynth = new $class($this->dspCore);
+        $this->hSynth = new $class($this);
         // should call ->reset on construct $this->hSynth->init();
     }
 
@@ -220,19 +226,22 @@ class Rack {
         }
     }
 
-
     function render($blocks) {
         //blocks could be useful for pre-rendering of background tracks..
         for ($i = 0; $i < $blocks; $i++) {
-            $this->hSynth->renderNextBlock();
-            $this->bufferOut = $this->hSynth->buffer;
+            $isStereo = $this->hSynth->renderNextBlock(); //$this->audioBuffer, false);
+            //$this->bufferOut = $this->hSynth->buffer;
             if (!is_null($this->hEffect1)) {
-                $this->hEffect1->process($this->bufferOut);
+                $isStereo = $this->hEffect1->process($this->audioBuffer, $isStereo); //$this->bufferOut);
             }
             if (!is_null($this->hEffect2)) {
-                $this->hEffect2->process($this->bufferOut);
+                $isStereo = $this->hEffect2->process($this->audioBuffer, $isStereo); //$this->bufferOut);
             }
+            //EQ, pan & fader
+            $isStereo = $this->hRackEmitter->process($this->audioBuffer, $isStereo);
         }
+        //save stereo-info to the summing function later on..
+        $this->audioIsStereo = $isStereo;
     }
 
     function loadPatch($target, $patchName) {

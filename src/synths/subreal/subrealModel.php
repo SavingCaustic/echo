@@ -3,9 +3,11 @@ require('subrealVoice.php');
 
 //This is *not* the controller. It needs to be run in the audio-thread.
 //settings are not midi-based but optimized for distribution to units.
+//(it's however not *setup* in the audio-thread)
 
 class SubrealModel extends ParamsAbstract implements SynthInterface {
     //objects
+    var $rack;
     var $dspCore;
     var $lfo1;
     var $voices;
@@ -23,10 +25,14 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
     var $osc2_modLevel;
     var $osc_mix;
 
-    function __construct($dspCore) {
-        $this->dspCore = &$dspCore;
+    function __construct($rack) {
+        $this->rack = &$rack;
+        $this->dspCore = &$this->rack->dspCore;
+        $this->buffer = &$this->rack->audioBuffer;
         $this->lfo1 = new LFO($this->dspCore);   //ok, this is the shared-lfo, not voice-lfo.
         $this->debug = false;
+        $this->setHowAmI('synths/subreal');
+        $this->initCtrlData($this->dspCore->appDir);
         $this->initSettings();
         //needs settings above..
         $this->setupVoices(4);
@@ -39,7 +45,8 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
     }
 
     function initSettings() {
-        $this->loadDefaultParams(__DIR__ . '/defaults.json');
+        //well i guess this has to go right?
+        $this->loadDefaultParams();
     }
 
     public function pushNumParam($name, $val) {
@@ -148,8 +155,8 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
         return $targetVoice;
     }
 
-    function renderNextBlock() {
-        //make stuff not done inside chunk
+    function renderNextBlock():bool {
+        //make stuff not done inside chunk.
         $blockSize = TPH_RACK_RENDER_SIZE;
         //LFO1
         $se = $this->settings;
@@ -158,7 +165,7 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
         //iterate over all voices and create a summed output.
         $voiceCount = sizeof($this->voices);
         $blockCreated = false;
-        $this->buffer = array_fill(0, $blockSize, 0);
+        $this->buffer = array_fill(0, $blockSize * 2, 0);
         for ($i = 0; $i < $voiceCount; $i++) {
             $myVoice = &$this->voices[$i];
             if ($myVoice->checkVoiceActive()) {
@@ -171,7 +178,7 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
             $distLevel = 2.5; //dunno really what to make of this. Should i have voice-amp based on voices?
             $distFactor = 1.4;
             $distFactorNeg = 2.2;
-            for ($i = 0; $i < $blockSize; $i++) {
+            for ($i = 0; $i < $blockSize * 2; $i++) {
                 if ($this->buffer[$i] > $distLevel) {
                     //multiplication-factor lowering as we go over 0.9
                     $factor = pow(($distLevel / $this->buffer[$i]), $distFactor);
@@ -182,5 +189,7 @@ class SubrealModel extends ParamsAbstract implements SynthInterface {
                 }
             }
         }
+        //always stereo for now..
+        return true;
     }
 }

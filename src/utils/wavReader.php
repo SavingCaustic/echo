@@ -3,6 +3,9 @@
 class WavReader {
     //could probably do quite much in the end, scrubbing etc.
     //minimal now.
+    function wavPrepare($wavFile) {
+        //get info about stereo and samplefrequency. Audo-conversion of 44.1 => 48. meh. bad quality.
+    }
 
     function wav2buffer($wavFile) {
         //open a wav-file, verify it's not to big and load it into buffer-pointer.

@@ -4,10 +4,35 @@ declare(strict_types=1);
 abstract class ParamsAbstract {
     abstract protected function pushNumParam($name, $val);
     abstract protected function pushStrParam($name, $val);
+    //
+    protected static $whoAmI = '';
+    protected static $ctrlData = null;  //maybe these aren't split in num and str?
+    protected static $ctrlOptions = null;
     
     //used by player, synths, effects and yada-yada.. 
     protected $numParams = array();
     protected $strParams = array();
+
+    protected function setHowAmI($str) {
+        self::$whoAmI = $str;
+    }
+
+    protected function initCtrlData($appDir) {
+        if (self::$ctrlData === null) {
+            $dir = $appDir . '/assets/' . self::$whoAmI . '/';
+            //load json-file from assets library.
+            self::$ctrlData = json_decode(file_get_contents($dir . 'ctrl_defaults.json'), true);
+            self::$ctrlOptions = json_decode(file_get_contents($dir . 'ctrl_options.json'), true);
+        }
+    }
+
+    public function getCtrlInfo($name, $key) {
+        //key could be min, max, log, options. i dunno..
+        if (self::$ctrlData === null) {
+            //load the json, (must NOT be done by player)
+
+        }
+    }
 
     public function loadDefaultParams($path) {
         //this must not be called by player. use prepare.

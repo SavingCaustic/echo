@@ -46,12 +46,14 @@ class ButterworthFilter {
         $this->a = [1, $a1 / $a0, $a2 / $a0];
     }
 
-    public function applyFilter($data,$mix) {
-        $filtered_data = [];
-
-        foreach ($data as $value) {
+    public function applyFilter(&$data,$mix) {
+        //this could really be an effect instead but for now..
+        for($i = 0; $i < TPH_RACK_RENDER_SIZE * 2; $i = $i + 2) {
+            //run mono signal through filter
+            $value = ($data[$i] + $data[$i+1]) / 2;
             $filtered_value = $this->b[0] * $value + $this->b[1] * $this->x[0] + $this->b[2] * $this->x[1] - $this->a[1] * $this->y[0] - $this->a[2] * $this->y[1];
-            $filtered_data[] = $filtered_value * $mix + $value * (1-$mix);
+            $data[$i] = $filtered_value * $mix + $data[$i] * (1-$mix);
+            $data[$i+1] = $filtered_value * $mix + $data[$i+1] * (1-$mix);
 
             // Shift the old values
             $this->x[1] = $this->x[0];
@@ -60,8 +62,6 @@ class ButterworthFilter {
             $this->y[1] = $this->y[0];
             $this->y[0] = $filtered_value;
         }
-
-        return $filtered_data;
     }
 }
 

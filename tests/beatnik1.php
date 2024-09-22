@@ -1,7 +1,7 @@
 <?php
 echo "Testing pattern running on PLAY. With 2-bar looping. \r\n";
 require('testWriter.php');
-$TW = new TestWriter(20000);
+$TW = new TestWriter(10000,48000,true);
 
 $PE = $TW->getPE();
 $PE->rackSetup(1, 'beatnik');

@@ -46,15 +46,17 @@ class BeatnikVoice {
     }
 
     function renderNextBlock($blockSize, $voiceIX) {        
-        for ($i = 0; $i < $blockSize; $i++) {
+        for ($i = 0; $i < $blockSize * 2; $i = $i + 2) {
             if ($this->samplePtr < $this->sampleSize) {
-                $this->synthModel->buffer[$i] += //($this->sample[$this->samplePtr++]) * $this->vel/127; 
-                    $this->filter->applyFilter($this->sample[$this->samplePtr++]) * $this->vel/127;
+                $sample = $this->filter->applyFilter($this->sample[$this->samplePtr++]) * $this->vel/127; 
+                //attenuate to standard? to allow EQ to function..
+                $this->synthModel->buffer[$i] += $sample; 
+                $this->synthModel->buffer[$i+1] += $sample; 
             } else {
                 $this->synthModel->buffer[$i] += 0;
+                $this->synthModel->buffer[$i + 1] += 0;
                 $this->active = false;
             }    
         }
     }
- 
 }

@@ -19,12 +19,11 @@ class NoiseOsc {
         return $this->seed / $this->c * 2 - 1;
     }
 
-    function getSamples($cnt) {
-        $samples = array();
+    function genSamples(&$buffer, $cnt, $monoJump = false) {
+        $m = $monoJump ? 2 : 1;
         for($i=0;$i<$cnt;$i++) {
             $this->seed = ($this->a * $this->seed + $this->b) % $this->c;
-            $samples[] = $this->seed / $this->c * 2 - 1;
+            $buffer[$i * $m] = $this->seed / $this->c * 2 - 1;
         }
-        return $samples;
     }
 }

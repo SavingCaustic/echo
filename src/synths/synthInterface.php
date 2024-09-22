@@ -7,7 +7,7 @@ interface SynthInterface {
 
     function parseMidi($cmd, $param1 = null, $param2 = null);
 
-    function renderNextBlock();
+    function renderNextBlock(): bool;
 
     //function noteOn($note, $vel);
 

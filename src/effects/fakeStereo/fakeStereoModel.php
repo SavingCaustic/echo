@@ -1,6 +1,6 @@
 <?php
 
-class DelayModel extends ParamsAbstract implements effectInterface {
+class FakeStereoModel extends ParamsAbstract implements effectInterface {
     //simple delay acting more or less as an interface for writing effects
     var $rackRef;
     var $lfp;
@@ -19,7 +19,7 @@ class DelayModel extends ParamsAbstract implements effectInterface {
         //$this->lpf = new ButterLPFopt(44100,1000);
         $this->fifoSize = 48000; //0.5 sec max. Fixed array best for performance?
         $this->fifoIdx = 0;
-        $this->fifoMax = 1000;
+        $this->fifoMax = 100;
         $this->reset();
     }
 
@@ -30,21 +30,21 @@ class DelayModel extends ParamsAbstract implements effectInterface {
     public function reset() {
         //imitate synth right..
         //should really be read from XML
-        $this->fifo = array_fill(0,$this->fifoSize,0);
+        $this->fifo = array_fill(0, $this->fifoSize, 0);
 
         $this->numParams = array(
             'FEEDBACK' => 0.1,
             'TIME' => 0.25,
-            'MIX'=> 0.5
+            'MIX' => 0.5
         );
         $this->pushAllParams();
 
         //save these default settings to be picked up by www-player
-        file_put_contents(__DIR__ . '/defaults.json',json_encode($this->params));
+        file_put_contents(__DIR__ . '/defaults.json', json_encode($this->params));
     }
 
     function pushNumParam($name, $val) {
-        switch($name) {
+        switch ($name) {
             case 'FEEDBACK':
                 $this->feedback = $val;
                 break;
@@ -54,40 +54,29 @@ class DelayModel extends ParamsAbstract implements effectInterface {
             case 'TIME':
                 $fifoReqSize = floor($val * TPH_SAMPLE_RATE * 1.1);
                 if ($fifoReqSize > $this->fifoSize) $fifoReqSize = $this->fifoSize;
-                $this->fifoMax = $fifoReqSize;    
+                $this->fifoMax = $fifoReqSize;
                 break;
         }
     }
 
-    function pushStrParam($name, $val) {}
+    function pushStrParam($name, $val) {
+    }
 
-    function process(&$buffer): bool {     
-        //haven't taken stereo into account have I?   
-        $bufferSize = TPH_RACK_RENDER_SIZE;
-        $bufferOut = array();
-        for($i=0;$i<$bufferSize;$i++) {
+    function process(&$buffer):bool {
+        //we assume signal is mono, on left side
+        $bufferSize = TPH_RACK_RENDER_SIZE * 2;
+        for ($i = 0; $i < $bufferSize; $i = $i + 2) {
             $echo = $this->fifo[$this->fifoIdx];
-            //$this->lpf->setCutoffFrequency(200);
-            //$echo = $this->lpf->filter($echo);  //meebe 
-            //$echo = $this->lpf->filter($echo) * 0.5;
-            //push value from buffer to ring-buffer, possibly with some feedback
             $feedback = $echo * $this->feedback;
-            //$feedback = $this->lpf->filter($feedback);
             $this->fifo[$this->fifoIdx] = $buffer[$i] + $feedback;
             if ($this->fifoIdx > $this->fifoMax) {
                 $this->fifoIdx = 0;
             } else {
                 $this->fifoIdx++;
             }
-            //$this->fifoIdx++;
-            //$this->fifoIdx %= floor(44.1 * $this->time);
-            //throw back the signal to the buffer.
-            //mix = 0 = dry, 1 = wet
-            $sample = $echo * $this->mix + $buffer[$i] * (1-$this->mix);
-            $buffer[$i] = $sample;
-            //$bufferOut[$i] = $sample;            
+            $sample = $echo * $this->mix + $buffer[$i] * (1 - $this->mix);
+            $buffer[$i+1] = $sample;
         }
-        return false;   //should probably support stereo too.
+        return true;    //is now stereo
     }
 }
-

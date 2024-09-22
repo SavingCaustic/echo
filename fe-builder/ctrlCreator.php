@@ -30,7 +30,8 @@ class CtrlCreator {
     //output
     var $defaults;  //num
     var $strDefaults;
-    var $enums;
+    var $options;   //fixed vales
+    var $strOptions;   //fixed vales
     var $bgImg;
     var $html;
     var $imgWidths = array();
@@ -40,7 +41,7 @@ class CtrlCreator {
     function __construct() {
         $this->debug = false;
         if (!function_exists('imagepng')) {
-            die('you *really* need imagegd extension for this to work..');
+            die('you *really* need imagegd (php-gd) extension for this to work AND the php-simple-xml..');
         }
         //get the argument (xml filename) and store
         if (array_key_exists('argv', $_SERVER)) {
@@ -64,6 +65,8 @@ class CtrlCreator {
         }
         //now we need to know what to output.
         //default is to output html and save image as tmp_bg.png
+        $this->options = array();
+        $this->strOptions = array();
     }
 
     function parseXml() {
@@ -139,7 +142,7 @@ class CtrlCreator {
     }
 
     function addDefault($name) {
-        $this->defaults[$name] = rand(0,127); //$this->getAttr('default',0);
+        $this->defaults[$name] = $this->getAttr('default',0);
     }
 
     function getXY() {
@@ -194,15 +197,19 @@ class CtrlCreator {
 
     function saveDefaults() {
         $ctrlPath = $this->xmlFile;
-        $defaultsFile = str_replace('controllers.xml','defaults.json',$ctrlPath);
+        $defaultsFile = str_replace('controllers.xml','ctrl_defaults.json',$ctrlPath);
         $arr = array(
             'num' => $this->defaults,
             'str' => $this->strDefaults
         );
         file_put_contents($defaultsFile, json_encode($arr, JSON_UNESCAPED_SLASHES));
         //and enums..
-        $enumFile = str_replace('controllers.xml','enums.json',$ctrlPath);
-        file_put_contents($enumFile, json_encode($this->enums, JSON_UNESCAPED_SLASHES));
+        $optionsFile = str_replace('controllers.xml','ctrl_options.json',$ctrlPath);
+        $arr = array(
+            'num' => $this->options,
+            'str' => $this->strOptions
+        );
+        file_put_contents($optionsFile, json_encode($arr, JSON_UNESCAPED_SLASHES));
     }
 
     function tag_comment($attr,$type) {
@@ -538,9 +545,9 @@ $this->html .= "};
         //angle is *not* 270 like real pot, but 256 to match range of CC.
         $angle = 256 / (sizeof($valArr)-1);
         $dotPotSize = 41;
-        $enums = [];
+        $options = [];
         for($i=0;$i<sizeof($valArr);$i++) {
-            $enums[] = $valArr[$i];
+            $options[] = $valArr[$i];
             $radAngle = round(-128+360+$angle*$i) % 360 / 180 * pi();
             $dotSin = round(cos($radAngle) * $dotPotSize) * -1;
             $dotCos = round(sin($radAngle) * $dotPotSize);
@@ -548,7 +555,8 @@ $this->html .= "};
             //die($values);
             imagefilledellipse($this->bgImg, $xy[0] + $dotCos, $xy[1] + $dotSin, 6, 6, $this->col3);
         }
-        $this->enums[$this->getAttr('name')] = $enums;
+        //somehow allow strOptions later for sine etc. 
+        $this->options[$this->getAttr('name')] = $options;
         $this->addLabel($xy);
         //HTML
         $xy = $this->getRelXY(60);

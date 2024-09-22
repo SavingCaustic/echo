@@ -25,6 +25,7 @@ class PlayerEngine extends ParamsAbstract {
     public $swingCycle;
     public $swingDepth;
     public $isPlaying;                 //if patterns are running..
+    public $audioBuffer;               //this is the buffer being pushed to audio-card. (interleaved stereo)
 
     protected $rackCount;                 //maximum racks
     protected $audioBufferSize;           //run-time adjustable (restart of audio device needed)
@@ -33,6 +34,8 @@ class PlayerEngine extends ParamsAbstract {
     protected $clockReset;
 
     protected $playPatterns;              //playPatterns. (Timing for eventors and effects are running always.)
+
+    public $dspCore;                 //LUT and DSP building blocks.
 
     protected $hErrorLog;
     protected $hMetronome;
@@ -59,12 +62,13 @@ class PlayerEngine extends ParamsAbstract {
         require('../appdir.php');
         $this->appDir = getAppDir();
         $this->audioBufferSize = 1024;
+        $this->audioBuffer = array_fill(0, $this->audioBufferSize * 2, 0);  //floats or ints?
         $this->masterTune = 440;
         $this->rackCount = TPH_RACK_COUNT;
         //global swing settings when not overridden by pattern
         $this->swingCycle = 96;
         $this->swingDepth = 0;
-
+        $this->dspCore = new DSPCore(TPH_SAMPLE_RATE, $this->masterTune, TPH_RACK_RENDER_SIZE, $this->appDir);
         $this->hErrorLog = new ErrorLog();
         $this->hRotator = new Rotator($this);
         $this->hTapeController = new TapeController($this);
@@ -163,7 +167,6 @@ class PlayerEngine extends ParamsAbstract {
 
     function renderNextBlock($debug = 0) {
         $outerCnt = $this->audioBufferSize / TPH_RACK_RENDER_SIZE;
-        $masterWave = array();
         if ($this->clockReset) {
             //ok, we need to iterate over all racks and set clock to zero.
             $this->clockReset = false;
@@ -175,7 +178,7 @@ class PlayerEngine extends ParamsAbstract {
                 }
             }
         }
-
+        $this->audioBuffer = array_fill(0, $this->audioBufferSize * 2, 0);  //floats or ints?
         for ($outer = 0; $outer < $outerCnt; $outer++) {
             $this->manageMidiInBuffer();                        //will be forwarded to resp rack
             for ($i = 0; $i < $this->rackCount; $i++) {         //iterate over (t)racks. USE threads MULTI-CORE HERE
@@ -185,20 +188,28 @@ class PlayerEngine extends ParamsAbstract {
                     $this->hRacks[$i]->render(1);
                 }
             }
-            // calculate master-wave for the rackRenderSize-block
-            $wave = array_fill(0, TPH_RACK_RENDER_SIZE, 0);
-            //this is more or less the mixer. SIMD would be nice here..
+            //now we should send sum of signals to reverb and delay, 
+            //well. we *could* wait with this to outside outer..
+            $delay = array_fill(0, TPH_RACK_RENDER_SIZE * 2, 0);
+            $reverb = array_fill(0, TPH_RACK_RENDER_SIZE * 2, 0); //reverb fake stereo for simplicity.
             for ($i = 0; $i < $this->rackCount; $i++) {
                 if (!is_null($this->hRacks[$i])) {
-                    for ($j = 0; $j < TPH_RACK_RENDER_SIZE; $j++) {
-                        $wave[$j] += $this->hRacks[$i]->bufferOut[$j];
+                    $this->hRacks[$i]->audioIsStereo = false;
+                    $rOffset = ($this->hRacks[$i]->audioIsStereo ? 1 : 0);
+                    for ($j = 0; $j < TPH_RACK_RENDER_SIZE * 2; $j = $j + 2) {
+                        $leftSample = $this->hRacks[$i]->audioBuffer[$j];
+                        $rightSample = $this->hRacks[$i]->audioBuffer[$j + 1];
+                        $delay[$j] += $leftSample * 0.5; //delay level * pan?
+                        $delay[$j + 1] += $rightSample * 0.5;
+                        //mono
+                        $reverb[$j] += ($leftSample + $rightSample) * 0.5; // * $lGain;
+                        $reverb[$j + 1] += ($leftSample + $rightSample) * 0.5; // * $lGain;
+                        //we should get reverb response here but never mind..
+                        $mainPtr = $j + $outer * 2 * TPH_RACK_RENDER_SIZE;
+                        $this->audioBuffer[$mainPtr] += $leftSample;
+                        $this->audioBuffer[$mainPtr + 1] += $rightSample;
                     }
                 }
-            }
-            //now output
-            $targetIX = $outer * TPH_RACK_RENDER_SIZE;
-            for ($i = 0; $i < TPH_RACK_RENDER_SIZE; $i++) {
-                $masterWave[$targetIX + $i] = $wave[$i];
             }
             //rotate the main wheel so the rest can follow
             $newEight = $this->hRotator->frameTurn();
@@ -211,7 +222,27 @@ class PlayerEngine extends ParamsAbstract {
                 }
             }
         }
-        return $masterWave;
+    }
+
+    function vol2gain($vol): float {
+        //should be moved to math
+        //vol is given in -dB right
+        if ($vol > 6) $vol = 6;     //ears are sensitivte stuff.
+        $gain = pow(0.5, ($vol / -6));
+        return $gain;
+    }
+
+    function panGain($pan, $right = false) {
+        if ($right) {
+            //0 - 1
+            //gain_right = std::sin((M_PI / 2) * ((pan + 1) / 2.0f));
+            $gain = sin((M_PI / 2) * ($pan + 1) / 2);
+        } else {
+            //-1 - 0
+            //gain_left = std::cos((M_PI / 2) * ((pan + 1) / 2.0f));
+            $gain = cos((M_PI / 2) * ($pan + 1) / 2);
+        }
+        return $gain;
     }
 
     function manageMidiInBuffer() {

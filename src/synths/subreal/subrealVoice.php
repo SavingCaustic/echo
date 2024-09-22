@@ -5,13 +5,15 @@ class SubrealVoice {
     var $synthModel;
     var $active;
     var $note;
-    var $velocilty;
+    var $velocity;
     var $osc1;
     var $osc2;
     var $lfo1AR;
     var $vcf;
     var $vca;
     var $filter;
+    var $voiceAmpL;  //set on noteOn and calculation
+    var $voiceAmpR;  //set on noteOn and calculation
 
     function __construct($synthModel) {
         $this->synthModel = &$synthModel;
@@ -28,6 +30,8 @@ class SubrealVoice {
         $this->vca = new ADSHR($this);
         $this->filter = new SubrealFilter();      //maybe SubsynthFilter2 is cooler.. 
         $this->filter->setParams('LOWPASS', $numSettings['VCF_CUTOFF'], $numSettings['VCF_RESONANCE']);
+        $this->voiceAmpL = 1;
+        $this->voiceAmpR = 0.5;
     }
 
     function noteOn($note, $vel) {
@@ -131,10 +135,10 @@ class SubrealVoice {
                 }
                 $sample = $osc1_sample * (1 - $this->synthModel->osc_mix) + $osc2_sample * ($this->synthModel->osc_mix); 
                 //feed the sample into the VCF somehow..
-                $sample = $this->filter->applyFilter($sample) * $ampMod;
+                $sample = $this->filter->applyFilter($sample) * $ampMod * 1;
                 //
-                //$sample *= $ampMod; //introduces noise * (0.5 + sqrt(abs($pitchMod*0.1)));
-                $this->synthModel->buffer[$i+$j] += $sample * 0.5; //0.5 = really 1/voicecount..
+                $this->synthModel->buffer[2*($i+$j)] += $sample * $this->voiceAmpL;
+                $this->synthModel->buffer[2*($i+$j)+1] += $sample * $this->voiceAmpR;
             }
         }
     }

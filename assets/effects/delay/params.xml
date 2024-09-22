@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<params>
+    <knob name="time" label="Time" xy="4,4" min="0" max="10"/>
+    <knob name="feedback" label="Feedback" xy="11,4" min="0" max="10"/>
+    <knob name="mix" label="Dry/Wet" xy="4,11" min="0" max="10"/>
+</params>

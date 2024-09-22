@@ -40,7 +40,25 @@ class DspCore {
     $this->setupWavetables();
   }
 
-  function setupWavetables() {
+  function noteToHz($note, $cent = 0) {
+    return $this->noteToHzET($note, $cent);
+  }
+
+  function noteToHzET($note, $cent = 0) {
+    //note = float!
+    //return $this->masterTune * pow($this->e12,$note - 69 + $cent / 100);
+    //improved:
+    //$oct = ($note - 69 + $cent / 100)/12;
+    //return $this->masterTune * pow(2,$oct);
+    return $this->masterTune * exp($this->ln2 * ($note - 69 + $cent / 100)/12);
+  }
+
+  function noteToHzMean($note, $cent = 0) {
+    return $this->masterTune * exp($this->ln1dot2 * ($note - 69 + $cent / 100)/4);
+    //return $this->masterTune * exp($this->ln1dot5 * ($note - 69 + $cent / 100)/7);
+  }
+
+  private function setupWavetables() {
     //wavetables of sin, tri, square, saw and noise.
     $a = array();
     $sineSize = 1024;
@@ -91,24 +109,6 @@ class DspCore {
     }
     $this->waveTables['noise'] = $a;
 
-  }
-
-  function noteToHz($note, $cent = 0) {
-    return $this->noteToHzET($note, $cent);
-  }
-
-  function noteToHzET($note, $cent = 0) {
-    //note = float!
-    //return $this->masterTune * pow($this->e12,$note - 69 + $cent / 100);
-    //improved:
-    //$oct = ($note - 69 + $cent / 100)/12;
-    //return $this->masterTune * pow(2,$oct);
-    return $this->masterTune * exp($this->ln2 * ($note - 69 + $cent / 100)/12);
-  }
-
-  function noteToHzMean($note, $cent = 0) {
-    return $this->masterTune * exp($this->ln1dot2 * ($note - 69 + $cent / 100)/4);
-    //return $this->masterTune * exp($this->ln1dot5 * ($note - 69 + $cent / 100)/7);
   }
 
 }

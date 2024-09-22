@@ -1,7 +1,7 @@
 <?php
 echo "Testing eventor running without play command. \r\n";
 require('testWriter.php');
-$TW = new TestWriter(20000);
+$TW = new TestWriter(10000,48000,true);
 
 $PE = $TW->getPE();
 $PE->rackSetup(1, 'beatnik');
@@ -23,3 +23,11 @@ $TW->render(120);
 $myRack->unloadEventor(1);
 $TW->render(20);
 $TW->close();
+
+
+//this can be an *external* script working to the API.
+//POST /core/doReset
+//POST /racks/add
+//POST /racks/1/setSynth
+
+//so http server for testing. yup. 

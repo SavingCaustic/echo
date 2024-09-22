@@ -8,7 +8,7 @@ interface EffectInterface {
     //called at end of __construct
 
     //function process(&$ptrBuffer);
-    function process(&$bufferOut);
+    function process(&$bufferOut): bool;
     //dsp process
 
     function processClock();
