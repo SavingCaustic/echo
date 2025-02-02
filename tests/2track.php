@@ -1,6 +1,6 @@
 <?php
 require('testWriter.php');
-$TW = new TestWriter(5000);
+$TW = new TestWriter(5000, 48000, false);
 
 $PE = $TW->getPE();
 
@@ -18,8 +18,8 @@ $PE->rackSetup(2, 'subreal');
 $myRack2 = $PE->getRackRef(2);
 
 /**
-* @var SubrealModel                  //fixes syntax in VS Code
-*/
+ * @var SubrealModel                  //fixes syntax in VS Code
+ */
 $mySub = $myRack2->getSynthRef();
 
 //test 1 - re-trigger same note.
@@ -38,8 +38,8 @@ $myEV1 = $myRack2->loadEventor('octaver', 1);
 $PE->rackSetup(3, 'subreal');
 $myRack3 = $PE->getRackRef(3);
 /**
-* @var SubrealModel                  //fixes syntax in VS Code
-*/
+ * @var SubrealModel                  //fixes syntax in VS Code
+ */
 $mySub2 = $myRack3->getSynthRef();
 
 /*
@@ -50,7 +50,7 @@ $p1 = array();
 for ($i = 0; $i < 16; $i++) {
     $p1[$i] = array(
         'id' => $i,
-        'tick' => $i * 48,
+        'tick' => $i * 60,
         'note' => $i + 46,
         'len' => 24,
         'vel' => rand(50, 100)
@@ -72,8 +72,8 @@ $notes = array();
 for ($j = 0; $j < 3; $j++) {
     for ($i = 0; $i < 3; $i++) {
         $notes[] = array(
-            'id' => $i+($j*5+1),
-            'tick' => 0 + 48*6*$j,
+            'id' => $i + ($j * 5 + 1),
+            'tick' => 0 + 60 * 6 * $j,
             'note' => 78 + $i * 7 - $j,
             'len' => 250,
             'vel' => 80

@@ -1,6 +1,6 @@
 <?php
 require('testWriter.php');
-$TW = new TestWriter(20000);
+$TW = new TestWriter(30000, 44100, true);
 
 $PE = $TW->getPE();
 
@@ -22,9 +22,9 @@ for ($row = 1; $row < sizeof($strPattern); $row++) {
     for ($i = 0; $i < 16; $i++) {
         if ($pRow[$i] == 'x') {
             $pNotes[] = array(
-                'id' => $i + $row*16, 
-                'tick' => $i * 48, 
-                'note' => $notes[$row], 
+                'id' => $i + $row * 16,
+                'tick' => $i * 60,
+                'note' => $notes[$row],
                 'len' => 24,
                 'vel' => 70
             );
@@ -51,13 +51,13 @@ $json = json_encode($pattern, JSON_UNESCAPED_SLASHES);
 $myRack->loadPatternFromJSON($json, 1);
 
 $myDelay = $myRack->loadEffect('delay');
-$myDelay->setNum('FEEDBACK',0.1);
-$myDelay->setNum('TIME',0.25);
+$myDelay->setNum('FEEDBACK', 0.1);
+$myDelay->setNum('TIME', 0.25);
 
 $PE->hTapeController->respondToKey('PLAY');
 //clock should run here, even though tick doesn't
 $TW->render(215);
-$myDelay->setNum('FEEDBACK',0.5);
+$myDelay->setNum('FEEDBACK', 0.5);
 $PE->hTapeController->respondToKey('STOP');
 $TW->render(50);
 $TW->close();

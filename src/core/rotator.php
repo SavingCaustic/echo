@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class Rotator {
     //protected $playerEngine;
-    public    $pulse;                   //Float 0 - 96 (192PPQN)
+    public    $pulse;                   //Float 0 - 96 (192PPQN)    //Migrating to 240 PPQN
     private   $pulsesPerFrame;          //float
 
     function __construct($playerEngine) {
@@ -22,7 +22,7 @@ class Rotator {
     }
 
     private function setPulsesPerFrame($eps): void {
-        //4 eps (120pbm) = 
+        //4 eps (120pbm) =  
         $this->pulsesPerFrame = $eps * TPH_RACK_RENDER_SIZE / TPH_SAMPLE_RATE * TPH_TICKS_PER_CLOCK * 12; //12 not 24 since /8
     }
 

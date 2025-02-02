@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 const TPH_SAMPLE_RATE = 48000;      //new standard in iOS and Android  
 const TPH_RACK_RENDER_SIZE = 64;
-const TPH_TICKS_PER_CLOCK = 8;      //PPQN = 192
+const TPH_TICKS_PER_CLOCK = 10;      //PPQN = 192 //migrating to 240 !
 const TPH_RACK_COUNT = 4;           //keep small for easy debugging..
 
 require 'paramsAbstract.php';
